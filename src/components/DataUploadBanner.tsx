@@ -1,17 +1,12 @@
-import { useRef } from "react";
-import { Upload, FileSpreadsheet, CheckCircle2, X } from "lucide-react";
+import { useState } from "react";
+import { Upload, FileSpreadsheet, CheckCircle2, X, Sparkles } from "lucide-react";
 import { useData } from "@/context/DataContext";
+import ImportWizard from "@/components/ImportWizard";
 import { cn } from "@/lib/utils";
 
 export default function DataUploadBanner() {
-  const { data, uploadFile, clearData, hasData } = useData();
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleFile = (file: File) => {
-    const ext = file.name.split(".").pop()?.toLowerCase();
-    if (!["csv", "tsv", "txt", "xlsx", "xls"].includes(ext || "")) return;
-    uploadFile(file);
-  };
+  const { data, clearData, hasData } = useData();
+  const [wizardOpen, setWizardOpen] = useState(false);
 
   if (data.isProcessing) {
     return (
@@ -25,6 +20,7 @@ export default function DataUploadBanner() {
   }
 
   if (hasData) {
+    const granLabel = { global: "Global", sku: "Par SKU", family: "Par Famille", subfamily: "Par Sous-famille" }[data.granularity];
     return (
       <div className="mb-4 rounded-xl border border-success/30 bg-success/5 p-4">
         <div className="flex items-center justify-between">
@@ -39,6 +35,12 @@ export default function DataUploadBanner() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">{granLabel}</span>
+            {data.groupForecasts.length > 0 && (
+              <span className="rounded-full bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent">
+                {data.groupForecasts.length} groupes
+              </span>
+            )}
             <span className="rounded-full bg-success/10 px-2.5 py-0.5 text-xs font-medium text-success">
               {data.forecasts?.bestModel}
             </span>
@@ -52,26 +54,20 @@ export default function DataUploadBanner() {
   }
 
   return (
-    <div
-      className="mb-4 cursor-pointer rounded-xl border-2 border-dashed border-border bg-card/50 p-4 text-center hover:border-primary/40 hover:bg-primary/5 transition-all"
-      onClick={() => inputRef.current?.click()}
-      onDragOver={(e) => e.preventDefault()}
-      onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handleFile(f); }}
-    >
-      <input
-        ref={inputRef}
-        type="file"
-        accept=".csv,.tsv,.txt,.xlsx,.xls"
-        className="hidden"
-        onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
-      />
-      <div className="flex items-center justify-center gap-3">
-        <FileSpreadsheet className="h-5 w-5 text-muted-foreground" />
-        <span className="text-sm text-muted-foreground">
-          <span className="font-medium text-foreground">Importez un fichier CSV/Excel</span> pour activer les prévisions sur vos données
-        </span>
-        <Upload className="h-4 w-4 text-primary" />
+    <>
+      <div
+        className="mb-4 cursor-pointer rounded-xl border-2 border-dashed border-border bg-card/50 p-4 text-center hover:border-primary/40 hover:bg-primary/5 transition-all"
+        onClick={() => setWizardOpen(true)}
+      >
+        <div className="flex items-center justify-center gap-3">
+          <FileSpreadsheet className="h-5 w-5 text-muted-foreground" />
+          <span className="text-sm text-muted-foreground">
+            <span className="font-medium text-foreground">Importez un fichier CSV/Excel</span> pour activer les prévisions sur vos données
+          </span>
+          <Upload className="h-4 w-4 text-primary" />
+        </div>
       </div>
-    </div>
+      <ImportWizard open={wizardOpen} onClose={() => setWizardOpen(false)} />
+    </>
   );
 }

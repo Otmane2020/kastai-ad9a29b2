@@ -1,6 +1,7 @@
-import { useRef, useState } from "react";
-import { Plug, Upload, Database, BarChart3, Globe, FileSpreadsheet, CheckCircle2 } from "lucide-react";
+import { useState } from "react";
+import { Plug, Database, BarChart3, Globe, FileSpreadsheet, CheckCircle2 } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
+import ImportWizard from "@/components/ImportWizard";
 import { useData } from "@/context/DataContext";
 import { cn } from "@/lib/utils";
 
@@ -12,15 +13,10 @@ const connectors = [
 ];
 
 export default function Connectors() {
-  const { data, uploadFile, hasData } = useData();
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [dragActive, setDragActive] = useState(false);
+  const { data, hasData } = useData();
+  const [wizardOpen, setWizardOpen] = useState(false);
 
-  const handleFile = (file: File) => {
-    const ext = file.name.split(".").pop()?.toLowerCase();
-    if (!["csv", "tsv", "txt", "xlsx", "xls"].includes(ext || "")) return;
-    uploadFile(file);
-  };
+  const granLabel = { global: "Global", sku: "Par SKU", family: "Par Famille", subfamily: "Par Sous-famille" }[data.granularity];
 
   return (
     <div className="animate-fade-in">
@@ -30,20 +26,10 @@ export default function Connectors() {
       <div
         className={cn(
           "mb-6 rounded-xl border-2 border-dashed p-8 text-center transition-all cursor-pointer",
-          dragActive ? "border-primary bg-primary/5" : "border-border bg-card"
+          hasData ? "border-success/30 bg-success/5" : "border-border bg-card hover:border-primary/40 hover:bg-primary/5"
         )}
-        onClick={() => inputRef.current?.click()}
-        onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
-        onDragLeave={() => setDragActive(false)}
-        onDrop={(e) => { e.preventDefault(); setDragActive(false); const f = e.dataTransfer.files[0]; if (f) handleFile(f); }}
+        onClick={() => !hasData && setWizardOpen(true)}
       >
-        <input
-          ref={inputRef}
-          type="file"
-          accept=".csv,.tsv,.txt,.xlsx,.xls"
-          className="hidden"
-          onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
-        />
         {hasData ? (
           <div className="flex items-center justify-center gap-3">
             <CheckCircle2 className="h-8 w-8 text-success" />
@@ -54,45 +40,43 @@ export default function Connectors() {
                 {data.mapping?.productCol && ` · Produit: ${data.mapping.productCol}`}
                 {data.mapping?.categoryCol && ` · Catégorie: ${data.mapping.categoryCol}`}
               </p>
-              <p className="text-xs text-success mt-1">
-                Meilleur modèle: {data.forecasts?.bestModel} (MAPE: {data.forecasts?.models[0].mape.toFixed(1)}%)
+              <p className="text-xs text-muted-foreground mt-1">
+                Granularité: {granLabel}
+                {data.groupForecasts.length > 0 && ` · ${data.groupForecasts.length} groupes analysés`}
+                {" · "}Meilleur modèle: {data.forecasts?.bestModel} (MAPE: {data.forecasts?.models[0].mape.toFixed(1)}%)
               </p>
             </div>
           </div>
         ) : (
-          <>
-            <Upload className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
-            <p className="font-display text-sm font-semibold text-foreground">Glissez vos fichiers ici</p>
-            <p className="text-xs text-muted-foreground mt-1">CSV, Excel — mapping automatique intelligent des colonnes</p>
-            <p className="text-xs text-muted-foreground mt-0.5">Détection automatique: dates, ventes, produits, catégories</p>
+          <div onClick={() => setWizardOpen(true)}>
+            <FileSpreadsheet className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
+            <p className="font-display text-sm font-semibold text-foreground">Assistant d'import CSV / Excel</p>
+            <p className="text-xs text-muted-foreground mt-1">Mapping automatique intelligent · Choix de granularité · Prévisions en un clic</p>
             <button className="mt-4 rounded-lg gradient-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity">
-              Parcourir
+              Lancer l'import
             </button>
-          </>
+          </div>
         )}
       </div>
 
       {/* Mapping info */}
       {hasData && data.mapping && (
         <div className="mb-6 rounded-xl border border-border bg-card p-5 shadow-card">
-          <h3 className="font-display text-sm font-semibold text-card-foreground mb-3">Mapping automatique détecté</h3>
+          <h3 className="font-display text-sm font-semibold text-card-foreground mb-3">Mapping des colonnes</h3>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {[
-              { label: "Date", value: data.mapping.dateCol },
-              { label: "Valeur", value: data.mapping.valueCol },
-              { label: "Produit", value: data.mapping.productCol },
-              { label: "Catégorie", value: data.mapping.categoryCol },
+              { label: "Date", value: data.mapping.dateCol, emoji: "📅" },
+              { label: "Valeur", value: data.mapping.valueCol, emoji: "📊" },
+              { label: "Produit/SKU", value: data.mapping.productCol, emoji: "📦" },
+              { label: "Catégorie", value: data.mapping.categoryCol, emoji: "🏷️" },
             ].map((m) => (
               <div key={m.label} className="rounded-lg bg-muted/50 p-3">
-                <p className="text-xs text-muted-foreground">{m.label}</p>
+                <p className="text-xs text-muted-foreground">{m.emoji} {m.label}</p>
                 <p className="font-medium text-sm text-card-foreground mt-0.5">
-                  {m.value || <span className="text-muted-foreground italic">Non détecté</span>}
+                  {m.value || <span className="text-muted-foreground italic">Non mappé</span>}
                 </p>
               </div>
             ))}
-          </div>
-          <div className="mt-3">
-            <p className="text-xs text-muted-foreground">Colonnes disponibles: {data.columns.join(", ")}</p>
           </div>
         </div>
       )}
@@ -122,6 +106,8 @@ export default function Connectors() {
           </div>
         ))}
       </div>
+
+      <ImportWizard open={wizardOpen} onClose={() => setWizardOpen(false)} />
     </div>
   );
 }

@@ -17,6 +17,7 @@ const navItems = [
   { path: "/inventory", label: "Stocks", icon: Package },
   { path: "/connectors", label: "Connecteurs", icon: Plug },
   { path: "/users", label: "Utilisateurs", icon: Users },
+  { path: "/superadmin", label: "Super Admin", icon: Sparkles },
 ];
 
 interface AppSidebarProps {
