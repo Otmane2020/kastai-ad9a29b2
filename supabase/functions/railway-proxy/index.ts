@@ -51,6 +51,17 @@ serve(async (req) => {
       if (payload.date_range) formData.append("date_range", JSON.stringify(payload.date_range));
       if (payload.total_rows) formData.append("total_rows", String(payload.total_rows));
 
+      // Send explicit column names so the server doesn't auto-detect wrong ones
+      if (payload.mapping?.dateCol) formData.append("date_column", payload.mapping.dateCol);
+      if (payload.mapping?.revenueCol) formData.append("value_column", payload.mapping.revenueCol);
+      if (payload.mapping?.quantityCol) formData.append("quantity_column", payload.mapping.quantityCol);
+      if (payload.mapping?.productCol) formData.append("product_column", payload.mapping.productCol);
+      if (payload.mapping?.categoryCol || payload.mapping?.familyCol) formData.append("category_column", payload.mapping.categoryCol || payload.mapping.familyCol);
+      if (payload.mapping?.subfamilyCol) formData.append("subfamily_column", payload.mapping.subfamilyCol);
+      // Also send as target_column for APIs that use that name
+      const targetCol = payload.mapping?.revenueCol || payload.mapping?.valueCol || payload.mapping?.quantityCol;
+      if (targetCol) formData.append("target_column", targetCol);
+
       const response = await fetch(apiUrl, {
         method: "POST",
         body: formData,
