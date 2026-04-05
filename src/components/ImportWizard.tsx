@@ -364,6 +364,13 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
               granularity: payload.granularity,
               forecast_targets: payload.forecastTargets,
               prophet_regressors: payload.prophetRegressors.filter(r => r.enabled).map(r => ({ key: r.key, type: r.type })),
+              // Explicit column mapping so server uses correct columns
+              date_column: wizard.mapping.dateCol,
+              value_column: wizard.mapping.revenueCol || wizard.mapping.valueCol,
+              quantity_column: wizard.mapping.quantityCol,
+              product_column: wizard.mapping.productCol,
+              category_column: wizard.mapping.categoryCol || wizard.mapping.familyCol,
+              target_column: wizard.mapping.revenueCol || wizard.mapping.valueCol || wizard.mapping.quantityCol,
             },
           }),
           signal: AbortSignal.timeout(180000),
