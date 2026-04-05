@@ -17,12 +17,35 @@ const STEP_LABELS: Record<Step, string> = {
 
 const STEPS: Step[] = ["upload", "mapping", "granularity", "launch"];
 
+export type ForecastHorizon = "1D" | "1W" | "2W" | "1M" | "3M" | "6M" | "12M" | "24M";
+export type ForecastGranularity = "global" | "sku" | "family" | "subfamily";
+
+export const HORIZON_OPTIONS: { value: ForecastHorizon; label: string }[] = [
+  { value: "1D", label: "Jour" },
+  { value: "1W", label: "1 Semaine" },
+  { value: "2W", label: "2 Semaines" },
+  { value: "1M", label: "1 Mois" },
+  { value: "3M", label: "3 Mois" },
+  { value: "6M", label: "6 Mois" },
+  { value: "12M", label: "12 Mois" },
+  { value: "24M", label: "24 Mois" },
+];
+
+export const GRANULARITY_OPTIONS: { value: ForecastGranularity; label: string; icon: string }[] = [
+  { value: "global", label: "Global (agrégé)", icon: "🌐" },
+  { value: "sku", label: "Par SKU / Produit", icon: "📦" },
+  { value: "family", label: "Par Famille produit", icon: "🏷️" },
+  { value: "subfamily", label: "Par Sous-famille", icon: "🔀" },
+];
+
 interface WizardState {
   file: File | null;
   rows: Record<string, any>[];
   columns: string[];
   mapping: ColumnMapping;
-  granularity: "global" | "sku" | "family" | "subfamily";
+  granularity: ForecastGranularity;
+  selectedHorizons: ForecastHorizon[];
+  selectedGranularities: ForecastGranularity[];
   preview: Record<string, any>[];
   aiMapping: AIMapping | null;
   aiAnalyzing: boolean;
@@ -36,6 +59,8 @@ const initialWizard: WizardState = {
   columns: [],
   mapping: { dateCol: null, valueCol: null, productCol: null, categoryCol: null },
   granularity: "global",
+  selectedHorizons: ["6M"],
+  selectedGranularities: ["global"],
   preview: [],
   aiMapping: null,
   aiAnalyzing: false,
@@ -439,57 +464,94 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
             </div>
           )}
 
-          {/* Step 3: Granularity */}
+          {/* Step 3: Granularity & Horizons */}
           {step === "granularity" && (
             <div className="space-y-5">
               <div>
-                <h3 className="font-display text-sm font-semibold text-card-foreground mb-1">Niveau de prévision</h3>
+                <h3 className="font-display text-sm font-semibold text-card-foreground mb-1">Configuration des prévisions</h3>
                 <p className="text-xs text-muted-foreground mb-4">
                   {wizard.businessContext
                     ? `Contexte IA : ${wizard.businessContext}`
-                    : "Choisissez à quel niveau lancer les prévisions"}
+                    : "Choisissez les niveaux et horizons de prévision"}
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {([
-                  { value: "global" as const, label: "Global (agrégé)", desc: "Prévision sur le total des ventes", icon: "🌐", always: true },
-                  { value: "sku" as const, label: "Par SKU / Produit", desc: `${uniqueValues.products.length} produits détectés`, icon: "📦", always: false, needs: "productCol" as const },
-                  { value: "family" as const, label: "Par Famille produit", desc: `${uniqueValues.categories.length} catégories détectées`, icon: "🏷️", always: false, needs: "categoryCol" as const },
-                  { value: "subfamily" as const, label: "Par Sous-famille", desc: "Croisement produit + catégorie", icon: "🔀", always: false, needsBoth: true },
-                ] as const).map((opt) => {
-                  const disabled =
-                    (!opt.always && "needs" in opt && opt.needs && !wizard.mapping[opt.needs]) ||
-                    (!opt.always && "needsBoth" in opt && opt.needsBoth && (!wizard.mapping.productCol || !wizard.mapping.categoryCol));
-                  const isAISuggested = wizard.aiMapping?.suggestedGranularity === opt.value;
-                  return (
-                    <button
-                      key={opt.value}
-                      disabled={!!disabled}
-                      onClick={() => setWizard((prev) => ({ ...prev, granularity: opt.value }))}
-                      className={cn(
-                        "rounded-xl border p-4 text-left transition-all",
-                        wizard.granularity === opt.value
-                          ? "border-primary bg-primary/5 shadow-elevated"
-                          : disabled
-                            ? "border-border bg-muted/30 opacity-50 cursor-not-allowed"
-                            : "border-border bg-card hover:border-primary/40 hover:shadow-card cursor-pointer"
-                      )}
-                    >
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-lg">{opt.icon}</span>
-                        <span className="font-display text-sm font-semibold text-card-foreground">{opt.label}</span>
-                        {isAISuggested && (
-                          <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[9px] font-medium text-primary">Suggestion IA</span>
+              {/* Horizons multiselect */}
+              <div>
+                <h4 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">⏱️ Horizons de prévision (multi-sélection)</h4>
+                <div className="flex flex-wrap gap-2">
+                  {HORIZON_OPTIONS.map((h) => {
+                    const isSelected = wizard.selectedHorizons.includes(h.value);
+                    return (
+                      <button
+                        key={h.value}
+                        onClick={() => setWizard((prev) => ({
+                          ...prev,
+                          selectedHorizons: isSelected
+                            ? prev.selectedHorizons.filter((x) => x !== h.value)
+                            : [...prev.selectedHorizons, h.value],
+                        }))}
+                        className={cn(
+                          "rounded-lg border px-4 py-2 text-sm font-medium transition-all",
+                          isSelected
+                            ? "border-primary bg-primary/10 text-primary shadow-sm"
+                            : "border-border bg-card text-muted-foreground hover:border-primary/40"
                         )}
-                      </div>
-                      <p className="text-xs text-muted-foreground">{opt.desc}</p>
-                    </button>
-                  );
-                })}
+                      >
+                        {h.label}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
-              {wizard.granularity === "sku" && uniqueValues.products.length > 0 && (
+              {/* Granularity multiselect */}
+              <div>
+                <h4 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">📊 Niveaux de prévision (multi-sélection)</h4>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  {GRANULARITY_OPTIONS.map((opt) => {
+                    const disabled =
+                      (opt.value === "sku" && !wizard.mapping.productCol) ||
+                      (opt.value === "family" && !wizard.mapping.categoryCol) ||
+                      (opt.value === "subfamily" && (!wizard.mapping.productCol || !wizard.mapping.categoryCol));
+                    const isSelected = wizard.selectedGranularities.includes(opt.value);
+                    const isAISuggested = wizard.aiMapping?.suggestedGranularity === opt.value;
+                    return (
+                      <button
+                        key={opt.value}
+                        disabled={!!disabled}
+                        onClick={() => setWizard((prev) => ({
+                          ...prev,
+                          selectedGranularities: isSelected
+                            ? prev.selectedGranularities.filter((x) => x !== opt.value)
+                            : [...prev.selectedGranularities, opt.value],
+                          granularity: !isSelected ? opt.value : prev.granularity,
+                        }))}
+                        className={cn(
+                          "rounded-xl border p-4 text-left transition-all",
+                          isSelected
+                            ? "border-primary bg-primary/5 shadow-elevated"
+                            : disabled
+                              ? "border-border bg-muted/30 opacity-50 cursor-not-allowed"
+                              : "border-border bg-card hover:border-primary/40 hover:shadow-card cursor-pointer"
+                        )}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-lg">{opt.icon}</span>
+                          <span className="font-display text-sm font-semibold text-card-foreground">{opt.label}</span>
+                          {isSelected && <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[9px] font-medium text-primary">✓</span>}
+                          {isAISuggested && (
+                            <span className="rounded-full bg-success/10 px-1.5 py-0.5 text-[9px] font-medium text-success">Suggestion IA</span>
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Detected values */}
+              {wizard.selectedGranularities.includes("sku") && uniqueValues.products.length > 0 && (
                 <div className="rounded-lg border border-border bg-muted/20 p-3">
                   <p className="text-xs font-medium text-card-foreground mb-2">Produits/SKU détectés :</p>
                   <div className="flex flex-wrap gap-1.5">
@@ -499,8 +561,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                   </div>
                 </div>
               )}
-
-              {wizard.granularity === "family" && uniqueValues.categories.length > 0 && (
+              {wizard.selectedGranularities.includes("family") && uniqueValues.categories.length > 0 && (
                 <div className="rounded-lg border border-border bg-muted/20 p-3">
                   <p className="text-xs font-medium text-card-foreground mb-2">Familles/Catégories :</p>
                   <div className="flex flex-wrap gap-1.5">
@@ -598,9 +659,15 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                   </div>
                 )}
                 <div className="border-t border-border pt-2 flex justify-between text-sm">
-                  <span className="text-muted-foreground">Granularité</span>
+                  <span className="text-muted-foreground">Granularités</span>
                   <span className="font-medium text-card-foreground">
-                    {{ global: "Global", sku: "Par SKU", family: "Par Famille", subfamily: "Par Sous-famille" }[wizard.granularity]}
+                    {wizard.selectedGranularities.map((g) => ({ global: "Global", sku: "SKU", family: "Famille", subfamily: "Sous-famille" }[g])).join(", ")}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Horizons</span>
+                  <span className="font-medium text-card-foreground">
+                    {wizard.selectedHorizons.join(", ")}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
