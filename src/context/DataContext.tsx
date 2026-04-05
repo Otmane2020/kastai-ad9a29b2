@@ -36,7 +36,7 @@ export interface DataState {
 
 interface DataContextType {
   data: DataState;
-  processData: (rows: DataRow[], columns: string[], mapping: ColumnMapping, fileName: string, granularity: Granularity) => Promise<void>;
+  processData: (rows: DataRow[], columns: string[], mapping: ColumnMapping, fileName: string, granularity: Granularity, serverResult?: any) => Promise<void>;
   clearData: () => void;
   hasData: boolean;
 }
