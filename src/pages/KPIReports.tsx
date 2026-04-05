@@ -57,7 +57,7 @@ export default function KPIReports() {
       <PageHeader
         title="KPI & Rapports"
         description="Analyse de performance et génération de rapports"
-        icon={<PieChart className="h-5 w-5" />}
+        icon={<PieChartIcon className="h-5 w-5" />}
         actions={
           <button className="flex items-center gap-2 rounded-lg gradient-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity">
             <ArrowDownToLine className="h-4 w-4" />Exporter PDF
@@ -67,9 +67,9 @@ export default function KPIReports() {
       <DataUploadBanner />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-6">
-        <KPICard title="MAPE moyen" value={mapeAvg} changeType="up" icon={<PieChart className="h-5 w-5" />} />
-        <KPICard title="Biais moyen" value={biasAvg} changeType="neutral" icon={<PieChart className="h-5 w-5" />} />
-        <KPICard title="Modèles testés" value={modelsCount} changeType="neutral" icon={<PieChart className="h-5 w-5" />} />
+        <KPICard title="MAPE moyen" value={mapeAvg} changeType="up" icon={<PieChartIcon className="h-5 w-5" />} />
+        <KPICard title="Biais moyen" value={biasAvg} changeType="neutral" icon={<PieChartIcon className="h-5 w-5" />} />
+        <KPICard title="Modèles testés" value={modelsCount} changeType="neutral" icon={<PieChartIcon className="h-5 w-5" />} />
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
