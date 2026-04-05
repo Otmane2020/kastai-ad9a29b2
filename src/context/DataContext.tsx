@@ -58,21 +58,58 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 
 function buildTimeSeries(rows: DataRow[], mapping: ColumnMapping): TimeSeriesPoint[] {
   const timeSeries: TimeSeriesPoint[] = [];
+  if (!mapping.dateCol) return timeSeries;
+
+  // Resolve value column: valueCol > revenueCol > quantityCol
+  const extMapping = mapping as any;
+  const valueColumn = mapping.valueCol || extMapping.revenueCol || extMapping.quantityCol;
+  if (!valueColumn) return timeSeries;
+
+  // Detect product/category columns including extended mapping
+  const productCol = mapping.productCol || extMapping.familyCol;
+  const categoryCol = mapping.categoryCol || extMapping.subfamilyCol;
+
   for (const row of rows) {
-    if (!mapping.dateCol || !mapping.valueCol) continue;
     const dateRaw = row[mapping.dateCol];
-    const valueRaw = row[mapping.valueCol];
+    const valueRaw = row[valueColumn];
     if (dateRaw == null || valueRaw == null) continue;
 
-    const date = dateRaw instanceof Date ? dateRaw : new Date(String(dateRaw));
-    const value = typeof valueRaw === "number" ? valueRaw : parseFloat(String(valueRaw));
+    // Robust date parsing: handle European formats (DD/MM/YYYY), Excel serial numbers
+    let date: Date;
+    if (dateRaw instanceof Date) {
+      date = dateRaw;
+    } else if (typeof dateRaw === "number") {
+      // Excel serial date
+      date = new Date((dateRaw - 25569) * 86400 * 1000);
+    } else {
+      const s = String(dateRaw).trim();
+      // Try DD/MM/YYYY or DD-MM-YYYY
+      const euMatch = s.match(/^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{2,4})$/);
+      if (euMatch) {
+        const [, d, m, y] = euMatch;
+        const year = y.length === 2 ? 2000 + parseInt(y) : parseInt(y);
+        date = new Date(year, parseInt(m) - 1, parseInt(d));
+      } else {
+        date = new Date(s);
+      }
+    }
+
+    // Robust value parsing: handle comma decimals, spaces
+    let value: number;
+    if (typeof valueRaw === "number") {
+      value = valueRaw;
+    } else {
+      const cleaned = String(valueRaw).replace(/\s/g, "").replace(/,/g, ".");
+      value = parseFloat(cleaned);
+    }
+
     if (isNaN(date.getTime()) || isNaN(value)) continue;
 
     timeSeries.push({
       date,
       value,
-      product: mapping.productCol ? String(row[mapping.productCol] ?? "") : undefined,
-      category: mapping.categoryCol ? String(row[mapping.categoryCol] ?? "") : undefined,
+      product: productCol ? String(row[productCol] ?? "") : undefined,
+      category: categoryCol ? String(row[categoryCol] ?? "") : undefined,
     });
   }
   timeSeries.sort((a, b) => a.date.getTime() - b.date.getTime());
