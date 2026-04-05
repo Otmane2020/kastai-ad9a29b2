@@ -32,9 +32,9 @@ export const HORIZON_OPTIONS: { value: ForecastHorizon; label: string }[] = [
   { value: "24M", label: "24 Mois" },
 ];
 
-export const GRANULARITY_OPTIONS: { value: ForecastGranularity; label: string; icon: string }[] = [
-  { value: "global", label: "Global (agrégé)", icon: "🌐" },
-  { value: "sku", label: "Par SKU / Produit", icon: "📦" },
+export const GRANULARITY_OPTIONS: { value: ForecastGranularity; label: string; icon: string; desc: string }[] = [
+  { value: "global", label: "Global (agrégé)", icon: "🌐", desc: "Prévision sur le total des ventes" },
+  { value: "sku", label: "Par SKU / Produit", icon: "📦", desc: "Prévision par référence produit" },
   { value: "family", label: "Par Famille produit", icon: "🏷️" },
   { value: "subfamily", label: "Par Sous-famille", icon: "🔀" },
 ];
