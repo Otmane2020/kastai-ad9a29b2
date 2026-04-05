@@ -112,10 +112,15 @@ export default function Forecast() {
     const monthly = aggregateMonthly(activeTs);
     const chartData: Record<string, any>[] = monthly.map((m) => ({ period: m.label, réel: m.value }));
 
+    // Determine the last historical date to project future dates
+    const lastDate = monthly.length > 0 ? new Date(monthly[monthly.length - 1].date) : new Date();
+
     if (activeFc) {
       activeFc.models.forEach((model) => {
         model.predictions.forEach((pred, i) => {
-          const label = `P+${i + 1}`;
+          // Generate real future date label (continuing monthly from last data point)
+          const futureDate = new Date(lastDate.getFullYear(), lastDate.getMonth() + (i + 1), 1);
+          const label = futureDate.toLocaleDateString("fr-FR", { month: "short", year: "2-digit" });
           let existing = chartData.find((r) => r.period === label);
           if (!existing) { existing = { period: label }; chartData.push(existing); }
           existing[model.name] = Math.round(pred);
