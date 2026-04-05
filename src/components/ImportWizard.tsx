@@ -190,9 +190,11 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
 
   const handleLaunch = useCallback(async () => {
     setLaunching(true);
+    setLaunchProgress(10);
     setError(null);
 
     try {
+      setLaunchProgress(25);
       if (launchMode === "server") {
         const serverUrl = localStorage.getItem("kastai_server_url") || "http://localhost:8000";
         const serverKey = localStorage.getItem("kastai_server_key") || "";
@@ -201,6 +203,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
           wizard.selectedTargets, wizard.prophetRegressors
         );
 
+        setLaunchProgress(40);
         const res = await fetch(`${serverUrl}/api/forecast`, {
           method: "POST",
           headers: {
@@ -216,21 +219,42 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
           throw new Error(`Serveur Python: ${res.status} ${errText}`);
         }
 
+        setLaunchProgress(70);
         const serverResult = await res.json();
         await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity, serverResult);
       } else {
+        setLaunchProgress(50);
         await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity);
       }
 
+      setLaunchProgress(100);
+      
+      // Small delay for visual satisfaction
+      await new Promise((r) => setTimeout(r, 400));
+
       setLaunching(false);
+      setLaunchProgress(0);
       onClose();
       setWizard(initialWizard);
       setStep("upload");
+
+      toast({
+        title: "✅ Prévisions calculées",
+        description: `${wizard.file?.name} — modèles exécutés avec succès`,
+      });
+
+      navigate("/forecast");
     } catch (err: any) {
       setError(err.message || "Erreur lors du calcul des prévisions.");
       setLaunching(false);
+      setLaunchProgress(0);
+      toast({
+        title: "❌ Erreur de prévision",
+        description: err.message || "Vérifiez vos données et réessayez.",
+        variant: "destructive",
+      });
     }
-  }, [wizard, processData, onClose, launchMode]);
+  }, [wizard, processData, onClose, launchMode, navigate, toast]);
 
   const uniqueValues = useMemo(() => {
     if (!wizard.rows.length) return { products: [], categories: [], families: [], subfamilies: [] };
