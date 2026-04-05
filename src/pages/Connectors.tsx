@@ -85,17 +85,16 @@ export default function Connectors() {
     try {
       const run = forecastRuns[fileId];
       const file = dbFiles.find(f => f.id === fileId);
+      const serverResult = run?.models_results as any;
+      const hasValidResults = serverResult && serverResult.models && Array.isArray(serverResult.models) && serverResult.models.length > 0;
       
-      if (run && run.models_results && file) {
-        // Already calculated — load stored results into DataContext
-        const serverResult = run.models_results as any;
+      if (run && hasValidResults && file) {
+        // Already calculated with valid results — load into DataContext
         const mapping = file.mapping as any;
         
         if (hasData && data.raw.length > 0 && data.fileName === file.file_name) {
-          // Data already in memory, just re-process with stored server results
           await processData(data.raw, data.columns, mapping, file.file_name, (file.granularity || "global") as any, run.horizon || 6, "revenue", serverResult);
         } else {
-          // No raw data in memory — just navigate, forecast page will show what's available
           await processData([], file.mapping ? Object.values(mapping).filter(Boolean).map(String) : [], mapping, file.file_name, (file.granularity || "global") as any, run.horizon || 6, "revenue", serverResult);
         }
         navigate("/forecast");
