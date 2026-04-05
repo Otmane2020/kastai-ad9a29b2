@@ -14,7 +14,122 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      forecast_runs: {
+        Row: {
+          best_mape: number | null
+          best_model: string | null
+          created_at: string | null
+          file_id: string | null
+          file_name: string | null
+          granularity: string | null
+          group_count: number | null
+          horizon: number | null
+          id: string
+          models_results: Json | null
+          total_points: number | null
+          user_id: string
+        }
+        Insert: {
+          best_mape?: number | null
+          best_model?: string | null
+          created_at?: string | null
+          file_id?: string | null
+          file_name?: string | null
+          granularity?: string | null
+          group_count?: number | null
+          horizon?: number | null
+          id?: string
+          models_results?: Json | null
+          total_points?: number | null
+          user_id: string
+        }
+        Update: {
+          best_mape?: number | null
+          best_model?: string | null
+          created_at?: string | null
+          file_id?: string | null
+          file_name?: string | null
+          granularity?: string | null
+          group_count?: number | null
+          horizon?: number | null
+          id?: string
+          models_results?: Json | null
+          total_points?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forecast_runs_file_id_fkey"
+            columns: ["file_id"]
+            isOneToOne: false
+            referencedRelation: "uploaded_files"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          company: string | null
+          created_at: string | null
+          full_name: string | null
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          company?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          company?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      uploaded_files: {
+        Row: {
+          column_count: number | null
+          columns: Json | null
+          file_name: string
+          granularity: string | null
+          id: string
+          mapping: Json | null
+          row_count: number | null
+          uploaded_at: string | null
+          user_id: string
+        }
+        Insert: {
+          column_count?: number | null
+          columns?: Json | null
+          file_name: string
+          granularity?: string | null
+          id?: string
+          mapping?: Json | null
+          row_count?: number | null
+          uploaded_at?: string | null
+          user_id: string
+        }
+        Update: {
+          column_count?: number | null
+          columns?: Json | null
+          file_name?: string
+          granularity?: string | null
+          id?: string
+          mapping?: Json | null
+          row_count?: number | null
+          uploaded_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
