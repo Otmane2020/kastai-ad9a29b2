@@ -190,12 +190,19 @@ export default function Forecast() {
 
     const lastDateResult = monthly.length > 0 ? new Date(monthly[monthly.length - 1].date) : new Date();
 
-    const models = activeFc.models.map((m, i) => ({
+    const modelNames = activeFc.models.map(m => m.name);
+    if (selectedModels.size === 0 || !modelNames.some(n => selectedModels.has(n))) {
+      // Auto-select best model on first load
+      const bestName = activeFc.models[0]?.name;
+      if (bestName) setSelectedModels(new Set([bestName]));
+    }
+
+    const models = activeFc.models.map((m) => ({
       name: m.name,
       mape: `${m.mape.toFixed(1)}%`,
       bias: `${m.bias >= 0 ? "+" : ""}${m.bias.toFixed(1)}%`,
       mapeNum: m.mape,
-      selected: i === 0,
+      selected: selectedModels.has(m.name) || (selectedModels.size === 0 && m.name === activeFc.models[0]?.name),
       predictions: m.predictions,
     }));
 
@@ -209,7 +216,7 @@ export default function Forecast() {
       forecastInfo: { bestModel: activeFc.bestModel, points: activeTs.length, horizon: activeFc.horizon },
       lastDate: lastDateResult,
     };
-  }, [hasData, data, viewLevel, selectedGroup]);
+  }, [hasData, data, viewLevel, selectedGroup, selectedModels]);
 
   return (
     <div className="animate-fade-in space-y-6">
@@ -231,7 +238,7 @@ export default function Forecast() {
         <GroupCards groups={groups} selectedGroup={selectedGroup} setSelectedGroup={setSelectedGroup} groupForecasts={data.groupForecasts} />
       )}
 
-      <ModelCards models={models} />
+      <ModelCards models={models} onToggle={handleToggleModel} />
 
       <ForecastChart
         chartData={chartData}
