@@ -301,10 +301,10 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
 
         setLaunchProgress(70);
         const serverResult = await res.json();
-        await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity, serverResult);
+        await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity, maxHorizon, serverResult);
       } else {
         setLaunchProgress(50);
-        await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity);
+        await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity, maxHorizon);
       }
 
       setLaunchProgress(100);
