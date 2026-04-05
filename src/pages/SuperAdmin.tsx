@@ -64,9 +64,9 @@ export default function SuperAdmin() {
 
   const statusInfo = {
     disconnected: { color: "text-muted-foreground", bg: "bg-muted", label: "Non connecté", icon: WifiOff },
-    connecting: { color: "text-primary", bg: "bg-primary/10", label: "Connexion...", icon: RefreshCw },
+    connecting: { color: "text-primary", bg: "bg-primary/10", label: "Connexion...", icon: RotateCw },
     connected: { color: "text-success", bg: "bg-success/10", label: "Connecté", icon: Wifi },
-    error: { color: "text-destructive", bg: "bg-destructive/10", label: "Erreur", icon: XCircle },
+    error: { color: "text-destructive", bg: "bg-destructive/10", label: "Erreur", icon: CircleX },
   }[config.status];
 
   return (
@@ -74,16 +74,16 @@ export default function SuperAdmin() {
       <PageHeader
         title="Super Admin"
         description="Configuration du serveur Python de prévisions avancées"
-        icon={<Settings className="h-5 w-5" />}
+        icon={<SlidersHorizontal className="h-5 w-5" />}
       />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* Server config */}
+        {/* ServerCog config */}
         <div className="space-y-4">
           <div className="rounded-xl border border-border bg-card p-5 shadow-card">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-display text-sm font-semibold text-card-foreground flex items-center gap-2">
-                <Server className="h-4 w-4 text-primary" />
+                <ServerCog className="h-4 w-4 text-primary" />
                 Serveur Python (FastAPI)
               </h3>
               <div className={cn("flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium", statusInfo.bg, statusInfo.color)}>
@@ -122,14 +122,14 @@ export default function SuperAdmin() {
                   disabled={config.status === "connecting"}
                   className="flex items-center gap-2 rounded-lg border border-primary text-primary px-4 py-2 text-sm font-medium hover:bg-primary/5 transition-colors disabled:opacity-50"
                 >
-                  <RefreshCw className={cn("h-4 w-4", config.status === "connecting" && "animate-spin")} />
+                  <RotateCw className={cn("h-4 w-4", config.status === "connecting" && "animate-spin")} />
                   Tester la connexion
                 </button>
                 <button
                   onClick={saveConfig}
                   className="flex items-center gap-2 rounded-lg gradient-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity"
                 >
-                  <Save className="h-4 w-4" />
+                  <SaveAll className="h-4 w-4" />
                   Sauvegarder
                 </button>
               </div>
@@ -140,7 +140,7 @@ export default function SuperAdmin() {
           {config.status === "connected" && (
             <div className="rounded-xl border border-success/30 bg-success/5 p-5">
               <div className="flex items-center gap-2 mb-3">
-                <CheckCircle2 className="h-5 w-5 text-success" />
+                <CircleCheck className="h-5 w-5 text-success" />
                 <h3 className="font-display text-sm font-semibold text-card-foreground">Serveur connecté</h3>
               </div>
               <div className="grid grid-cols-2 gap-3 text-sm">

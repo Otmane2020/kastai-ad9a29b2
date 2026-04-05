@@ -6,10 +6,10 @@ import { cn } from "@/lib/utils";
 import { useMemo } from "react";
 
 const demoAlerts = [
-  { id: 1, type: "critical" as const, title: "Rupture de stock imminente", desc: "SKU #1042 - Stock < seuil critique", time: "Il y a 2h", icon: Package },
+  { id: 1, type: "critical" as const, title: "Rupture de stock imminente", desc: "SKU #1042 - Stock < seuil critique", time: "Il y a 2h", icon: Boxes },
   { id: 2, type: "critical" as const, title: "Baisse ventes anormale", desc: "Catégorie Textile: -23% vs prévision", time: "Il y a 4h", icon: TrendingDown },
-  { id: 3, type: "warning" as const, title: "Écart prévision détecté", desc: "Modèle sous-performe (MAPE > 8%)", time: "Il y a 6h", icon: AlertTriangle },
-  { id: 4, type: "info" as const, title: "Saisonnalité détectée", desc: "Pic de demande prévu dans 14 jours", time: "Hier", icon: Bell },
+  { id: 3, type: "warning" as const, title: "Écart prévision détecté", desc: "Modèle sous-performe (MAPE > 8%)", time: "Il y a 6h", icon: ShieldAlert },
+  { id: 4, type: "info" as const, title: "Saisonnalité détectée", desc: "Pic de demande prévu dans 14 jours", time: "Hier", icon: BellRing },
 ];
 
 export default function Alerts() {
@@ -56,7 +56,7 @@ export default function Alerts() {
           title: `Modèle ${m.name} sous-performe`,
           desc: `MAPE: ${m.mape.toFixed(1)}% — au-dessus du seuil de 8%`,
           time: "Analyse",
-          icon: AlertTriangle,
+          icon: ShieldAlert,
         });
       }
     });
@@ -68,7 +68,7 @@ export default function Alerts() {
         title: "Aucune anomalie détectée",
         desc: "Toutes les valeurs sont dans les intervalles normaux",
         time: "Maintenant",
-        icon: Bell,
+        icon: BellRing,
       });
     }
 
@@ -89,7 +89,7 @@ export default function Alerts() {
 
   return (
     <div className="animate-fade-in">
-      <PageHeader title="Alertes & Recommandations" description="Détection d'anomalies et suggestions automatiques" icon={<AlertTriangle className="h-5 w-5" />} />
+      <PageHeader title="Alertes & Recommandations" description="Détection d'anomalies et suggestions automatiques" icon={<ShieldAlert className="h-5 w-5" />} />
       <DataUploadBanner />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

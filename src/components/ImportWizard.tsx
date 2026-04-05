@@ -269,7 +269,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <div className="flex items-center gap-2">
-            <Brain className="h-5 w-5 text-primary" />
+            <BrainCircuit className="h-5 w-5 text-primary" />
             <h2 className="font-display text-lg font-bold text-card-foreground">Assistant d'import intelligent</h2>
           </div>
           <button onClick={() => { onClose(); setWizard(initialWizard); setStep("upload"); }} className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted transition-colors">
@@ -287,7 +287,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                 i === stepIdx ? "gradient-primary text-primary-foreground" :
                 "bg-muted text-muted-foreground"
               )}>
-                {i < stepIdx ? <CheckCircle2 className="h-4 w-4" /> : i + 1}
+                {i < stepIdx ? <CircleCheck className="h-4 w-4" /> : i + 1}
               </div>
               <span className={cn(
                 "text-xs font-medium hidden sm:block truncate",
@@ -304,12 +304,12 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
         <div className="flex-1 overflow-y-auto px-6 py-5">
           {error && (
             <div className="mb-4 flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
-              <AlertCircle className="h-4 w-4 shrink-0" />
+              <TriangleAlert className="h-4 w-4 shrink-0" />
               {error}
             </div>
           )}
 
-          {/* Step 1: Upload */}
+          {/* Step 1: CloudUpload */}
           {step === "upload" && (
             <div
               className={cn(
@@ -335,11 +335,11 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                 </div>
               ) : (
                 <>
-                  <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                  <CloudUpload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
                   <p className="font-display text-base font-semibold text-foreground">Glissez votre fichier ici</p>
                   <p className="text-sm text-muted-foreground mt-2">CSV, TSV, Excel (.xlsx, .xls)</p>
                   <p className="text-xs text-muted-foreground mt-1 flex items-center justify-center gap-1">
-                    <Sparkles className="h-3 w-3" /> L'IA analysera automatiquement vos colonnes
+                    <Zap className="h-3 w-3" /> L'IA analysera automatiquement vos colonnes
                   </p>
                   <button className="mt-4 rounded-lg gradient-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity">
                     Parcourir
@@ -367,7 +367,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
               {wizard.aiMapping && !wizard.aiAnalyzing && (
                 <div className="rounded-xl border border-success/30 bg-success/5 p-4">
                   <div className="flex items-start gap-3">
-                    <Brain className="h-5 w-5 text-success mt-0.5" />
+                    <BrainCircuit className="h-5 w-5 text-success mt-0.5" />
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <p className="text-sm font-medium text-success">Mapping IA terminé</p>
@@ -382,7 +382,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
               )}
 
               <div className="flex items-center gap-2 mb-2">
-                <FileSpreadsheet className="h-5 w-5 text-primary" />
+                <FileUp className="h-5 w-5 text-primary" />
                 <span className="font-display text-sm font-semibold text-card-foreground">{wizard.file?.name}</span>
                 <span className="text-xs text-muted-foreground">— {wizard.rows.length} lignes · {wizard.columns.length} colonnes</span>
               </div>
@@ -741,7 +741,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
             <div className="space-y-5 py-2">
               <div className="text-center">
                 <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl gradient-primary mb-3">
-                  <Play className="h-8 w-8 text-primary-foreground" />
+                  <CirclePlay className="h-8 w-8 text-primary-foreground" />
                 </div>
                 <h3 className="font-display text-lg font-bold text-card-foreground">Prêt à lancer</h3>
                 <p className="text-sm text-muted-foreground mt-1">Tous les onglets seront mis à jour automatiquement</p>
@@ -759,7 +759,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                     )}
                   >
                     <div className="flex items-center gap-2 mb-1">
-                      <Sparkles className="h-4 w-4 text-primary" />
+                      <Zap className="h-4 w-4 text-primary" />
                       <span className="font-display text-sm font-semibold text-card-foreground">Moteur JS (local)</span>
                     </div>
                     <p className="text-xs text-muted-foreground">Lissage expo, Holt, moyenne mobile, tendance linéaire</p>
@@ -773,7 +773,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                     )}
                   >
                     <div className="flex items-center gap-2 mb-1">
-                      <Server className="h-4 w-4 text-accent" />
+                      <ServerCog className="h-4 w-4 text-accent" />
                       <span className="font-display text-sm font-semibold text-card-foreground">Serveur Python</span>
                       {!serverConfigured && <span className="text-[9px] text-warning bg-warning/10 rounded-full px-1.5 py-0.5">Non configuré</span>}
                     </div>
@@ -853,7 +853,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                 {wizard.businessContext && (
                   <div className="border-t border-border pt-2">
                     <p className="text-xs text-muted-foreground">
-                      <Brain className="h-3 w-3 inline mr-1" />
+                      <BrainCircuit className="h-3 w-3 inline mr-1" />
                       {wizard.businessContext}
                     </p>
                   </div>
@@ -891,7 +891,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
               disabled={launching}
               className="flex items-center gap-2 rounded-lg gradient-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50"
             >
-              <Play className="h-4 w-4" />
+              <CirclePlay className="h-4 w-4" />
               {launching ? "En cours..." : "Lancer les prévisions"}
             </button>
           ) : (

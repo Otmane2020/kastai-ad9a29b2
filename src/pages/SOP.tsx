@@ -54,7 +54,7 @@ export default function SOP() {
 
   return (
     <div className="animate-fade-in">
-      <PageHeader title="S&OP" description="Alignement ventes / production — planification stratégique" icon={<Layers className="h-5 w-5" />} />
+      <PageHeader title="S&OP" description="Alignement ventes / production — planification stratégique" icon={<Workflow className="h-5 w-5" />} />
       <DataUploadBanner />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-6">

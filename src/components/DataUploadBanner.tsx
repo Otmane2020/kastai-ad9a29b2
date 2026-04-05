@@ -25,7 +25,7 @@ export default function DataUploadBanner() {
       <div className="mb-4 rounded-xl border border-success/30 bg-success/5 p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <CheckCircle2 className="h-5 w-5 text-success" />
+            <CircleCheck className="h-5 w-5 text-success" />
             <div>
               <span className="text-sm font-medium text-foreground">{data.fileName}</span>
               <span className="ml-2 text-xs text-muted-foreground">
@@ -60,11 +60,11 @@ export default function DataUploadBanner() {
         onClick={() => setWizardOpen(true)}
       >
         <div className="flex items-center justify-center gap-3">
-          <FileSpreadsheet className="h-5 w-5 text-muted-foreground" />
+          <FileUp className="h-5 w-5 text-muted-foreground" />
           <span className="text-sm text-muted-foreground">
             <span className="font-medium text-foreground">Importez un fichier CSV/Excel</span> pour activer les prévisions sur vos données
           </span>
-          <Upload className="h-4 w-4 text-primary" />
+          <CloudUpload className="h-4 w-4 text-primary" />
         </div>
       </div>
       <ImportWizard open={wizardOpen} onClose={() => setWizardOpen(false)} />
