@@ -1,30 +1,102 @@
-import { AlertTriangle, TrendingDown, Package, Bell } from "lucide-react";
+import { AlertTriangle, TrendingDown, Package, Bell, TrendingUp } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
+import DataUploadBanner from "@/components/DataUploadBanner";
+import { useData } from "@/context/DataContext";
 import { cn } from "@/lib/utils";
+import { useMemo } from "react";
 
-const alerts = [
-  { id: 1, type: "critical" as const, title: "Rupture de stock imminente", desc: "SKU #1042 - Stock < seuil critique (3 jours restants)", time: "Il y a 2h", icon: Package },
-  { id: 2, type: "critical" as const, title: "Baisse ventes anormale", desc: "Catégorie Textile: -23% vs prévision cette semaine", time: "Il y a 4h", icon: TrendingDown },
-  { id: 3, type: "warning" as const, title: "Écart prévision détecté", desc: "Le modèle ARIMA sous-performe (MAPE > 8%) sur la région Sud", time: "Il y a 6h", icon: AlertTriangle },
-  { id: 4, type: "info" as const, title: "Saisonnalité détectée", desc: "Pic de demande prévu dans 14 jours - catégorie Électronique", time: "Hier", icon: Bell },
-  { id: 5, type: "warning" as const, title: "Surstock détecté", desc: "SKU #3087 - 45 jours de stock vs 20 jours objectif", time: "Hier", icon: Package },
-];
-
-const recommendations = [
-  { action: "Réapprovisionner SKU #1042", impact: "Éviter €45k de ventes perdues", priority: "Urgent" },
-  { action: "Ajuster prévisions Textile -15%", impact: "Améliorer MAPE de 2.1%", priority: "Haute" },
-  { action: "Promotion sur SKU #3087", impact: "Réduire surstock de 25 jours", priority: "Moyenne" },
-  { action: "Augmenter stock Électronique +20%", impact: "Capter pic saisonnier", priority: "Haute" },
+const demoAlerts = [
+  { id: 1, type: "critical" as const, title: "Rupture de stock imminente", desc: "SKU #1042 - Stock < seuil critique", time: "Il y a 2h", icon: Package },
+  { id: 2, type: "critical" as const, title: "Baisse ventes anormale", desc: "Catégorie Textile: -23% vs prévision", time: "Il y a 4h", icon: TrendingDown },
+  { id: 3, type: "warning" as const, title: "Écart prévision détecté", desc: "Modèle sous-performe (MAPE > 8%)", time: "Il y a 6h", icon: AlertTriangle },
+  { id: 4, type: "info" as const, title: "Saisonnalité détectée", desc: "Pic de demande prévu dans 14 jours", time: "Hier", icon: Bell },
 ];
 
 export default function Alerts() {
+  const { data, hasData } = useData();
+
+  const { alerts, recommendations } = useMemo(() => {
+    if (!hasData || !data.forecasts) {
+      return {
+        alerts: demoAlerts,
+        recommendations: [
+          { action: "Importez vos données", impact: "Activer les alertes intelligentes", priority: "Haute" },
+        ],
+      };
+    }
+
+    const ts = data.timeSeries;
+    const values = ts.map((t) => t.value);
+    const mean = values.reduce((a, b) => a + b, 0) / values.length;
+    const std = Math.sqrt(values.reduce((s, v) => s + (v - mean) ** 2, 0) / values.length);
+
+    // Detect anomalies with z-score
+    const generatedAlerts: typeof demoAlerts = [];
+    const lastN = ts.slice(-10);
+    lastN.forEach((point, i) => {
+      const z = std > 0 ? (point.value - mean) / std : 0;
+      if (Math.abs(z) > 1.5) {
+        generatedAlerts.push({
+          id: i + 1,
+          type: Math.abs(z) > 2 ? "critical" : "warning",
+          title: z < 0 ? "Baisse anormale détectée" : "Pic anormal détecté",
+          desc: `${point.product || "Donnée"} — valeur ${Math.round(point.value)} (z-score: ${z.toFixed(1)})`,
+          time: point.date.toLocaleDateString("fr-FR"),
+          icon: z < 0 ? TrendingDown : TrendingUp,
+        });
+      }
+    });
+
+    // Model performance alerts
+    data.forecasts.models.forEach((m) => {
+      if (m.mape > 8) {
+        generatedAlerts.push({
+          id: 100 + generatedAlerts.length,
+          type: "warning",
+          title: `Modèle ${m.name} sous-performe`,
+          desc: `MAPE: ${m.mape.toFixed(1)}% — au-dessus du seuil de 8%`,
+          time: "Analyse",
+          icon: AlertTriangle,
+        });
+      }
+    });
+
+    if (generatedAlerts.length === 0) {
+      generatedAlerts.push({
+        id: 1,
+        type: "info" as const,
+        title: "Aucune anomalie détectée",
+        desc: "Toutes les valeurs sont dans les intervalles normaux",
+        time: "Maintenant",
+        icon: Bell,
+      });
+    }
+
+    // Recommendations
+    const best = data.forecasts.models[0];
+    const recs = [
+      { action: `Utiliser ${best.name} pour les prévisions`, impact: `MAPE de ${best.mape.toFixed(1)}% seulement`, priority: "Haute" },
+    ];
+    if (best.bias > 2) recs.push({ action: "Ajuster le biais positif", impact: `Biais de +${best.bias.toFixed(1)}%`, priority: "Moyenne" });
+    if (best.bias < -2) recs.push({ action: "Corriger la sous-estimation", impact: `Biais de ${best.bias.toFixed(1)}%`, priority: "Haute" });
+
+    const trend = values.slice(-3).reduce((a, b) => a + b, 0) / 3 - values.slice(-6, -3).reduce((a, b) => a + b, 0) / 3;
+    if (trend < 0) recs.push({ action: "Tendance baissière détectée", impact: "Réajuster objectifs", priority: "Urgent" });
+    else recs.push({ action: "Tendance haussière confirmée", impact: "Augmenter les objectifs", priority: "Moyenne" });
+
+    return { alerts: generatedAlerts, recommendations: recs };
+  }, [hasData, data]);
+
   return (
     <div className="animate-fade-in">
       <PageHeader title="Alertes & Recommandations" description="Détection d'anomalies et suggestions automatiques" icon={<AlertTriangle className="h-5 w-5" />} />
+      <DataUploadBanner />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div>
-          <h3 className="font-display text-sm font-semibold text-foreground mb-4">Alertes récentes</h3>
+          <h3 className="font-display text-sm font-semibold text-foreground mb-4">
+            Alertes {hasData && <span className="text-muted-foreground font-normal">({alerts.length})</span>}
+          </h3>
           <div className="space-y-3">
             {alerts.map((a) => (
               <div key={a.id} className={cn(
@@ -42,9 +114,9 @@ export default function Alerts() {
                   )}>
                     <a.icon className="h-4 w-4" />
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground">{a.title}</p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">{a.desc}</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground truncate">{a.desc}</p>
                     <p className="mt-1 text-xs text-muted-foreground/70">{a.time}</p>
                   </div>
                 </div>
@@ -61,7 +133,7 @@ export default function Alerts() {
                 <div className="flex items-start justify-between mb-2">
                   <p className="text-sm font-medium text-card-foreground">{r.action}</p>
                   <span className={cn(
-                    "rounded-full px-2 py-0.5 text-xs font-medium",
+                    "rounded-full px-2 py-0.5 text-xs font-medium shrink-0 ml-2",
                     r.priority === "Urgent" && "bg-destructive/10 text-destructive",
                     r.priority === "Haute" && "bg-warning/10 text-warning",
                     r.priority === "Moyenne" && "bg-primary/10 text-primary"
@@ -69,10 +141,7 @@ export default function Alerts() {
                     {r.priority}
                   </span>
                 </div>
-                <p className="text-xs text-muted-foreground">Impact estimé : {r.impact}</p>
-                <button className="mt-3 rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 transition-colors">
-                  Appliquer
-                </button>
+                <p className="text-xs text-muted-foreground">{r.impact}</p>
               </div>
             ))}
           </div>

@@ -1,21 +1,57 @@
 import { BarChart3, Download } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
+import DataUploadBanner from "@/components/DataUploadBanner";
 import KPICard from "@/components/KPICard";
+import { useData } from "@/context/DataContext";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from "recharts";
-
-const monthlyKPI = [
-  { month: "Jan", précision: 94, volume: 1200 }, { month: "Fév", précision: 95, volume: 1350 },
-  { month: "Mar", précision: 96, volume: 1500 }, { month: "Avr", précision: 93, volume: 1420 },
-  { month: "Mai", précision: 97, volume: 1600 }, { month: "Jun", précision: 95, volume: 1550 },
-];
-
-const radarData = [
-  { metric: "Précision", value: 95 }, { metric: "Réactivité", value: 88 },
-  { metric: "Couverture", value: 92 }, { metric: "Stabilité", value: 90 },
-  { metric: "Scalabilité", value: 85 }, { metric: "Coût", value: 78 },
-];
+import { useMemo } from "react";
 
 export default function KPIReports() {
+  const { data, hasData } = useData();
+
+  const { monthlyKPI, radarData, mapeAvg, biasAvg, modelsCount } = useMemo(() => {
+    if (!hasData || !data.forecasts) {
+      return {
+        monthlyKPI: [
+          { month: "Jan", précision: 94 }, { month: "Fév", précision: 95 },
+          { month: "Mar", précision: 96 }, { month: "Avr", précision: 93 },
+          { month: "Mai", précision: 97 }, { month: "Jun", précision: 95 },
+        ],
+        radarData: [
+          { metric: "Précision", value: 95 }, { metric: "Réactivité", value: 88 },
+          { metric: "Couverture", value: 92 }, { metric: "Stabilité", value: 90 },
+        ],
+        mapeAvg: "3.9%", biasAvg: "+0.3%", modelsCount: "4",
+      };
+    }
+
+    const fc = data.forecasts;
+    const avgMape = fc.models.reduce((s, m) => s + m.mape, 0) / fc.models.length;
+    const avgBias = fc.models.reduce((s, m) => s + m.bias, 0) / fc.models.length;
+
+    // Build per-model accuracy as "monthly" chart
+    const monthlyKPI = fc.models.map((m) => ({
+      month: m.name.split("(")[0].trim().slice(0, 10),
+      précision: parseFloat((100 - m.mape).toFixed(1)),
+    }));
+
+    const best = fc.models[0];
+    const radarData = [
+      { metric: "Précision", value: Math.round(100 - best.mape) },
+      { metric: "Stabilité", value: Math.round(Math.max(0, 100 - Math.abs(best.bias) * 5)) },
+      { metric: "Couverture", value: Math.round(Math.min(100, data.timeSeries.length / 2)) },
+      { metric: "Réactivité", value: Math.round(100 - best.mae / (data.timeSeries.reduce((s, t) => s + t.value, 0) / data.timeSeries.length) * 100) },
+    ];
+
+    return {
+      monthlyKPI,
+      radarData,
+      mapeAvg: `${avgMape.toFixed(1)}%`,
+      biasAvg: `${avgBias >= 0 ? "+" : ""}${avgBias.toFixed(1)}%`,
+      modelsCount: `${fc.models.length}`,
+    };
+  }, [hasData, data]);
+
   return (
     <div className="animate-fade-in">
       <PageHeader
@@ -28,21 +64,22 @@ export default function KPIReports() {
           </button>
         }
       />
+      <DataUploadBanner />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-6">
-        <KPICard title="MAPE moyen" value="3.9%" change="-0.8% vs trimestre" changeType="up" icon={<BarChart3 className="h-5 w-5" />} />
-        <KPICard title="Biais moyen" value="+0.3%" change="Quasi neutre" changeType="neutral" icon={<BarChart3 className="h-5 w-5" />} />
-        <KPICard title="Modèles actifs" value="4" change="XGBoost en tête" changeType="neutral" icon={<BarChart3 className="h-5 w-5" />} />
+        <KPICard title="MAPE moyen" value={mapeAvg} changeType="up" icon={<BarChart3 className="h-5 w-5" />} />
+        <KPICard title="Biais moyen" value={biasAvg} changeType="neutral" icon={<BarChart3 className="h-5 w-5" />} />
+        <KPICard title="Modèles testés" value={modelsCount} changeType="neutral" icon={<BarChart3 className="h-5 w-5" />} />
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div className="rounded-xl border border-border bg-card p-5 shadow-card">
-          <h3 className="font-display text-sm font-semibold text-card-foreground mb-4">Précision mensuelle (%)</h3>
+          <h3 className="font-display text-sm font-semibold text-card-foreground mb-4">Précision par modèle (%)</h3>
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={monthlyKPI}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(214, 20%, 90%)" />
-              <XAxis dataKey="month" tick={{ fontSize: 12 }} stroke="hsl(215, 15%, 50%)" />
-              <YAxis domain={[85, 100]} tick={{ fontSize: 12 }} stroke="hsl(215, 15%, 50%)" />
+              <XAxis dataKey="month" tick={{ fontSize: 10 }} stroke="hsl(215, 15%, 50%)" />
+              <YAxis domain={[0, 100]} tick={{ fontSize: 12 }} stroke="hsl(215, 15%, 50%)" />
               <Tooltip contentStyle={{ borderRadius: 12, fontSize: 12 }} />
               <Bar dataKey="précision" fill="hsl(217, 91%, 50%)" radius={[6, 6, 0, 0]} />
             </BarChart>
