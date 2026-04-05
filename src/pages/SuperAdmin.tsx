@@ -45,14 +45,14 @@ export default function SuperAdmin() {
           version: data.version || "unknown",
         }));
         setModels(data.models || ["ARIMA", "Prophet", "XGBoost", "LSTM"]);
-        addLog(`✅ Connecté — version ${data.version || "?"}`);
+        addLog(`Connecté — version ${data.version || "?"}`);
       } else {
         setConfig((prev) => ({ ...prev, status: "error", lastPing: null }));
-        addLog(`❌ Erreur ${res.status}: ${res.statusText}`);
+        addLog(`Erreur ${res.status}: ${res.statusText}`);
       }
     } catch (err: any) {
       setConfig((prev) => ({ ...prev, status: "error", lastPing: null }));
-      addLog(`❌ Connexion échouée: ${err.message || "timeout"}`);
+      addLog(`Connexion échouée: ${err.message || "timeout"}`);
     }
   };
 

@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useMemo } from "react";
-import { CloudUpload, FileUp, CircleCheck, ChevronRight, ChevronLeft, CirclePlay, X, TriangleAlert, Zap, BrainCircuit, Loader2, ServerCog, CalendarRange, CloudSun } from "lucide-react";
+import { CloudUpload, FileUp, CircleCheck, ChevronRight, ChevronLeft, CirclePlay, X, TriangleAlert, Zap, BrainCircuit, Loader2, ServerCog, CalendarRange, CloudSun, Globe, Package, Tag, GitBranch, DollarSign, Hash, CalendarDays, BarChart3, Crosshair, Rocket, CheckSquare, Square, Columns3 } from "lucide-react";
 import { parseFile, autoMapColumns, ColumnMapping } from "@/lib/dataParser";
 import { useData } from "@/context/DataContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,16 +35,16 @@ export const HORIZON_OPTIONS: { value: ForecastHorizon; label: string }[] = [
   { value: "24M", label: "24 Mois" },
 ];
 
-export const GRANULARITY_OPTIONS: { value: ForecastGranularity; label: string; icon: string; desc: string }[] = [
-  { value: "global", label: "Global (agrégé)", icon: "🌐", desc: "Prévision sur le total des ventes" },
-  { value: "sku", label: "Par SKU / Produit", icon: "📦", desc: "Prévision par référence produit" },
-  { value: "family", label: "Par Famille produit", icon: "🏷️", desc: "Prévision par famille / catégorie" },
-  { value: "subfamily", label: "Par Sous-famille", icon: "🔀", desc: "Croisement produit + catégorie" },
+export const GRANULARITY_OPTIONS: { value: ForecastGranularity; label: string; icon: React.ReactNode; desc: string }[] = [
+  { value: "global", label: "Global (agrégé)", icon: <Globe className="h-4 w-4" />, desc: "Prévision sur le total des ventes" },
+  { value: "sku", label: "Par SKU / Produit", icon: <Package className="h-4 w-4" />, desc: "Prévision par référence produit" },
+  { value: "family", label: "Par Famille produit", icon: <Tag className="h-4 w-4" />, desc: "Prévision par famille / catégorie" },
+  { value: "subfamily", label: "Par Sous-famille", icon: <GitBranch className="h-4 w-4" />, desc: "Croisement produit + catégorie" },
 ];
 
-export const TARGET_OPTIONS: { value: ForecastTarget; label: string; icon: string; tab: string }[] = [
-  { value: "revenue", label: "Chiffre d'affaires (CA)", icon: "💰", tab: "Finance" },
-  { value: "quantity", label: "Quantité", icon: "📦", tab: "Forecast" },
+export const TARGET_OPTIONS: { value: ForecastTarget; label: string; icon: React.ReactNode; tab: string }[] = [
+  { value: "revenue", label: "Chiffre d'affaires (CA)", icon: <DollarSign className="h-4 w-4" />, tab: "Finance" },
+  { value: "quantity", label: "Quantité", icon: <Hash className="h-4 w-4" />, tab: "Forecast" },
 ];
 
 interface WizardState {
@@ -113,7 +113,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
       const contextRoles = ["price", "promo", "discount", "region", "store", "channel", "cost", "margin"];
       const columnRegressors: ProphetRegressor[] = (aiResult.allColumns || [])
         .filter((c) => contextRoles.includes(c.role) || c.role === "other")
-        .map((c) => ({ key: c.name, label: `📊 ${c.name} (${c.role})`, enabled: contextRoles.includes(c.role), type: "column" as const }));
+        .map((c) => ({ key: c.name, label: `${c.name} (${c.role})`, enabled: contextRoles.includes(c.role), type: "column" as const }));
 
       setWizard((prev) => ({
         ...prev,
@@ -270,7 +270,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
       setStep("upload");
 
       toast({
-        title: "✅ Prévisions calculées",
+        title: "Prévisions calculées",
         description: `${wizard.file?.name} — modèles exécutés avec succès`,
       });
 
@@ -280,7 +280,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
       setLaunching(false);
       setLaunchProgress(0);
       toast({
-        title: "❌ Erreur de prévision",
+        title: "Erreur de prévision",
         description: err.message || "Vérifiez vos données et réessayez.",
         variant: "destructive",
       });
@@ -314,14 +314,14 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
   if (!open) return null;
 
   const mappingFields: { key: keyof ExtendedMapping; label: string; required: boolean }[] = [
-    { key: "dateCol", label: "📅 Colonne Date", required: true },
-    { key: "revenueCol", label: "💰 CA / Chiffre d'affaires", required: false },
-    { key: "quantityCol", label: "📦 Quantité / Volume", required: false },
-    { key: "valueCol", label: "📊 Valeur principale (fallback)", required: false },
-    { key: "productCol", label: "🏷️ Produit / SKU", required: false },
-    { key: "categoryCol", label: "📂 Catégorie", required: false },
-    { key: "familyCol", label: "👨‍👩‍👧 Famille", required: false },
-    { key: "subfamilyCol", label: "🔀 Sous-famille", required: false },
+    { key: "dateCol", label: "Colonne Date", required: true },
+    { key: "revenueCol", label: "CA / Chiffre d'affaires", required: false },
+    { key: "quantityCol", label: "Quantité / Volume", required: false },
+    { key: "valueCol", label: "Valeur principale (fallback)", required: false },
+    { key: "productCol", label: "Produit / SKU", required: false },
+    { key: "categoryCol", label: "Catégorie", required: false },
+    { key: "familyCol", label: "Famille", required: false },
+    { key: "subfamilyCol", label: "Sous-famille", required: false },
   ];
 
   return (
@@ -581,7 +581,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
 
               {/* Forecast targets */}
               <div>
-                <h4 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">🎯 Valeurs à prévoir (multi-sélection)</h4>
+                <h4 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide flex items-center gap-1.5"><Crosshair className="h-3.5 w-3.5" /> Valeurs à prévoir (multi-sélection)</h4>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {TARGET_OPTIONS.map((t) => {
                     const isSelected = wizard.selectedTargets.includes(t.value);
@@ -638,7 +638,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                             : "border-border bg-card text-muted-foreground hover:border-primary/40"
                         )}
                       >
-                        <div className="text-sm mb-0.5">{isSelected ? "✅" : "⬜"}</div>
+                        <div className="text-sm mb-0.5">{isSelected ? <CheckSquare className="h-4 w-4 text-primary" /> : <Square className="h-4 w-4 text-muted-foreground" />}</div>
                         {h.label}
                       </button>
                     );
@@ -648,7 +648,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
 
               {/* Granularity multiselect */}
               <div>
-                <h4 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">📊 Niveaux de prévision (multi-sélection)</h4>
+                <h4 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide flex items-center gap-1.5"><BarChart3 className="h-3.5 w-3.5" /> Niveaux de prévision (multi-sélection)</h4>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                   {GRANULARITY_OPTIONS.map((opt) => {
                     const disabled =
@@ -681,8 +681,8 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                         )}
                       >
                         <div className="flex items-center gap-1.5 mb-1">
-                          <span className="text-sm">{isSelected ? "✅" : "⬜"}</span>
-                          <span className="text-base">{opt.icon}</span>
+                          {isSelected ? <CheckSquare className="h-4 w-4 text-primary" /> : <Square className="h-4 w-4 text-muted-foreground" />}
+                          <span>{opt.icon}</span>
                           <span className="font-display text-xs font-semibold text-card-foreground">{opt.label}</span>
                         </div>
                         <p className="text-[10px] text-muted-foreground mb-1">{opt.desc}</p>
@@ -709,7 +709,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                 {/* Column regressors */}
                 {wizard.prophetRegressors.filter((r) => r.type === "column").length > 0 && (
                   <div className="mb-3">
-                    <p className="text-[10px] font-medium text-card-foreground mb-2">📊 Colonnes contextuelles (promo, prix, etc.)</p>
+                    <p className="text-[10px] font-medium text-card-foreground mb-2 flex items-center gap-1"><Columns3 className="h-3 w-3" /> Colonnes contextuelles (promo, prix, etc.)</p>
                     <div className="flex flex-wrap gap-2">
                       {wizard.prophetRegressors.filter((r) => r.type === "column").map((r) => (
                         <button
@@ -731,7 +731,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
 
                 {/* External events */}
                 <div>
-                  <p className="text-[10px] font-medium text-card-foreground mb-2">📅 Événements & données externes</p>
+                  <p className="text-[10px] font-medium text-card-foreground mb-2 flex items-center gap-1"><CalendarDays className="h-3 w-3" /> Événements & données externes</p>
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
                     {wizard.prophetRegressors.filter((r) => r.type === "external").map((r) => (
                       <button
@@ -755,7 +755,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {uniqueValues.products.length > 0 && (
                   <div className="rounded-lg border border-border bg-muted/20 p-3">
-                    <p className="text-xs font-medium text-card-foreground mb-2">📦 SKU détectés :</p>
+                    <p className="text-xs font-medium text-card-foreground mb-2 flex items-center gap-1"><Package className="h-3.5 w-3.5" /> SKU détectés :</p>
                     <div className="flex flex-wrap gap-1.5">
                       {uniqueValues.products.map((p) => (
                         <span key={p} className="rounded-full bg-accent/10 px-2.5 py-0.5 text-[10px] text-accent font-medium">{p}</span>
@@ -765,7 +765,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                 )}
                 {uniqueValues.families.length > 0 && (
                   <div className="rounded-lg border border-border bg-muted/20 p-3">
-                    <p className="text-xs font-medium text-card-foreground mb-2">👨‍👩‍👧 Familles :</p>
+                    <p className="text-xs font-medium text-card-foreground mb-2 flex items-center gap-1"><Tag className="h-3.5 w-3.5" /> Familles :</p>
                     <div className="flex flex-wrap gap-1.5">
                       {uniqueValues.families.map((f) => (
                         <span key={f} className="rounded-full bg-warning/10 px-2.5 py-0.5 text-[10px] text-warning font-medium">{f}</span>
@@ -775,7 +775,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                 )}
                 {uniqueValues.subfamilies.length > 0 && (
                   <div className="rounded-lg border border-border bg-muted/20 p-3">
-                    <p className="text-xs font-medium text-card-foreground mb-2">🔀 Sous-familles :</p>
+                    <p className="text-xs font-medium text-card-foreground mb-2 flex items-center gap-1"><GitBranch className="h-3.5 w-3.5" /> Sous-familles :</p>
                     <div className="flex flex-wrap gap-1.5">
                       {uniqueValues.subfamilies.map((s) => (
                         <span key={s} className="rounded-full bg-primary/10 px-2.5 py-0.5 text-[10px] text-primary font-medium">{s}</span>
@@ -785,7 +785,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                 )}
                 {uniqueValues.categories.length > 0 && (
                   <div className="rounded-lg border border-border bg-muted/20 p-3">
-                    <p className="text-xs font-medium text-card-foreground mb-2">📂 Catégories :</p>
+                    <p className="text-xs font-medium text-card-foreground mb-2 flex items-center gap-1"><Columns3 className="h-3.5 w-3.5" /> Catégories :</p>
                     <div className="flex flex-wrap gap-1.5">
                       {uniqueValues.categories.map((c) => (
                         <span key={c} className="rounded-full bg-success/10 px-2.5 py-0.5 text-[10px] text-success font-medium">{c}</span>
@@ -854,38 +854,38 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                   <span className="font-medium text-card-foreground">{wizard.rows.length} × {wizard.columns.length}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">🎯 Cibles</span>
+                  <span className="text-muted-foreground flex items-center gap-1"><Crosshair className="h-3 w-3" /> Cibles</span>
                   <span className="font-medium text-primary">
                     {wizard.selectedTargets.map((t) => t === "revenue" ? "CA (Finance)" : "Quantité (Forecast)").join(", ")}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">📅 Date</span>
+                  <span className="text-muted-foreground flex items-center gap-1"><CalendarDays className="h-3 w-3" /> Date</span>
                   <span className="font-medium text-primary">{wizard.mapping.dateCol || "—"}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">💰 CA</span>
+                  <span className="text-muted-foreground flex items-center gap-1"><DollarSign className="h-3 w-3" /> CA</span>
                   <span className="font-medium text-success">{wizard.mapping.revenueCol || "—"}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">📦 Quantité</span>
+                  <span className="text-muted-foreground flex items-center gap-1"><Hash className="h-3 w-3" /> Quantité</span>
                   <span className="font-medium text-accent">{wizard.mapping.quantityCol || "—"}</span>
                 </div>
                 {wizard.mapping.productCol && (
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">🏷️ Produit</span>
+                    <span className="text-muted-foreground flex items-center gap-1"><Tag className="h-3 w-3" /> Produit</span>
                     <span className="font-medium text-accent">{wizard.mapping.productCol}</span>
                   </div>
                 )}
                 {wizard.mapping.familyCol && (
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">👨‍👩‍👧 Famille</span>
+                    <span className="text-muted-foreground flex items-center gap-1"><Tag className="h-3 w-3" /> Famille</span>
                     <span className="font-medium text-warning">{wizard.mapping.familyCol}</span>
                   </div>
                 )}
                 {wizard.mapping.subfamilyCol && (
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">🔀 Sous-famille</span>
+                    <span className="text-muted-foreground flex items-center gap-1"><GitBranch className="h-3 w-3" /> Sous-famille</span>
                     <span className="font-medium text-warning">{wizard.mapping.subfamilyCol}</span>
                   </div>
                 )}
@@ -967,7 +967,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
               ) : (
                 <CirclePlay className="h-4 w-4" />
               )}
-              {launching ? "Calcul en cours..." : "🚀 Lancer les prévisions"}
+              {launching ? "Calcul en cours..." : "Lancer les prévisions"}
             </button>
           ) : (
             <button

@@ -63,12 +63,12 @@ export default function Connectors() {
       const granularity = mapping.productCol ? "sku" : "global";
       await processData(rows, columns, mapping, file.name, granularity);
       addToHistory({ fileName: file.name, rows: rows.length, columns: columns.length, mapping: `${mapping.dateCol} → ${mapping.valueCol}`, status: "success" });
-      toast({ title: "✅ Prévisions calculées", description: `${file.name} — modèles exécutés avec succès` });
+      toast({ title: "Prévisions calculées", description: `${file.name} — modèles exécutés avec succès` });
       navigate("/forecast");
     } catch (err) {
       console.error("Quick load error:", err);
       addToHistory({ fileName: file.name, rows: 0, columns: 0, mapping: "Erreur", status: "error" });
-      toast({ title: "❌ Erreur", description: "Impossible de traiter le fichier.", variant: "destructive" });
+      toast({ title: "Erreur", description: "Impossible de traiter le fichier.", variant: "destructive" });
     }
     setQuickLoading(false);
   }, [processData, navigate, toast]);
@@ -79,11 +79,11 @@ export default function Connectors() {
     setLoadingForecast(true);
     try {
       await processData(data.raw, data.columns, data.mapping!, data.fileName!, data.granularity);
-      toast({ title: "✅ Prévisions relancées", description: "Modèles recalculés avec succès" });
+      toast({ title: "Prévisions relancées", description: "Modèles recalculés avec succès" });
       navigate("/forecast");
     } catch (err) {
       console.error("Reload forecast error:", err);
-      toast({ title: "❌ Erreur", description: "Impossible de relancer les prévisions.", variant: "destructive" });
+      toast({ title: "Erreur", description: "Impossible de relancer les prévisions.", variant: "destructive" });
     }
     setLoadingForecast(false);
   }, [hasData, data, processData, navigate, toast]);
@@ -202,10 +202,10 @@ export default function Connectors() {
           <h3 className="font-display text-sm font-semibold text-card-foreground mb-3">Mapping des colonnes</h3>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {[
-              { label: "Date", value: data.mapping.dateCol, emoji: "📅" },
-              { label: "Valeur", value: data.mapping.valueCol || (data.mapping as any)?.revenueCol || (data.mapping as any)?.quantityCol, emoji: "📊" },
-              { label: "Produit/SKU", value: data.mapping.productCol, emoji: "📦" },
-              { label: "Catégorie", value: data.mapping.categoryCol, emoji: "🏷️" },
+              { label: "Date", value: data.mapping.dateCol, emoji: "" },
+              { label: "Valeur", value: data.mapping.valueCol || (data.mapping as any)?.revenueCol || (data.mapping as any)?.quantityCol, emoji: "" },
+              { label: "Produit/SKU", value: data.mapping.productCol, emoji: "" },
+              { label: "Catégorie", value: data.mapping.categoryCol, emoji: "" },
             ].map((m) => (
               <div key={m.label} className="rounded-lg bg-muted/50 p-3">
                 <p className="text-xs text-muted-foreground">{m.emoji} {m.label}</p>

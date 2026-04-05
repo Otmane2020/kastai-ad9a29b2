@@ -35,7 +35,7 @@ export default function Auth() {
         });
         if (error) throw error;
         toast({
-          title: "✅ Inscription réussie",
+          title: "Inscription réussie",
           description: "Vérifiez votre email pour confirmer votre compte.",
         });
       }
