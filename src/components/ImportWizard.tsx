@@ -364,6 +364,13 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
               granularity: payload.granularity,
               forecast_targets: payload.forecastTargets,
               prophet_regressors: payload.prophetRegressors.filter(r => r.enabled).map(r => ({ key: r.key, type: r.type })),
+              // Explicit column mapping so server uses correct columns
+              date_column: wizard.mapping.dateCol,
+              value_column: wizard.mapping.revenueCol || wizard.mapping.valueCol,
+              quantity_column: wizard.mapping.quantityCol,
+              product_column: wizard.mapping.productCol,
+              category_column: wizard.mapping.categoryCol || wizard.mapping.familyCol,
+              target_column: wizard.mapping.revenueCol || wizard.mapping.valueCol || wizard.mapping.quantityCol,
             },
           }),
           signal: AbortSignal.timeout(180000),
@@ -376,7 +383,22 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
 
         setLaunchProgress(75);
         serverResult = await forecastRes.json();
-        await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity, maxHorizon, wizard.primaryTarget, serverResult);
+        
+        // Validate server results - check for bad data (epoch dates, all-zero metrics)
+        const hasBadDates = serverResult.forecast_dates?.some((d: string) => d.startsWith("1970-"));
+        const allMetricsZero = serverResult.all_model_rankings?.every((m: any) => m.mape === 0 && m.mae === 0);
+        
+        if (hasBadDates || allMetricsZero) {
+          console.warn("Server returned invalid results (epoch dates or all-zero metrics), falling back to local models");
+          serverResult = null;
+          toast({ title: "Serveur ML indisponible", description: "Résultats serveur invalides — calcul local activé.", variant: "default" });
+        }
+        
+        if (serverResult) {
+          await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity, maxHorizon, wizard.primaryTarget, serverResult);
+        } else {
+          await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity, maxHorizon, wizard.primaryTarget);
+        }
       } else {
         setLaunchProgress(50);
         await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity, maxHorizon, wizard.primaryTarget);
