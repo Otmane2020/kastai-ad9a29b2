@@ -12,7 +12,12 @@ import Forecast from "@/pages/Forecast";
 import Alerts from "@/pages/Alerts";
 import KPIReports from "@/pages/KPIReports";
 import Finance from "@/pages/Finance";
-import SOP from "@/pages/SOP";
+import SOPOverview from "@/pages/sop/SOPOverview";
+import SOPStructure from "@/pages/sop/SOPStructure";
+import SOPCapacity from "@/pages/sop/SOPCapacity";
+import SOPPlan from "@/pages/sop/SOPPlan";
+import SOPKpis from "@/pages/sop/SOPKpis";
+import SOPScenarios from "@/pages/sop/SOPScenarios";
 import Inventory from "@/pages/Inventory";
 import Connectors from "@/pages/Connectors";
 import UserManagement from "@/pages/UserManagement";
@@ -38,7 +43,12 @@ const App = () => (
                 <Route path="/alerts" element={<Alerts />} />
                 <Route path="/kpi" element={<KPIReports />} />
                 <Route path="/finance" element={<Finance />} />
-                <Route path="/sop" element={<SOP />} />
+                <Route path="/sop" element={<SOPOverview />} />
+                <Route path="/sop/structure" element={<SOPStructure />} />
+                <Route path="/sop/capacity" element={<SOPCapacity />} />
+                <Route path="/sop/plan" element={<SOPPlan />} />
+                <Route path="/sop/kpis" element={<SOPKpis />} />
+                <Route path="/sop/scenarios" element={<SOPScenarios />} />
                 <Route path="/inventory" element={<Inventory />} />
                 <Route path="/connectors" element={<Connectors />} />
                 <Route path="/users" element={<UserManagement />} />
