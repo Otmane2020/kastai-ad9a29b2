@@ -279,27 +279,32 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
     try {
       setLaunchProgress(25);
       if (launchMode === "server") {
-        const serverUrl = localStorage.getItem("kastai_server_url") || "http://localhost:8000";
-        const serverKey = localStorage.getItem("kastai_server_key") || "";
         const payload = buildForecastPayload(
           wizard.rows, wizard.columns, wizard.mapping, wizard.aiMapping, wizard.file!.name, wizard.granularity,
           wizard.selectedTargets, wizard.prophetRegressors
         );
 
         setLaunchProgress(40);
-        const res = await fetch(`${serverUrl}/api/forecast`, {
+
+        // Call Railway API through edge function proxy
+        const proxyUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/railway-proxy`;
+        const res = await fetch(proxyUrl, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            ...(serverKey ? { Authorization: `Bearer ${serverKey}` } : {}),
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           },
-          body: JSON.stringify(payload),
+          body: JSON.stringify({
+            endpoint: "/api/forecast",
+            method: "POST",
+            payload,
+          }),
           signal: AbortSignal.timeout(120000),
         });
 
         if (!res.ok) {
           const errText = await res.text().catch(() => "");
-          throw new Error(`Serveur Python: ${res.status} ${errText}`);
+          throw new Error(`Serveur ML Railway: ${res.status} ${errText}`);
         }
 
         setLaunchProgress(70);
@@ -399,7 +404,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
     return { products: products.slice(0, 20), categories: categories.slice(0, 20), families: families.slice(0, 20), subfamilies: subfamilies.slice(0, 20) };
   }, [wizard.rows, wizard.mapping]);
 
-  const serverConfigured = !!localStorage.getItem("kastai_server_url");
+  const serverConfigured = true; // Railway API connected via edge function
 
   const toggleRegressor = (key: string) => {
     setWizard((prev) => ({
@@ -990,9 +995,9 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                     <div className="flex items-center gap-2 mb-1">
                       <ServerCog className="h-4 w-4 text-accent" />
                       <span className="font-display text-sm font-semibold text-card-foreground">Serveur Python</span>
-                      {!serverConfigured && <span className="text-[9px] text-warning bg-warning/10 rounded-full px-1.5 py-0.5">Non configuré</span>}
+                      {serverConfigured && <span className="text-[9px] text-success bg-success/10 rounded-full px-1.5 py-0.5">Railway ✓</span>}
                     </div>
-                    <p className="text-xs text-muted-foreground">ARIMA, Prophet + régresseurs, XGBoost, LSTM</p>
+                    <p className="text-xs text-muted-foreground">13 modèles ML : ARIMA, Prophet, XGBoost, LSTM…</p>
                   </button>
                 </div>
               </div>
