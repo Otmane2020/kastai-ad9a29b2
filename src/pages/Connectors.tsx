@@ -49,21 +49,61 @@ export default function Connectors() {
   const [wizardOpen, setWizardOpen] = useState(false);
   const [history, setHistory] = useState<ImportHistoryEntry[]>(getImportHistory);
   const [dbFiles, setDbFiles] = useState<any[]>([]);
+  const [forecastRuns, setForecastRuns] = useState<Record<string, any>>({});
+  const [launchingFileId, setLaunchingFileId] = useState<string | null>(null);
 
-  // Fetch uploaded files from database
+  // Fetch uploaded files + forecast runs from database
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const { data: files } = await supabase
-        .from("uploaded_files")
-        .select("id, file_name, row_count, column_count, granularity, uploaded_at, mapping")
-        .eq("user_id", user.id)
-        .order("uploaded_at", { ascending: false })
-        .limit(20);
-      if (files) setDbFiles(files);
+      const [filesRes, runsRes] = await Promise.all([
+        supabase
+          .from("uploaded_files")
+          .select("id, file_name, row_count, column_count, granularity, uploaded_at, mapping")
+          .eq("user_id", user.id)
+          .order("uploaded_at", { ascending: false })
+          .limit(20),
+        supabase
+          .from("forecast_runs")
+          .select("id, file_id, best_model, best_mape, total_points, group_count, created_at")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false }),
+      ]);
+      if (filesRes.data) setDbFiles(filesRes.data);
+      if (runsRes.data) {
+        const map: Record<string, any> = {};
+        runsRes.data.forEach((r) => { if (r.file_id && !map[r.file_id]) map[r.file_id] = r; });
+        setForecastRuns(map);
+      }
     })();
   }, [wizardOpen]);
+
+  // Launch forecast for a specific file
+  const handleLaunchFromFile = useCallback(async (fileId: string) => {
+    setLaunchingFileId(fileId);
+    try {
+      const run = forecastRuns[fileId];
+      if (run) {
+        // Already calculated — navigate directly
+        navigate("/forecast");
+        toast({ title: "Prévisions disponibles", description: `Résultats déjà calculés (${run.best_model}, MAPE ${run.best_mape?.toFixed(1)}%)` });
+      } else {
+        // Need to re-run: reload data via current context if same file, else tell user
+        if (hasData && data.fileName === dbFiles.find(f => f.id === fileId)?.file_name) {
+          await processData(data.raw, data.columns, data.mapping!, data.fileName!, data.granularity);
+          navigate("/forecast");
+          toast({ title: "Prévisions calculées", description: "Modèles exécutés avec succès" });
+        } else {
+          toast({ title: "Réimportation nécessaire", description: "Veuillez réimporter ce fichier pour lancer les prévisions.", variant: "destructive" });
+        }
+      }
+    } catch (err) {
+      console.error("Launch from file error:", err);
+      toast({ title: "Erreur", description: "Impossible de lancer les prévisions.", variant: "destructive" });
+    }
+    setLaunchingFileId(null);
+  }, [forecastRuns, hasData, data, processData, navigate, toast, dbFiles]);
   const [loadingForecast, setLoadingForecast] = useState(false);
   const [quickLoading, setQuickLoading] = useState(false);
   const quickInputRef = useRef<HTMLInputElement>(null);
@@ -262,10 +302,34 @@ export default function Connectors() {
                     <p className="text-muted-foreground">
                       {f.row_count ?? "?"} lignes · {f.column_count ?? "?"} col · {mappingLabel} · {f.granularity ?? "global"}
                     </p>
+                    {forecastRuns[f.id] && (
+                      <p className="text-success mt-0.5">
+                        ✓ {forecastRuns[f.id].best_model} · MAPE {forecastRuns[f.id].best_mape?.toFixed(1)}% · {forecastRuns[f.id].group_count ?? 0} groupes
+                      </p>
+                    )}
                   </div>
-                  <div className="flex items-center gap-1 text-muted-foreground shrink-0">
-                    <Timer className="h-3 w-3" />
-                    {f.uploaded_at ? new Date(f.uploaded_at).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "—"}
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={() => handleLaunchFromFile(f.id)}
+                      disabled={launchingFileId === f.id}
+                      className={cn(
+                        "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all",
+                        forecastRuns[f.id]
+                          ? "bg-success/10 text-success hover:bg-success/20"
+                          : "bg-primary/10 text-primary hover:bg-primary/20"
+                      )}
+                    >
+                      {launchingFileId === f.id ? (
+                        <div className="h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                      ) : (
+                        <CirclePlay className="h-3 w-3" />
+                      )}
+                      {forecastRuns[f.id] ? "Voir" : "Lancer"}
+                    </button>
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <Timer className="h-3 w-3" />
+                      {f.uploaded_at ? new Date(f.uploaded_at).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "—"}
+                    </div>
                   </div>
                 </div>
               );
