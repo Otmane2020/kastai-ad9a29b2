@@ -289,30 +289,46 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
 
       setLaunchProgress(100);
       
-      // Save to history
+      // Save forecast run to history (file may already be saved from AI cache step)
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
-          const { data: fileRecord } = await supabase.from("uploaded_files").insert({
-            user_id: user.id,
-            file_name: wizard.file!.name,
-            row_count: wizard.rows.length,
-            column_count: wizard.columns.length,
-            columns: wizard.columns,
-            mapping: wizard.mapping as any,
-            granularity: wizard.granularity,
-          }).select("id").single();
+          const hash = getColumnsHash(wizard.columns);
+          // Find or create the file record
+          const { data: existingFile } = await supabase
+            .from("uploaded_files")
+            .select("id")
+            .eq("user_id", user.id)
+            .eq("columns_hash", hash)
+            .eq("file_name", wizard.file!.name)
+            .order("uploaded_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
 
-          // Get forecast results from context after processing
-          const bestModel = "SES"; // Will be updated from actual results
+          let fileId = existingFile?.id;
+          if (!fileId) {
+            const { data: newFile } = await supabase.from("uploaded_files").insert({
+              user_id: user.id,
+              file_name: wizard.file!.name,
+              row_count: wizard.rows.length,
+              column_count: wizard.columns.length,
+              columns: wizard.columns as any,
+              columns_hash: hash,
+              mapping: wizard.mapping as any,
+              ai_mapping: wizard.aiMapping as any,
+              granularity: wizard.granularity,
+            }).select("id").single();
+            fileId = newFile?.id;
+          }
+
           await supabase.from("forecast_runs").insert({
             user_id: user.id,
-            file_id: fileRecord?.id || null,
+            file_id: fileId || null,
             file_name: wizard.file!.name,
             granularity: wizard.granularity,
             horizon: 6,
             total_points: wizard.rows.length,
-            best_model: bestModel,
+            best_model: "SES",
             models_results: {} as any,
           });
         }
