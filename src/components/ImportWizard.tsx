@@ -347,7 +347,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
             file_id: fileId || null,
             file_name: wizard.file!.name,
             granularity: wizard.granularity,
-            horizon: 6,
+            horizon: maxHorizon,
             total_points: wizard.rows.length,
             best_model: "SES",
             models_results: {} as any,
