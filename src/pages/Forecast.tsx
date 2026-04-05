@@ -63,9 +63,13 @@ export default function Forecast() {
 
   const availableLevels = useMemo(() => {
     const levels: ViewLevel[] = ["global"];
-    if (hasData && data.mapping?.productCol) levels.push("sku");
-    if (hasData && data.mapping?.categoryCol) levels.push("family");
-    if (hasData && data.mapping?.productCol && data.mapping?.categoryCol) levels.push("subfamily");
+    if (!hasData || !data.mapping) return levels;
+    const ext = data.mapping as any;
+    const hasProduct = !!(data.mapping.productCol || ext.familyCol);
+    const hasCategory = !!(data.mapping.categoryCol || ext.subfamilyCol);
+    if (hasProduct) levels.push("sku");
+    if (hasCategory) levels.push("family");
+    if (hasProduct && hasCategory) levels.push("subfamily");
     return levels;
   }, [hasData, data.mapping]);
 
