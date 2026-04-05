@@ -5,6 +5,9 @@ import { useData } from "@/context/DataContext";
 import { supabase } from "@/integrations/supabase/client";
 import { AIMapping, ColumnInfo, ExtendedMapping, ProphetRegressor, DEFAULT_PROPHET_EXTERNAL_EVENTS, buildForecastPayload } from "@/lib/forecastPayload";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { Progress } from "@/components/ui/progress";
 
 type Step = "upload" | "mapping" | "granularity" | "launch";
 
@@ -80,10 +83,13 @@ const initialWizard: WizardState = {
 
 export default function ImportWizard({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { processData } = useData();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [step, setStep] = useState<Step>("upload");
   const [wizard, setWizard] = useState<WizardState>(initialWizard);
   const [parsing, setParsing] = useState(false);
   const [launching, setLaunching] = useState(false);
+  const [launchProgress, setLaunchProgress] = useState(0);
   const [launchMode, setLaunchMode] = useState<"local" | "server">("local");
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
