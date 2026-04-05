@@ -76,6 +76,7 @@ interface WizardState {
   selectedHorizons: ForecastHorizon[];
   selectedGranularities: ForecastGranularity[];
   selectedTargets: ForecastTarget[];
+  primaryTarget: ForecastTarget;
   preview: Record<string, any>[];
   aiMapping: AIMapping | null;
   aiAnalyzing: boolean;
@@ -93,6 +94,7 @@ const initialWizard: WizardState = {
   selectedHorizons: ["6M"],
   selectedGranularities: ["global"],
   selectedTargets: ["revenue", "quantity"],
+  primaryTarget: "revenue",
   preview: [],
   aiMapping: null,
   aiAnalyzing: false,
