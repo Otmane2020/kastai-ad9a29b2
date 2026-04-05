@@ -122,7 +122,9 @@ function aggregateToMonthly(points: TimeSeriesPoint[]): { date: Date; value: num
     }
     buckets.get(key)!.total += p.value;
   }
-  return Array.from(buckets.values()).sort((a, b) => a.date.getTime() - b.date.getTime());
+  return Array.from(buckets.values())
+    .sort((a, b) => a.date.getTime() - b.date.getTime())
+    .map((b) => ({ date: b.date, value: b.total }));
 }
 
 function getGroupKey(point: TimeSeriesPoint, granularity: Granularity): string {
