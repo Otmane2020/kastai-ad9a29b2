@@ -279,21 +279,26 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
     try {
       setLaunchProgress(25);
       if (launchMode === "server") {
-        const serverUrl = localStorage.getItem("kastai_server_url") || "http://localhost:8000";
-        const serverKey = localStorage.getItem("kastai_server_key") || "";
         const payload = buildForecastPayload(
           wizard.rows, wizard.columns, wizard.mapping, wizard.aiMapping, wizard.file!.name, wizard.granularity,
           wizard.selectedTargets, wizard.prophetRegressors
         );
 
         setLaunchProgress(40);
-        const res = await fetch(`${serverUrl}/api/forecast`, {
+
+        // Call Railway API through edge function proxy
+        const proxyUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/railway-proxy`;
+        const res = await fetch(proxyUrl, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            ...(serverKey ? { Authorization: `Bearer ${serverKey}` } : {}),
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           },
-          body: JSON.stringify(payload),
+          body: JSON.stringify({
+            endpoint: "/api/forecast",
+            method: "POST",
+            payload,
+          }),
           signal: AbortSignal.timeout(120000),
         });
 
