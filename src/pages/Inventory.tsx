@@ -1,4 +1,4 @@
-import { Package } from "lucide-react";
+import { Boxes } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import DataUploadBanner from "@/components/DataUploadBanner";
 import { cn } from "@/lib/utils";

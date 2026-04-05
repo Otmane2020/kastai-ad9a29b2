@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Settings, Server, CheckCircle2, XCircle, Wifi, WifiOff, RefreshCw, Save } from "lucide-react";
+import { SlidersHorizontal, ServerCog, CircleCheck, CircleX, Wifi, WifiOff, RotateCw, SaveAll } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import { cn } from "@/lib/utils";
 

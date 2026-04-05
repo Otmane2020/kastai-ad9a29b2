@@ -1,4 +1,4 @@
-import { Users, Shield, Mail } from "lucide-react";
+import { UserCog, ShieldCheck, MailPlus } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import { cn } from "@/lib/utils";
 

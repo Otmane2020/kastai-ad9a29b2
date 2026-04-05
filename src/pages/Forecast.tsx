@@ -1,4 +1,4 @@
-import { TrendingUp } from "lucide-react";
+import { LineChart } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import DataUploadBanner from "@/components/DataUploadBanner";
 import { useData, TimeSeriesPoint } from "@/context/DataContext";

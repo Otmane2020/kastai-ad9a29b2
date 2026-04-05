@@ -1,4 +1,4 @@
-import { BarChart3, Download } from "lucide-react";
+import { PieChart, ArrowDownToLine } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import DataUploadBanner from "@/components/DataUploadBanner";
 import KPICard from "@/components/KPICard";

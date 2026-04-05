@@ -1,4 +1,4 @@
-import { AlertTriangle, TrendingDown, Package, Bell, TrendingUp } from "lucide-react";
+import { ShieldAlert, TrendingDown, Boxes, BellRing, TrendingUp } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import DataUploadBanner from "@/components/DataUploadBanner";
 import { useData } from "@/context/DataContext";

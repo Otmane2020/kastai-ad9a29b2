@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from "react";
-import { Plug, Database, BarChart3, Globe, FileSpreadsheet, CheckCircle2, Upload, History, Play, Trash2, Clock } from "lucide-react";
+import { Cable, DatabaseZap, PieChart, Globe2, FileUp, CircleCheck, CloudUpload, Clock4, CirclePlay, Trash2, Timer } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import ImportWizard from "@/components/ImportWizard";
 import { useData } from "@/context/DataContext";

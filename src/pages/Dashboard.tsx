@@ -1,4 +1,4 @@
-import { LayoutDashboard, TrendingUp, Target, AlertTriangle, ArrowUpRight } from "lucide-react";
+import { SquareKanban, LineChart, Crosshair, ShieldAlert, ArrowUpRight } from "lucide-react";
 import KPICard from "@/components/KPICard";
 import PageHeader from "@/components/PageHeader";
 import DataUploadBanner from "@/components/DataUploadBanner";

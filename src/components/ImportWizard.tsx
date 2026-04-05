@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useMemo } from "react";
-import { Upload, FileSpreadsheet, CheckCircle2, ChevronRight, ChevronLeft, Play, X, AlertCircle, Sparkles, Brain, Loader2, Server, Calendar, CloudSun } from "lucide-react";
+import { CloudUpload, FileUp, CircleCheck, ChevronRight, ChevronLeft, CirclePlay, X, TriangleAlert, Zap, BrainCircuit, Loader2, ServerCog, CalendarRange, CloudSun } from "lucide-react";
 import { parseFile, autoMapColumns, ColumnMapping } from "@/lib/dataParser";
 import { useData } from "@/context/DataContext";
 import { supabase } from "@/integrations/supabase/client";

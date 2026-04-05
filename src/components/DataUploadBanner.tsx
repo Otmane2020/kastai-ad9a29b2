@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Upload, FileSpreadsheet, CheckCircle2, X, Sparkles } from "lucide-react";
+import { CloudUpload, FileUp, CircleCheck, X, Zap } from "lucide-react";
 import { useData } from "@/context/DataContext";
 import ImportWizard from "@/components/ImportWizard";
 import { cn } from "@/lib/utils";

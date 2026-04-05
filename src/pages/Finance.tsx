@@ -1,4 +1,4 @@
-import { DollarSign } from "lucide-react";
+import { Wallet } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import DataUploadBanner from "@/components/DataUploadBanner";
 import KPICard from "@/components/KPICard";

@@ -1,24 +1,24 @@
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
-  LayoutDashboard, TrendingUp, AlertTriangle, BarChart3,
-  DollarSign, Layers, Package, Plug, Users, Bot, ChevronLeft,
-  ChevronRight, Sparkles
+  SquareKanban, LineChart, ShieldAlert, PieChart,
+  Wallet, Workflow, Boxes, Cable, UserCog, MessageSquare, ChevronLeft,
+  ChevronRight, Gem
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import logoKastAi from "@/assets/logo-kast-ai.png";
 
 const navItems = [
-  { path: "/", label: "Dashboard", icon: LayoutDashboard },
-  { path: "/forecast", label: "Prévisions", icon: TrendingUp },
-  { path: "/alerts", label: "Alertes", icon: AlertTriangle },
-  { path: "/kpi", label: "KPI & Rapports", icon: BarChart3 },
-  { path: "/finance", label: "Finance", icon: DollarSign },
-  { path: "/sop", label: "S&OP", icon: Layers },
-  { path: "/inventory", label: "Stocks", icon: Package },
-  { path: "/connectors", label: "Connecteurs", icon: Plug },
-  { path: "/users", label: "Utilisateurs", icon: Users },
-  { path: "/superadmin", label: "Super Admin", icon: Sparkles },
+  { path: "/", label: "Dashboard", icon: SquareKanban },
+  { path: "/forecast", label: "Prévisions", icon: LineChart },
+  { path: "/alerts", label: "Alertes", icon: ShieldAlert },
+  { path: "/kpi", label: "KPI & Rapports", icon: PieChart },
+  { path: "/finance", label: "Finance", icon: Wallet },
+  { path: "/sop", label: "S&OP", icon: Workflow },
+  { path: "/inventory", label: "Stocks", icon: Boxes },
+  { path: "/connectors", label: "Connecteurs", icon: Cable },
+  { path: "/users", label: "Utilisateurs", icon: UserCog },
+  { path: "/superadmin", label: "Super Admin", icon: Gem },
 ];
 
 interface AppSidebarProps {
@@ -77,7 +77,7 @@ export default function AppSidebar({ onToggleCopilot, copilotOpen }: AppSidebarP
               : "text-sidebar-foreground hover:bg-sidebar-accent/60"
           )}
         >
-          <Bot className="h-[18px] w-[18px] shrink-0" />
+          <MessageSquare className="h-[18px] w-[18px] shrink-0" />
           {!collapsed && <span>Copilot IA</span>}
         </button>
       </div>
