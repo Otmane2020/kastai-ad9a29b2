@@ -35,8 +35,8 @@ export const HORIZON_OPTIONS: { value: ForecastHorizon; label: string }[] = [
 export const GRANULARITY_OPTIONS: { value: ForecastGranularity; label: string; icon: string; desc: string }[] = [
   { value: "global", label: "Global (agrégé)", icon: "🌐", desc: "Prévision sur le total des ventes" },
   { value: "sku", label: "Par SKU / Produit", icon: "📦", desc: "Prévision par référence produit" },
-  { value: "family", label: "Par Famille produit", icon: "🏷️" },
-  { value: "subfamily", label: "Par Sous-famille", icon: "🔀" },
+  { value: "family", label: "Par Famille produit", icon: "🏷️", desc: "Prévision par famille / catégorie" },
+  { value: "subfamily", label: "Par Sous-famille", icon: "🔀", desc: "Croisement produit + catégorie" },
 ];
 
 export const TARGET_OPTIONS: { value: ForecastTarget; label: string; icon: string; tab: string }[] = [
