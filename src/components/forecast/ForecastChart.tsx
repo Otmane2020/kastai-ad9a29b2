@@ -62,18 +62,19 @@ export default function ForecastChart({ chartData, models, title, subtitle }: Fo
               connectNulls={false}
             />
           ))}
-          {/* Future forecast lines */}
-          {models.map((m, i) => (
-            <Line
-              key={m.name}
-              type="monotone"
-              dataKey={m.name}
-              stroke={MODEL_COLORS[i % MODEL_COLORS.length]}
-              strokeWidth={m.selected ? 2.5 : 1.5}
-              strokeDasharray={m.selected ? undefined : "6 3"}
-              dot={m.selected ? { r: 3, fill: MODEL_COLORS[i % MODEL_COLORS.length] } : false}
-            />
-          ))}
+          {/* Future forecast lines — only selected models */}
+          {models.map((m, i) =>
+            m.selected ? (
+              <Line
+                key={m.name}
+                type="monotone"
+                dataKey={m.name}
+                stroke={MODEL_COLORS[i % MODEL_COLORS.length]}
+                strokeWidth={2.5}
+                dot={{ r: 3, fill: MODEL_COLORS[i % MODEL_COLORS.length] }}
+              />
+            ) : null
+          )}
         </LineChart>
       </ResponsiveContainer>
     </div>
