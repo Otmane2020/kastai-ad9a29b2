@@ -701,6 +701,38 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                 </p>
               </div>
 
+              {/* Primary forecast target */}
+              <div>
+                <h4 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide flex items-center gap-1.5"><Rocket className="h-3.5 w-3.5" /> Prévision principale</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  {TARGET_OPTIONS.map((t) => {
+                    const isActive = wizard.primaryTarget === t.value;
+                    const colMapped = t.value === "revenue" ? wizard.mapping.revenueCol : wizard.mapping.quantityCol;
+                    return (
+                      <button
+                        key={t.value}
+                        onClick={() => setWizard((prev) => ({ ...prev, primaryTarget: t.value }))}
+                        className={cn(
+                          "rounded-xl border p-4 text-left transition-all",
+                          isActive
+                            ? "border-primary bg-primary/10 shadow-elevated ring-1 ring-primary/30"
+                            : "border-border bg-card hover:border-primary/40 cursor-pointer"
+                        )}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-lg">{t.icon}</span>
+                          <span className="font-display text-sm font-semibold text-card-foreground">{t.label}</span>
+                          {isActive && <span className="rounded-full bg-primary px-2 py-0.5 text-[9px] font-bold text-primary-foreground">Principal</span>}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Colonne : {colMapped || "non mappée"}
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
               {/* Forecast targets */}
               <div>
                 <h4 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide flex items-center gap-1.5"><Crosshair className="h-3.5 w-3.5" /> Valeurs à prévoir (multi-sélection)</h4>
