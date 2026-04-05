@@ -1,4 +1,4 @@
-import { TrendingUp } from "lucide-react";
+import { LineChart } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import DataUploadBanner from "@/components/DataUploadBanner";
 import { useData, TimeSeriesPoint } from "@/context/DataContext";
@@ -200,7 +200,7 @@ export default function Forecast() {
 
   return (
     <div className="animate-fade-in space-y-6">
-      <PageHeader title="Prévisions" description="Visualisation des forecasts et comparaison des modèles" icon={<TrendingUp className="h-5 w-5" />} />
+      <PageHeader title="Prévisions" description="Visualisation des forecasts et comparaison des modèles" icon={<LineChart className="h-5 w-5" />} />
       <DataUploadBanner />
 
       {hasData && availableLevels.length > 1 && (

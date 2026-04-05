@@ -1,4 +1,4 @@
-import { Package } from "lucide-react";
+import { Boxes } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import DataUploadBanner from "@/components/DataUploadBanner";
 import { cn } from "@/lib/utils";
@@ -15,7 +15,7 @@ const inventory = [
 export default function Inventory() {
   return (
     <div className="animate-fade-in">
-      <PageHeader title="Optimisation des stocks" description="Recommandations de réapprovisionnement intelligent" icon={<Package className="h-5 w-5" />} />
+      <PageHeader title="Optimisation des stocks" description="Recommandations de réapprovisionnement intelligent" icon={<Boxes className="h-5 w-5" />} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-4 mb-6">
         <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">

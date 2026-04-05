@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Bot, Send, X, Sparkles } from "lucide-react";
+import { MessageSquare, SendHorizonal, X, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLocation } from "react-router-dom";
 
@@ -87,7 +87,7 @@ export default function CopilotPanel({ open, onClose }: CopilotPanelProps) {
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-primary">
-            <Sparkles className="h-4 w-4 text-primary-foreground" />
+            <Zap className="h-4 w-4 text-primary-foreground" />
           </div>
           <div>
             <p className="font-display text-sm font-semibold text-foreground">Copilot IA</p>
@@ -104,7 +104,7 @@ export default function CopilotPanel({ open, onClose }: CopilotPanelProps) {
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl gradient-primary animate-pulse-glow">
-              <Bot className="h-7 w-7 text-primary-foreground" />
+              <MessageSquare className="h-7 w-7 text-primary-foreground" />
             </div>
             <p className="font-display text-sm font-semibold text-foreground">Bonjour ! Je suis votre Copilot IA</p>
             <p className="mt-1 text-xs text-muted-foreground max-w-[240px]">
@@ -166,7 +166,7 @@ export default function CopilotPanel({ open, onClose }: CopilotPanelProps) {
             disabled={!input.trim()}
             className="flex h-8 w-8 items-center justify-center rounded-lg gradient-primary text-primary-foreground disabled:opacity-40 transition-opacity"
           >
-            <Send className="h-4 w-4" />
+            <SendHorizonal className="h-4 w-4" />
           </button>
         </div>
       </div>

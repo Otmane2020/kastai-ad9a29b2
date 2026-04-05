@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from "react";
-import { Plug, Database, BarChart3, Globe, FileSpreadsheet, CheckCircle2, Upload, History, Play, Trash2, Clock } from "lucide-react";
+import { Cable, DatabaseZap, PieChart, Globe2, FileUp, CircleCheck, CloudUpload, Clock4, CirclePlay, Trash2, Timer } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import ImportWizard from "@/components/ImportWizard";
 import { useData } from "@/context/DataContext";
@@ -7,10 +7,10 @@ import { parseFile, autoMapColumns } from "@/lib/dataParser";
 import { cn } from "@/lib/utils";
 
 const connectors = [
-  { name: "ERP (SAP, Oracle)", icon: Database, status: "available" as const, desc: "Connexion directe aux systèmes ERP" },
-  { name: "Power BI", icon: BarChart3, status: "available" as const, desc: "Intégration BI pour dashboards" },
-  { name: "Tableau", icon: BarChart3, status: "available" as const, desc: "Connecteur Tableau natif" },
-  { name: "API REST", icon: Globe, status: "active" as const, desc: "Endpoints pour intégrations externes" },
+  { name: "ERP (SAP, Oracle)", icon: DatabaseZap, status: "available" as const, desc: "Connexion directe aux systèmes ERP" },
+  { name: "Power BI", icon: PieChart, status: "available" as const, desc: "Intégration BI pour dashboards" },
+  { name: "Tableau", icon: PieChart, status: "available" as const, desc: "Connecteur Tableau natif" },
+  { name: "API REST", icon: Globe2, status: "active" as const, desc: "Endpoints pour intégrations externes" },
 ];
 
 interface ImportHistoryEntry {
@@ -80,9 +80,9 @@ export default function Connectors() {
 
   return (
     <div className="animate-fade-in">
-      <PageHeader title="Connecteurs" description="Import/export de données et intégrations" icon={<Plug className="h-5 w-5" />} />
+      <PageHeader title="Connecteurs" description="Import/export de données et intégrations" icon={<Cable className="h-5 w-5" />} />
 
-      {/* Upload zone */}
+      {/* CloudUpload zone */}
       <div
         className={cn(
           "mb-6 rounded-xl border-2 border-dashed p-8 text-center transition-all cursor-pointer",
@@ -92,7 +92,7 @@ export default function Connectors() {
       >
         {hasData ? (
           <div className="flex items-center justify-center gap-3">
-            <CheckCircle2 className="h-8 w-8 text-success" />
+            <CircleCheck className="h-8 w-8 text-success" />
             <div className="text-left flex-1">
               <p className="font-display text-sm font-semibold text-foreground">{data.fileName} — importé ✓</p>
               <p className="text-xs text-muted-foreground">
@@ -115,7 +115,7 @@ export default function Connectors() {
                 {loadingForecast ? (
                   <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
                 ) : (
-                  <Play className="h-3.5 w-3.5" />
+                  <CirclePlay className="h-3.5 w-3.5" />
                 )}
                 Relancer prévisions
               </button>
@@ -123,7 +123,7 @@ export default function Connectors() {
                 onClick={(e) => { e.stopPropagation(); setWizardOpen(true); }}
                 className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-card-foreground hover:bg-muted/50 transition-colors"
               >
-                <Upload className="h-3.5 w-3.5" />
+                <CloudUpload className="h-3.5 w-3.5" />
                 Nouvel import
               </button>
               <button
@@ -136,7 +136,7 @@ export default function Connectors() {
           </div>
         ) : (
           <div onClick={() => setWizardOpen(true)}>
-            <FileSpreadsheet className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
+            <FileUp className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
             <p className="font-display text-sm font-semibold text-foreground">Assistant d'import CSV / Excel</p>
             <p className="text-xs text-muted-foreground mt-1">Mapping automatique intelligent · Choix de granularité · Prévisions en un clic</p>
             <button className="mt-4 rounded-lg gradient-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity">
@@ -150,7 +150,7 @@ export default function Connectors() {
       <div className="mb-6 rounded-xl border border-border bg-card p-5 shadow-card">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Play className="h-4 w-4 text-primary" />
+            <CirclePlay className="h-4 w-4 text-primary" />
             <h3 className="font-display text-sm font-semibold text-card-foreground">Chargement rapide</h3>
           </div>
           <span className="text-[10px] text-muted-foreground">Import + prévisions automatiques</span>
@@ -179,7 +179,7 @@ export default function Connectors() {
             </>
           ) : (
             <>
-              <Upload className="h-4 w-4" />
+              <CloudUpload className="h-4 w-4" />
               Charger un fichier CSV/Excel → Load prévision
             </>
           )}
@@ -208,11 +208,11 @@ export default function Connectors() {
         </div>
       )}
 
-      {/* Import History */}
+      {/* Import Clock4 */}
       <div className="mb-6 rounded-xl border border-border bg-card p-5 shadow-card">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <History className="h-4 w-4 text-muted-foreground" />
+            <Clock4 className="h-4 w-4 text-muted-foreground" />
             <h3 className="font-display text-sm font-semibold text-card-foreground">Historique des imports</h3>
           </div>
           {history.length > 0 && (
@@ -234,7 +234,7 @@ export default function Connectors() {
                   "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
                   entry.status === "success" ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
                 )}>
-                  {entry.status === "success" ? <CheckCircle2 className="h-4 w-4" /> : <FileSpreadsheet className="h-4 w-4" />}
+                  {entry.status === "success" ? <CircleCheck className="h-4 w-4" /> : <FileUp className="h-4 w-4" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-card-foreground truncate">{entry.fileName}</p>
@@ -243,7 +243,7 @@ export default function Connectors() {
                   </p>
                 </div>
                 <div className="flex items-center gap-1 text-muted-foreground shrink-0">
-                  <Clock className="h-3 w-3" />
+                  <Timer className="h-3 w-3" />
                   {new Date(entry.date).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
                 </div>
               </div>

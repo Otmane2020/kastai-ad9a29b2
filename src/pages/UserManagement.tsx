@@ -1,4 +1,4 @@
-import { Users, Shield, Mail } from "lucide-react";
+import { UserCog, ShieldCheck, MailPlus } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import { cn } from "@/lib/utils";
 
@@ -15,10 +15,10 @@ export default function UserManagement() {
       <PageHeader
         title="Utilisateurs"
         description="Gestion des utilisateurs, rôles et permissions"
-        icon={<Users className="h-5 w-5" />}
+        icon={<UserCog className="h-5 w-5" />}
         actions={
           <button className="flex items-center gap-2 rounded-lg gradient-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity">
-            <Mail className="h-4 w-4" />Inviter
+            <MailPlus className="h-4 w-4" />Inviter
           </button>
         }
       />
@@ -42,7 +42,7 @@ export default function UserManagement() {
                 </td>
                 <td className="px-5 py-3">
                   <div className="flex items-center gap-1.5">
-                    <Shield className="h-3.5 w-3.5 text-muted-foreground" />
+                    <ShieldCheck className="h-3.5 w-3.5 text-muted-foreground" />
                     <span className="text-card-foreground">{u.role}</span>
                   </div>
                 </td>

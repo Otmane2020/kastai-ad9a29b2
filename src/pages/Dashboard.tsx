@@ -1,4 +1,4 @@
-import { LayoutDashboard, TrendingUp, Target, AlertTriangle, ArrowUpRight } from "lucide-react";
+import { SquareKanban, LineChart, Crosshair, ShieldAlert, ArrowUpRight } from "lucide-react";
 import KPICard from "@/components/KPICard";
 import PageHeader from "@/components/PageHeader";
 import DataUploadBanner from "@/components/DataUploadBanner";
@@ -95,13 +95,13 @@ export default function Dashboard() {
 
   return (
     <div className="animate-fade-in">
-      <PageHeader title="Dashboard" description="Vue globale des performances et KPIs" icon={<LayoutDashboard className="h-5 w-5" />} />
+      <PageHeader title="Dashboard" description="Vue globale des performances et KPIs" icon={<SquareKanban className="h-5 w-5" />} />
       <DataUploadBanner />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
         <KPICard title="Chiffre d'affaires" value={totalValue} change={`${growth} période`} changeType={growth.startsWith("+") ? "up" : "down"} icon={<TrendingUp className="h-5 w-5" />} />
-        <KPICard title="Précision prévisions" value={avgValue} change={hasData ? data.forecasts?.bestModel || "" : "Demo"} changeType="up" icon={<Target className="h-5 w-5" />} />
-        <KPICard title="Points de données" value={hasData ? `${data.timeSeries.length}` : "—"} change={hasData ? `${data.columns.length} colonnes` : "Importez vos données"} changeType="neutral" icon={<AlertTriangle className="h-5 w-5" />} />
+        <KPICard title="Précision prévisions" value={avgValue} change={hasData ? data.forecasts?.bestModel || "" : "Demo"} changeType="up" icon={<Crosshair className="h-5 w-5" />} />
+        <KPICard title="Points de données" value={hasData ? `${data.timeSeries.length}` : "—"} change={hasData ? `${data.columns.length} colonnes` : "Importez vos données"} changeType="neutral" icon={<ShieldAlert className="h-5 w-5" />} />
         <KPICard title="Croissance" value={growth} change="Tendance" changeType={growth.startsWith("+") ? "up" : "down"} icon={<ArrowUpRight className="h-5 w-5" />} />
       </div>
 

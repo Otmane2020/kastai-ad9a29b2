@@ -1,4 +1,4 @@
-import { DollarSign } from "lucide-react";
+import { Wallet } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import DataUploadBanner from "@/components/DataUploadBanner";
 import KPICard from "@/components/KPICard";
@@ -42,13 +42,13 @@ export default function Finance() {
 
   return (
     <div className="animate-fade-in">
-      <PageHeader title="Finance" description="Prévision du CA et simulation de scénarios" icon={<DollarSign className="h-5 w-5" />} />
+      <PageHeader title="Finance" description="Prévision du CA et simulation de scénarios" icon={<Wallet className="h-5 w-5" />} />
       <DataUploadBanner />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-6">
-        <KPICard title="CA prévisionnel" value={caTotal} changeType="up" icon={<DollarSign className="h-5 w-5" />} />
-        <KPICard title="Fiabilité prévision" value={margin} changeType="up" icon={<DollarSign className="h-5 w-5" />} />
-        <KPICard title="Meilleur modèle" value={bestScenario} changeType="neutral" icon={<DollarSign className="h-5 w-5" />} />
+        <KPICard title="CA prévisionnel" value={caTotal} changeType="up" icon={<Wallet className="h-5 w-5" />} />
+        <KPICard title="Fiabilité prévision" value={margin} changeType="up" icon={<Wallet className="h-5 w-5" />} />
+        <KPICard title="Meilleur modèle" value={bestScenario} changeType="neutral" icon={<Wallet className="h-5 w-5" />} />
       </div>
 
       <div className="rounded-xl border border-border bg-card p-5 shadow-card">
