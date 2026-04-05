@@ -3,9 +3,10 @@ import { NavLink, useLocation } from "react-router-dom";
 import {
   SquareKanban, LineChart, ShieldAlert, PieChart,
   Wallet, Workflow, Boxes, Cable, UserCog, MessageSquare, ChevronLeft,
-  ChevronRight, Gem
+  ChevronRight, Gem, LogOut
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
 import logoKastAi from "@/assets/logo-kast-ai.png";
 
 const navItems = [
@@ -29,6 +30,7 @@ interface AppSidebarProps {
 export default function AppSidebar({ onToggleCopilot, copilotOpen }: AppSidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const { signOut, user } = useAuth();
 
   return (
     <aside
@@ -79,6 +81,20 @@ export default function AppSidebar({ onToggleCopilot, copilotOpen }: AppSidebarP
         >
           <MessageSquare className="h-[18px] w-[18px] shrink-0" />
           {!collapsed && <span>Copilot IA</span>}
+        </button>
+      </div>
+
+      {/* User & Logout */}
+      <div className="border-t border-sidebar-border p-3 space-y-1">
+        {!collapsed && user && (
+          <p className="px-3 text-xs text-sidebar-foreground/60 truncate">{user.email}</p>
+        )}
+        <button
+          onClick={signOut}
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground hover:bg-destructive/20 hover:text-destructive transition-colors"
+        >
+          <LogOut className="h-[18px] w-[18px] shrink-0" />
+          {!collapsed && <span>Déconnexion</span>}
         </button>
       </div>
 
