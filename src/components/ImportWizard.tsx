@@ -412,7 +412,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
 
           {/* Step 2: Mapping */}
           {step === "mapping" && (
-            <div className="space-y-5">
+            <div className="relative space-y-5 min-h-[300px]">
               {/* AI analysis overlay */}
               {wizard.aiAnalyzing && (
                 <div className="absolute inset-0 z-10 flex items-center justify-center bg-card/80 backdrop-blur-sm rounded-2xl animate-fade-in">
