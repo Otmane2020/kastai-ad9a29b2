@@ -277,7 +277,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
     setError(null);
     let serverResult: any = null;
 
-    try:
+    try {
       setLaunchProgress(25);
       if (launchMode === "server") {
         const payload = buildForecastPayload(
