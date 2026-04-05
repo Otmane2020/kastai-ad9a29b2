@@ -1043,6 +1043,10 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                     <span className="font-medium text-warning">{wizard.mapping.subfamilyCol}</span>
                   </div>
                 )}
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground flex items-center gap-1"><Rocket className="h-3 w-3" /> Prévision principale</span>
+                  <span className="font-medium text-primary">{wizard.primaryTarget === "revenue" ? "CA (€)" : "Quantité"}</span>
+                </div>
                 <div className="border-t border-border pt-2 flex justify-between">
                   <span className="text-muted-foreground">Granularités</span>
                   <span className="font-medium text-card-foreground">
