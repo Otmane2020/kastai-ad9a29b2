@@ -229,6 +229,37 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
 
       setLaunchProgress(100);
       
+      // Save to history
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: fileRecord } = await supabase.from("uploaded_files").insert({
+            user_id: user.id,
+            file_name: wizard.file!.name,
+            row_count: wizard.rows.length,
+            column_count: wizard.columns.length,
+            columns: wizard.columns,
+            mapping: wizard.mapping as any,
+            granularity: wizard.granularity,
+          }).select("id").single();
+
+          // Get forecast results from context after processing
+          const bestModel = "SES"; // Will be updated from actual results
+          await supabase.from("forecast_runs").insert({
+            user_id: user.id,
+            file_id: fileRecord?.id || null,
+            file_name: wizard.file!.name,
+            granularity: wizard.granularity,
+            horizon: 6,
+            total_points: wizard.rows.length,
+            best_model: bestModel,
+            models_results: {} as any,
+          });
+        }
+      } catch (histErr) {
+        console.warn("History save failed:", histErr);
+      }
+
       // Small delay for visual satisfaction
       await new Promise((r) => setTimeout(r, 400));
 
