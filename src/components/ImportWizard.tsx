@@ -111,7 +111,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
     const contextRoles = ["price", "promo", "discount", "region", "store", "channel", "cost", "margin"];
     const columnRegressors: ProphetRegressor[] = (aiResult.allColumns || [])
       .filter((c) => contextRoles.includes(c.role) || c.role === "other")
-      .map((c) => ({ key: c.name, label: `${c.name} (${c.role})`, enabled: contextRoles.includes(c.role), type: "column" as const }));
+      .map((c) => ({ key: c.name, label: `${c.name} (${c.role})`, enabled: true, type: "column" as const }));
 
     setWizard((prev) => ({
       ...prev,
