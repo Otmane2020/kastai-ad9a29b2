@@ -112,6 +112,21 @@ function buildTimeSeries(rows: DataRow[], mapping: ColumnMapping): TimeSeriesPoi
   return timeSeries;
 }
 
+/** Aggregate raw time series points into monthly sums */
+function aggregateToMonthly(points: TimeSeriesPoint[]): { date: Date; value: number }[] {
+  const buckets = new Map<string, { date: Date; total: number }>();
+  for (const p of points) {
+    const key = `${p.date.getFullYear()}-${String(p.date.getMonth() + 1).padStart(2, "0")}`;
+    if (!buckets.has(key)) {
+      buckets.set(key, { date: new Date(p.date.getFullYear(), p.date.getMonth(), 1), total: 0 });
+    }
+    buckets.get(key)!.total += p.value;
+  }
+  return Array.from(buckets.values())
+    .sort((a, b) => a.date.getTime() - b.date.getTime())
+    .map((b) => ({ date: b.date, value: b.total }));
+}
+
 function getGroupKey(point: TimeSeriesPoint, granularity: Granularity): string {
   switch (granularity) {
     case "sku": return point.product || "Inconnu";
@@ -131,8 +146,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
     try {
       const timeSeries = buildTimeSeries(rows, mapping);
-      const values = timeSeries.map((t) => t.value);
-      const forecasts = values.length >= 6 ? runAllModels(values, horizon) : null;
+
+      // Aggregate to monthly BEFORE forecasting so predictions match chart scale
+      const monthlyGlobal = aggregateToMonthly(timeSeries);
+      const monthlyValues = monthlyGlobal.map((m) => m.value);
+      const forecasts = monthlyValues.length >= 4 ? runAllModels(monthlyValues, horizon) : null;
 
       // Group forecasts
       const groups = new Map<string, TimeSeriesPoint[]>();
@@ -145,19 +163,20 @@ export function DataProvider({ children }: { children: ReactNode }) {
       }
 
       const groupForecasts: GroupForecast[] = [];
-      const groupKeys: string[] = [];
       for (const [groupKey, pts] of groups.entries()) {
-        const gValues = pts.map((p) => p.value);
-        if (gValues.length >= 6) {
+        // Aggregate group to monthly before forecasting
+        const monthlyGroup = aggregateToMonthly(pts);
+        const gValues = monthlyGroup.map((m) => m.value);
+        if (gValues.length >= 4) {
           groupForecasts.push({
             groupKey,
             timeSeries: pts,
             forecasts: runAllModels(gValues, horizon),
           });
-          groupKeys.push(groupKey);
         }
       }
 
+      // Sort groups by total value descending
       groupForecasts.sort((a, b) => {
         const totalA = a.timeSeries.reduce((s, p) => s + p.value, 0);
         const totalB = b.timeSeries.reduce((s, p) => s + p.value, 0);
