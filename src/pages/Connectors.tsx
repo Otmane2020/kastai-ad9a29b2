@@ -63,12 +63,15 @@ export default function Connectors() {
       const granularity = mapping.productCol ? "sku" : "global";
       await processData(rows, columns, mapping, file.name, granularity);
       addToHistory({ fileName: file.name, rows: rows.length, columns: columns.length, mapping: `${mapping.dateCol} → ${mapping.valueCol}`, status: "success" });
+      toast({ title: "✅ Prévisions calculées", description: `${file.name} — modèles exécutés avec succès` });
+      navigate("/forecast");
     } catch (err) {
       console.error("Quick load error:", err);
       addToHistory({ fileName: file.name, rows: 0, columns: 0, mapping: "Erreur", status: "error" });
+      toast({ title: "❌ Erreur", description: "Impossible de traiter le fichier.", variant: "destructive" });
     }
     setQuickLoading(false);
-  }, [processData]);
+  }, [processData, navigate, toast]);
 
   // Re-run forecast on current data
   const handleReloadForecast = useCallback(async () => {
