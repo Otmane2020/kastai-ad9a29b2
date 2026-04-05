@@ -6,6 +6,7 @@ import {
   ChevronRight, Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import logoKastAi from "@/assets/logo-kast-ai.png";
 
 const navItems = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -37,16 +38,10 @@ export default function AppSidebar({ onToggleCopilot, copilotOpen }: AppSidebarP
       )}
     >
       {/* Logo */}
-      <div className="flex h-16 items-center gap-2 px-4">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg gradient-primary">
-          <Sparkles className="h-5 w-5 text-primary-foreground" />
+      <div className="flex h-16 items-center justify-center px-3">
+        <div className={cn("flex items-center justify-center rounded-lg bg-white overflow-hidden", collapsed ? "h-10 w-10 p-1" : "h-10 px-3 py-1")}>
+          <img src={logoKastAi} alt="Kast AI" className={cn("object-contain", collapsed ? "h-7 w-7" : "h-8")} />
         </div>
-        {!collapsed && (
-          <div className="animate-fade-in">
-            <span className="font-display text-lg font-bold text-sidebar-primary-foreground">Kast</span>
-            <span className="font-display text-lg font-bold text-sidebar-primary"> AI</span>
-          </div>
-        )}
       </div>
 
       {/* Nav */}
