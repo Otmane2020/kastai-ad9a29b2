@@ -1,4 +1,4 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, LabelList } from "recharts";
 import { cn } from "@/lib/utils";
 import { ForecastResult } from "@/lib/forecastEngine";
 import { GroupForecast, TimeSeriesPoint } from "@/context/DataContext";
