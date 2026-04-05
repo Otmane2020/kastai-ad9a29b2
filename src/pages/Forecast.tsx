@@ -3,7 +3,7 @@ import PageHeader from "@/components/PageHeader";
 import DataUploadBanner from "@/components/DataUploadBanner";
 import { useData, TimeSeriesPoint } from "@/context/DataContext";
 import { ForecastResult } from "@/lib/forecastEngine";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import ForecastFilters, { ViewLevel, VIEW_LABELS, HorizonFilter } from "@/components/forecast/ForecastFilters";
 import ForecastChart from "@/components/forecast/ForecastChart";
 import { HorizonTable, ModelComparisonTable, SKUTable, BacktestTable, MAPEBarChart } from "@/components/forecast/ForecastTables";
