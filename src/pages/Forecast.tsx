@@ -1,4 +1,4 @@
-import { LineChart as LineChartIcon } from "lucide-react";
+import { LineChart as LineChartIcon, DollarSign, Hash } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import DataUploadBanner from "@/components/DataUploadBanner";
 import { useData, TimeSeriesPoint } from "@/context/DataContext";
