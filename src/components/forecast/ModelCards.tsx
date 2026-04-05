@@ -15,7 +15,7 @@ interface ModelCardsProps {
 
 export default function ModelCards({ models, onToggle }: ModelCardsProps) {
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5 mb-6">
+    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 mb-6">
       {models.map((m) => (
         <div
           key={m.name}
