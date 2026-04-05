@@ -49,19 +49,24 @@ export default function ForecastChart({ chartData, models, title, subtitle }: Fo
           {hasTestSet && (
             <Line type="monotone" dataKey="réel (test)" stroke="hsl(280, 60%, 55%)" strokeWidth={2.5} strokeDasharray="4 4" dot={{ r: 4, fill: "hsl(280, 60%, 55%)", strokeWidth: 2, stroke: "white" }} connectNulls={false} name="Réel (test 20%)" />
           )}
-          {/* Backtest predictions on test set */}
-          {backtestKeys.map((key, i) => (
-            <Line
-              key={key}
-              type="monotone"
-              dataKey={key}
-              stroke={BACKTEST_COLORS[i % BACKTEST_COLORS.length]}
-              strokeWidth={1.5}
-              strokeDasharray="3 3"
-              dot={{ r: 3, fill: BACKTEST_COLORS[i % BACKTEST_COLORS.length], strokeWidth: 1, stroke: "white" }}
-              connectNulls={false}
-            />
-          ))}
+          {/* Backtest predictions on test set — only selected models */}
+          {backtestKeys.map((key, i) => {
+            const modelName = key.replace(" (backtest)", "");
+            const isSelected = models.find(m => m.name === modelName)?.selected;
+            if (!isSelected) return null;
+            return (
+              <Line
+                key={key}
+                type="monotone"
+                dataKey={key}
+                stroke={BACKTEST_COLORS[i % BACKTEST_COLORS.length]}
+                strokeWidth={1.5}
+                strokeDasharray="3 3"
+                dot={{ r: 3, fill: BACKTEST_COLORS[i % BACKTEST_COLORS.length], strokeWidth: 1, stroke: "white" }}
+                connectNulls={false}
+              />
+            );
+          })}
           {/* Future forecast lines — only selected models */}
           {models.map((m, i) =>
             m.selected ? (
