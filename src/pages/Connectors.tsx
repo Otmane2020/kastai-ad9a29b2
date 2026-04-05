@@ -99,18 +99,15 @@ export default function Connectors() {
         }
         navigate("/forecast");
         toast({ title: "Prévisions chargées", description: `Résultats restaurés (${run.best_model})` });
-      } else if (!run) {
-        // No forecast yet — need to re-run
-        if (hasData && data.fileName === file?.file_name) {
+      } else {
+        // No valid forecast — need to re-import and run
+        if (hasData && data.raw.length > 0 && data.fileName === file?.file_name) {
           await processData(data.raw, data.columns, data.mapping!, data.fileName!, data.granularity);
           navigate("/forecast");
           toast({ title: "Prévisions calculées", description: "Modèles exécutés avec succès" });
         } else {
-          toast({ title: "Réimportation nécessaire", description: "Veuillez réimporter ce fichier pour lancer les prévisions.", variant: "destructive" });
+          toast({ title: "Réimportation nécessaire", description: "Veuillez réimporter ce fichier pour lancer les prévisions." });
         }
-      } else {
-        // Run exists but no models_results stored
-        toast({ title: "Données incomplètes", description: "Les résultats détaillés ne sont pas stockés. Relancez les prévisions.", variant: "destructive" });
       }
     } catch (err) {
       console.error("Launch from file error:", err);
