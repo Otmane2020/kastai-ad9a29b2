@@ -14,6 +14,7 @@ import SOP from "@/pages/SOP";
 import Inventory from "@/pages/Inventory";
 import Connectors from "@/pages/Connectors";
 import UserManagement from "@/pages/UserManagement";
+import SuperAdmin from "@/pages/SuperAdmin";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +37,7 @@ const App = () => (
               <Route path="/inventory" element={<Inventory />} />
               <Route path="/connectors" element={<Connectors />} />
               <Route path="/users" element={<UserManagement />} />
+              <Route path="/superadmin" element={<SuperAdmin />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
