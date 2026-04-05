@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
-import { CloudUpload, FileUp, CircleCheck, ChevronRight, ChevronLeft, CirclePlay, X, TriangleAlert, Zap, BrainCircuit, Loader2, ServerCog, CalendarRange, CloudSun, Globe, Package, Tag, GitBranch, DollarSign, Hash, CalendarDays, BarChart3, Crosshair, Rocket, CheckSquare, Square, Columns3 } from "lucide-react";
+import { CloudUpload, FileUp, CircleCheck, ChevronRight, ChevronLeft, CirclePlay, X, TriangleAlert, Zap, Loader2, ServerCog, CalendarRange, CloudSun, Globe, Package, Tag, GitBranch, DollarSign, Hash, CalendarDays, BarChart3, Crosshair, Rocket, CheckSquare, Square, Columns3 } from "lucide-react";
+import logoIcon from "@/assets/logo-icon.png";
 import { parseFile, autoMapColumns, ColumnMapping } from "@/lib/dataParser";
 import { useData } from "@/context/DataContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -406,7 +407,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <div className="flex items-center gap-2">
-            <BrainCircuit className="h-5 w-5 text-primary" />
+            <img src={logoIcon} alt="KastAI" className="h-5 w-5 rounded-sm object-cover" />
             <h2 className="font-display text-lg font-bold text-card-foreground">Assistant d'import intelligent</h2>
           </div>
           <button onClick={() => { onClose(); setWizard(initialWizard); setStep("upload"); }} className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted transition-colors">
@@ -495,7 +496,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                   <div className="flex flex-col items-center gap-5 max-w-sm text-center p-8 rounded-2xl border border-primary/20 bg-card shadow-elevated">
                     <div className="relative">
                       <div className="h-16 w-16 rounded-full border-[3px] border-primary/20 flex items-center justify-center">
-                        <BrainCircuit className="h-8 w-8 text-primary animate-pulse" />
+                        <img src={logoIcon} alt="KastAI" className="h-8 w-8 rounded-full object-cover animate-pulse" />
                       </div>
                       <div className="absolute inset-0 h-16 w-16 rounded-full border-[3px] border-t-primary border-r-transparent border-b-transparent border-l-transparent animate-spin" />
                     </div>
@@ -527,7 +528,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
               {wizard.aiMapping && !wizard.aiAnalyzing && (
                 <div className="rounded-xl border border-success/30 bg-success/5 p-4">
                   <div className="flex items-start gap-3">
-                    <BrainCircuit className="h-5 w-5 text-success mt-0.5" />
+                    <img src={logoIcon} alt="KastAI" className="h-5 w-5 rounded-sm object-cover mt-0.5" />
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <p className="text-sm font-medium text-success">Mapping IA terminé</p>
@@ -1013,7 +1014,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                 {wizard.businessContext && (
                   <div className="border-t border-border pt-2">
                     <p className="text-xs text-muted-foreground">
-                      <BrainCircuit className="h-3 w-3 inline mr-1" />
+                      <img src={logoIcon} alt="KastAI" className="h-3 w-3 inline mr-1 rounded-sm" />
                       {wizard.businessContext}
                     </p>
                   </div>
