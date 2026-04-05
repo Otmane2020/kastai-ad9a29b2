@@ -1,4 +1,4 @@
-import { LineChart as LineChartIcon, DollarSign, Hash } from "lucide-react";
+import { LineChart as LineChartIcon, DollarSign, Hash, ServerCog, Zap } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import DataUploadBanner from "@/components/DataUploadBanner";
 import { useData, TimeSeriesPoint } from "@/context/DataContext";
@@ -225,6 +225,17 @@ export default function Forecast() {
           <span className="inline-flex items-center gap-1.5 rounded-full bg-accent/60 border border-border px-3 py-1 text-xs font-medium text-foreground">
             Horizon : {data.horizon} mois
           </span>
+          {data.forecasts && data.forecasts.models.length > 5 ? (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-success/10 border border-success/30 px-3 py-1 text-xs font-semibold text-success">
+              <ServerCog className="h-3.5 w-3.5" />
+              Serveur ML — {data.forecasts.models.length} modèles
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-muted border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
+              <Zap className="h-3.5 w-3.5" />
+              Moteur JS local
+            </span>
+          )}
         </div>
       )}
 
