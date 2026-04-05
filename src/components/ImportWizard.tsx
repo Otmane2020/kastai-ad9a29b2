@@ -374,7 +374,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
         }
 
         setLaunchProgress(75);
-        const serverResult = await forecastRes.json();
+        serverResult = await forecastRes.json();
         await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity, maxHorizon, wizard.primaryTarget, serverResult);
       } else {
         setLaunchProgress(50);
