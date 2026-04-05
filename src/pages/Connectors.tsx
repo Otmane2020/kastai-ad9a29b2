@@ -85,33 +85,29 @@ export default function Connectors() {
     try {
       const run = forecastRuns[fileId];
       const file = dbFiles.find(f => f.id === fileId);
+      const serverResult = run?.models_results as any;
+      const hasValidResults = serverResult && serverResult.models && Array.isArray(serverResult.models) && serverResult.models.length > 0;
       
-      if (run && run.models_results && file) {
-        // Already calculated — load stored results into DataContext
-        const serverResult = run.models_results as any;
+      if (run && hasValidResults && file) {
+        // Already calculated with valid results — load into DataContext
         const mapping = file.mapping as any;
         
         if (hasData && data.raw.length > 0 && data.fileName === file.file_name) {
-          // Data already in memory, just re-process with stored server results
           await processData(data.raw, data.columns, mapping, file.file_name, (file.granularity || "global") as any, run.horizon || 6, "revenue", serverResult);
         } else {
-          // No raw data in memory — just navigate, forecast page will show what's available
           await processData([], file.mapping ? Object.values(mapping).filter(Boolean).map(String) : [], mapping, file.file_name, (file.granularity || "global") as any, run.horizon || 6, "revenue", serverResult);
         }
         navigate("/forecast");
         toast({ title: "Prévisions chargées", description: `Résultats restaurés (${run.best_model})` });
-      } else if (!run) {
-        // No forecast yet — need to re-run
-        if (hasData && data.fileName === file?.file_name) {
+      } else {
+        // No valid forecast — need to re-import and run
+        if (hasData && data.raw.length > 0 && data.fileName === file?.file_name) {
           await processData(data.raw, data.columns, data.mapping!, data.fileName!, data.granularity);
           navigate("/forecast");
           toast({ title: "Prévisions calculées", description: "Modèles exécutés avec succès" });
         } else {
-          toast({ title: "Réimportation nécessaire", description: "Veuillez réimporter ce fichier pour lancer les prévisions.", variant: "destructive" });
+          toast({ title: "Réimportation nécessaire", description: "Veuillez réimporter ce fichier pour lancer les prévisions." });
         }
-      } else {
-        // Run exists but no models_results stored
-        toast({ title: "Données incomplètes", description: "Les résultats détaillés ne sont pas stockés. Relancez les prévisions.", variant: "destructive" });
       }
     } catch (err) {
       console.error("Launch from file error:", err);
@@ -307,6 +303,9 @@ export default function Connectors() {
             {dbFiles.map((f) => {
               const mapping = f.mapping as any;
               const mappingLabel = mapping ? `${mapping.dateCol || "?"} → ${mapping.valueCol || mapping.revenueCol || mapping.quantityCol || "?"}` : "—";
+              const run = forecastRuns[f.id];
+              const sr = run?.models_results as any;
+              const hasValidRun = run && sr && sr.models && Array.isArray(sr.models) && sr.models.length > 0;
               return (
                 <div key={f.id} className="flex items-center gap-3 rounded-lg bg-muted/30 px-4 py-3 text-xs">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-success/10 text-success">
@@ -317,9 +316,9 @@ export default function Connectors() {
                     <p className="text-muted-foreground">
                       {f.row_count ?? "?"} lignes · {f.column_count ?? "?"} col · {mappingLabel} · {f.granularity ?? "global"}
                     </p>
-                    {forecastRuns[f.id] && (
+                    {hasValidRun && (
                       <p className="text-success mt-0.5">
-                        ✓ {forecastRuns[f.id].best_model} · MAPE {forecastRuns[f.id].best_mape?.toFixed(1)}% · {forecastRuns[f.id].group_count ?? 0} groupes
+                        ✓ {run.best_model} · MAPE {run.best_mape?.toFixed(1) ?? "—"}% · {run.group_count ?? 0} groupes
                       </p>
                     )}
                   </div>
@@ -329,7 +328,7 @@ export default function Connectors() {
                       disabled={launchingFileId === f.id}
                       className={cn(
                         "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all",
-                        forecastRuns[f.id]
+                        hasValidRun
                           ? "bg-success/10 text-success hover:bg-success/20"
                           : "bg-primary/10 text-primary hover:bg-primary/20"
                       )}
@@ -339,7 +338,7 @@ export default function Connectors() {
                       ) : (
                         <CirclePlay className="h-3 w-3" />
                       )}
-                      {forecastRuns[f.id] ? "Voir" : "Lancer"}
+                      {hasValidRun ? "Voir" : "Lancer"}
                     </button>
                     <div className="flex items-center gap-1 text-muted-foreground">
                       <Timer className="h-3 w-3" />
