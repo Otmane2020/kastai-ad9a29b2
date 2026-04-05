@@ -29,17 +29,17 @@ export interface ProphetRegressor {
 }
 
 export const DEFAULT_PROPHET_EXTERNAL_EVENTS: ProphetRegressor[] = [
-  { key: "holidays_fr", label: "🇫🇷 Jours fériés France", enabled: true, type: "external" },
-  { key: "black_friday", label: "🛒 Black Friday", enabled: true, type: "external" },
-  { key: "christmas", label: "🎄 Noël / Fêtes", enabled: true, type: "external" },
-  { key: "valentines", label: "💝 Saint-Valentin", enabled: true, type: "external" },
-  { key: "mothers_day", label: "👩 Fête des Mères", enabled: true, type: "external" },
-  { key: "fathers_day", label: "👨 Fête des Pères", enabled: true, type: "external" },
-  { key: "back_to_school", label: "🎒 Rentrée scolaire", enabled: true, type: "external" },
-  { key: "summer_sales", label: "☀️ Soldes d'été", enabled: true, type: "external" },
-  { key: "winter_sales", label: "❄️ Soldes d'hiver", enabled: true, type: "external" },
-  { key: "easter", label: "🐣 Pâques", enabled: true, type: "external" },
-  { key: "weather", label: "🌤️ Données météo", enabled: false, type: "external" },
+  { key: "holidays_fr", label: "Jours fériés France", enabled: true, type: "external" },
+  { key: "black_friday", label: "Black Friday", enabled: true, type: "external" },
+  { key: "christmas", label: "Noël / Fêtes", enabled: true, type: "external" },
+  { key: "valentines", label: "Saint-Valentin", enabled: true, type: "external" },
+  { key: "mothers_day", label: "Fête des Mères", enabled: true, type: "external" },
+  { key: "fathers_day", label: "Fête des Pères", enabled: true, type: "external" },
+  { key: "back_to_school", label: "Rentrée scolaire", enabled: true, type: "external" },
+  { key: "summer_sales", label: "Soldes d'été", enabled: true, type: "external" },
+  { key: "winter_sales", label: "Soldes d'hiver", enabled: true, type: "external" },
+  { key: "easter", label: "Pâques", enabled: true, type: "external" },
+  { key: "weather", label: "Données météo", enabled: false, type: "external" },
 ];
 
 export interface ExtendedMapping extends ColumnMapping {

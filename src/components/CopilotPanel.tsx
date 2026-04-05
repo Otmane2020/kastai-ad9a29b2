@@ -22,13 +22,13 @@ const pageContext: Record<string, string> = {
 
 const smartResponses: Record<string, string[]> = {
   prévision: [
-    "📈 D'après les données récentes, la tendance est haussière avec une croissance projetée de +12% sur le prochain trimestre. Le modèle Prophet montre la meilleure précision (MAPE: 4.2%).",
+    "D'après les données récentes, la tendance est haussière avec une croissance projetée de +12% sur le prochain trimestre. Le modèle Prophet montre la meilleure précision (MAPE: 4.2%).",
   ],
   ventes: [
-    "🛒 Les ventes ont augmenté de 8.3% ce mois-ci. Les produits électroniques tirent la croissance. Je recommande d'augmenter le stock de la catégorie A de 15%.",
+    "Les ventes ont augmenté de 8.3% ce mois-ci. Les produits électroniques tirent la croissance. Je recommande d'augmenter le stock de la catégorie A de 15%.",
   ],
   stock: [
-    "📦 3 produits sont en risque de rupture dans les 7 prochains jours. Je recommande un réapprovisionnement immédiat pour les SKU #1042, #2087 et #3156.",
+    "3 produits sont en risque de rupture dans les 7 prochains jours. Je recommande un réapprovisionnement immédiat pour les SKU #1042, #2087 et #3156.",
   ],
   default: [
     "Je suis le Copilot IA de Kast. Je peux analyser vos données, expliquer les prévisions, et proposer des actions concrètes. Que souhaitez-vous savoir ?",

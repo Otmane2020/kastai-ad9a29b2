@@ -31,7 +31,7 @@ function HorizonTable({ models, horizon, lastDate }: { models: ModelInfo[]; hori
   return (
     <div className="rounded-xl border border-border bg-card p-5 shadow-card">
       <h3 className="font-display text-sm font-semibold text-card-foreground mb-4">
-        📅 Prévisions par horizon ({horizon})
+        Prévisions par horizon ({horizon})
       </h3>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
@@ -115,7 +115,7 @@ function SKUTable({ groupForecasts, lastDate }: { groupForecasts: GroupForecast[
   return (
     <div className="rounded-xl border border-border bg-card p-5 shadow-card">
       <h3 className="font-display text-sm font-semibold text-card-foreground mb-4">
-        📦 Synthèse par SKU / Groupe ({groupForecasts.length})
+        Synthèse par SKU / Groupe ({groupForecasts.length})
       </h3>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">

@@ -765,7 +765,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                 )}
                 {uniqueValues.families.length > 0 && (
                   <div className="rounded-lg border border-border bg-muted/20 p-3">
-                    <p className="text-xs font-medium text-card-foreground mb-2">👨‍👩‍👧 Familles :</p>
+                    <p className="text-xs font-medium text-card-foreground mb-2 flex items-center gap-1"><Tag className="h-3.5 w-3.5" /> Familles :</p>
                     <div className="flex flex-wrap gap-1.5">
                       {uniqueValues.families.map((f) => (
                         <span key={f} className="rounded-full bg-warning/10 px-2.5 py-0.5 text-[10px] text-warning font-medium">{f}</span>
@@ -775,7 +775,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                 )}
                 {uniqueValues.subfamilies.length > 0 && (
                   <div className="rounded-lg border border-border bg-muted/20 p-3">
-                    <p className="text-xs font-medium text-card-foreground mb-2">🔀 Sous-familles :</p>
+                    <p className="text-xs font-medium text-card-foreground mb-2 flex items-center gap-1"><GitBranch className="h-3.5 w-3.5" /> Sous-familles :</p>
                     <div className="flex flex-wrap gap-1.5">
                       {uniqueValues.subfamilies.map((s) => (
                         <span key={s} className="rounded-full bg-primary/10 px-2.5 py-0.5 text-[10px] text-primary font-medium">{s}</span>
@@ -785,7 +785,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                 )}
                 {uniqueValues.categories.length > 0 && (
                   <div className="rounded-lg border border-border bg-muted/20 p-3">
-                    <p className="text-xs font-medium text-card-foreground mb-2">📂 Catégories :</p>
+                    <p className="text-xs font-medium text-card-foreground mb-2 flex items-center gap-1"><Columns3 className="h-3.5 w-3.5" /> Catégories :</p>
                     <div className="flex flex-wrap gap-1.5">
                       {uniqueValues.categories.map((c) => (
                         <span key={c} className="rounded-full bg-success/10 px-2.5 py-0.5 text-[10px] text-success font-medium">{c}</span>
@@ -879,13 +879,13 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                 )}
                 {wizard.mapping.familyCol && (
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">👨‍👩‍👧 Famille</span>
+                    <span className="text-muted-foreground flex items-center gap-1"><Tag className="h-3 w-3" /> Famille</span>
                     <span className="font-medium text-warning">{wizard.mapping.familyCol}</span>
                   </div>
                 )}
                 {wizard.mapping.subfamilyCol && (
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">🔀 Sous-famille</span>
+                    <span className="text-muted-foreground flex items-center gap-1"><GitBranch className="h-3 w-3" /> Sous-famille</span>
                     <span className="font-medium text-warning">{wizard.mapping.subfamilyCol}</span>
                   </div>
                 )}

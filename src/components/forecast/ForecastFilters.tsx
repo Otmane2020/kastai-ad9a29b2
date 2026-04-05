@@ -5,10 +5,10 @@ import { GroupForecast, TimeSeriesPoint } from "@/context/DataContext";
 export type ViewLevel = "global" | "sku" | "family" | "subfamily";
 
 export const VIEW_LABELS: Record<ViewLevel, string> = {
-  global: "🌐 Global",
-  sku: "📦 Par SKU",
-  family: "🏷️ Par Famille",
-  subfamily: "🔀 Sous-famille",
+  global: "Global",
+  sku: "Par SKU",
+  family: "Par Famille",
+  subfamily: "Sous-famille",
 };
 
 export type HorizonFilter = "1W" | "1M" | "3M" | "6M" | "12M" | "24M";
