@@ -79,11 +79,14 @@ export default function Connectors() {
     setLoadingForecast(true);
     try {
       await processData(data.raw, data.columns, data.mapping!, data.fileName!, data.granularity);
+      toast({ title: "✅ Prévisions relancées", description: "Modèles recalculés avec succès" });
+      navigate("/forecast");
     } catch (err) {
       console.error("Reload forecast error:", err);
+      toast({ title: "❌ Erreur", description: "Impossible de relancer les prévisions.", variant: "destructive" });
     }
     setLoadingForecast(false);
-  }, [hasData, data, processData]);
+  }, [hasData, data, processData, navigate, toast]);
 
   return (
     <div className="animate-fade-in">
