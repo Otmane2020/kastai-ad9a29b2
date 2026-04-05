@@ -36,6 +36,25 @@ export const HORIZON_OPTIONS: { value: ForecastHorizon; label: string }[] = [
   { value: "24M", label: "24 Mois" },
 ];
 
+export function horizonToMonths(h: ForecastHorizon): number {
+  switch (h) {
+    case "1D": return 1;
+    case "1W": return 1;
+    case "2W": return 1;
+    case "1M": return 1;
+    case "3M": return 3;
+    case "6M": return 6;
+    case "12M": return 12;
+    case "24M": return 24;
+    default: return 6;
+  }
+}
+
+function getMaxHorizonMonths(horizons: ForecastHorizon[]): number {
+  if (horizons.length === 0) return 6;
+  return Math.max(...horizons.map(horizonToMonths));
+}
+
 export const GRANULARITY_OPTIONS: { value: ForecastGranularity; label: string; icon: React.ReactNode; desc: string }[] = [
   { value: "global", label: "Global (agrégé)", icon: <Globe className="h-4 w-4" />, desc: "Prévision sur le total des ventes" },
   { value: "sku", label: "Par SKU / Produit", icon: <Package className="h-4 w-4" />, desc: "Prévision par référence produit" },
