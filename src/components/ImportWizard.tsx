@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo } from "react";
+import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { CloudUpload, FileUp, CircleCheck, ChevronRight, ChevronLeft, CirclePlay, X, TriangleAlert, Zap, BrainCircuit, Loader2, ServerCog, CalendarRange, CloudSun, Globe, Package, Tag, GitBranch, DollarSign, Hash, CalendarDays, BarChart3, Crosshair, Rocket, CheckSquare, Square, Columns3 } from "lucide-react";
 import { parseFile, autoMapColumns, ColumnMapping } from "@/lib/dataParser";
 import { useData } from "@/context/DataContext";
@@ -97,6 +97,11 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
   const [dragActive, setDragActive] = useState(false);
 
   const stepIdx = STEPS.indexOf(step);
+
+  // Scroll content to top on step change
+  useEffect(() => {
+    contentRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  }, [step]);
 
   // AI-powered smart mapping
   const runAIMapping = useCallback(async (columns: string[], rows: Record<string, any>[], fileName: string) => {
