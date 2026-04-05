@@ -5,6 +5,8 @@ import ImportWizard from "@/components/ImportWizard";
 import { useData } from "@/context/DataContext";
 import { parseFile, autoMapColumns } from "@/lib/dataParser";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 const connectors = [
   { name: "ERP (SAP, Oracle)", icon: DatabaseZap, status: "available" as const, desc: "Connexion directe aux systèmes ERP" },

@@ -925,10 +925,18 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
             <button
               onClick={handleLaunch}
               disabled={launching}
-              className="flex items-center gap-2 rounded-lg gradient-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50"
+              className={cn(
+                "flex items-center gap-2 rounded-lg gradient-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground transition-all disabled:opacity-50",
+                !launching && "hover:opacity-90 hover:scale-105 hover:shadow-lg active:scale-95",
+                launching && "animate-pulse"
+              )}
             >
-              <CirclePlay className="h-4 w-4" />
-              {launching ? "En cours..." : "Lancer les prévisions"}
+              {launching ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <CirclePlay className="h-4 w-4" />
+              )}
+              {launching ? "Calcul en cours..." : "🚀 Lancer les prévisions"}
             </button>
           ) : (
             <button
