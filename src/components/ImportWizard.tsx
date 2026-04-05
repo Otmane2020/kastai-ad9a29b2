@@ -555,10 +555,10 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                 </div>
               </div>
 
-              {/* Horizons multiselect */}
+              {/* Horizons multiselect - PROMINENT */}
               <div>
-                <h4 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">⏱️ Horizons de prévision</h4>
-                <div className="flex flex-wrap gap-2">
+                <h4 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">⏱️ Horizons de prévision (multi-sélection)</h4>
+                <div className="grid grid-cols-4 gap-2 sm:grid-cols-8">
                   {HORIZON_OPTIONS.map((h) => {
                     const isSelected = wizard.selectedHorizons.includes(h.value);
                     return (
@@ -571,12 +571,13 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                             : [...prev.selectedHorizons, h.value],
                         }))}
                         className={cn(
-                          "rounded-lg border px-4 py-2 text-sm font-medium transition-all",
+                          "rounded-lg border px-2 py-2.5 text-xs font-medium transition-all text-center",
                           isSelected
                             ? "border-primary bg-primary/10 text-primary shadow-sm"
                             : "border-border bg-card text-muted-foreground hover:border-primary/40"
                         )}
                       >
+                        <div className="text-sm mb-0.5">{isSelected ? "✅" : "⬜"}</div>
                         {h.label}
                       </button>
                     );
@@ -586,7 +587,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
 
               {/* Granularity multiselect */}
               <div>
-                <h4 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">📊 Niveaux de prévision</h4>
+                <h4 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">📊 Niveaux de prévision (multi-sélection)</h4>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                   {GRANULARITY_OPTIONS.map((opt) => {
                     const disabled =
@@ -595,6 +596,9 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                       (opt.value === "subfamily" && !wizard.mapping.subfamilyCol);
                     const isSelected = wizard.selectedGranularities.includes(opt.value);
                     const isAISuggested = wizard.aiMapping?.suggestedGranularity === opt.value;
+                    const detectedCount = opt.value === "sku" ? uniqueValues.products.length :
+                      opt.value === "family" ? (uniqueValues.families.length || uniqueValues.categories.length) :
+                      opt.value === "subfamily" ? uniqueValues.subfamilies.length : 0;
                     return (
                       <button
                         key={opt.value}
@@ -615,13 +619,15 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                               : "border-border bg-card hover:border-primary/40 cursor-pointer"
                         )}
                       >
-                        <div className="flex items-center gap-1.5 mb-0.5">
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <span className="text-sm">{isSelected ? "✅" : "⬜"}</span>
                           <span className="text-base">{opt.icon}</span>
                           <span className="font-display text-xs font-semibold text-card-foreground">{opt.label}</span>
                         </div>
-                        <div className="flex gap-1">
-                          {isSelected && <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[9px] font-medium text-primary">✓</span>}
-                          {isAISuggested && <span className="rounded-full bg-success/10 px-1.5 py-0.5 text-[9px] font-medium text-success">IA</span>}
+                        <p className="text-[10px] text-muted-foreground mb-1">{opt.desc}</p>
+                        <div className="flex gap-1 flex-wrap">
+                          {isAISuggested && <span className="rounded-full bg-success/10 px-1.5 py-0.5 text-[9px] font-medium text-success">Suggestion IA</span>}
+                          {detectedCount > 0 && <span className="rounded-full bg-accent/10 px-1.5 py-0.5 text-[9px] font-medium text-accent">{detectedCount} détectés</span>}
                         </div>
                       </button>
                     );
