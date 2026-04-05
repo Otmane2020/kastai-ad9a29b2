@@ -92,7 +92,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<DataState>(initialState);
 
   const processData = useCallback(async (
-    rows: DataRow[], columns: string[], mapping: ColumnMapping, fileName: string, granularity: Granularity
+    rows: DataRow[], columns: string[], mapping: ColumnMapping, fileName: string, granularity: Granularity, serverResult?: any
   ) => {
     setData((prev) => ({ ...prev, isProcessing: true }));
 
