@@ -113,7 +113,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
       const contextRoles = ["price", "promo", "discount", "region", "store", "channel", "cost", "margin"];
       const columnRegressors: ProphetRegressor[] = (aiResult.allColumns || [])
         .filter((c) => contextRoles.includes(c.role) || c.role === "other")
-        .map((c) => ({ key: c.name, label: `📊 ${c.name} (${c.role})`, enabled: contextRoles.includes(c.role), type: "column" as const }));
+        .map((c) => ({ key: c.name, label: `${c.name} (${c.role})`, enabled: contextRoles.includes(c.role), type: "column" as const }));
 
       setWizard((prev) => ({
         ...prev,
@@ -270,7 +270,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
       setStep("upload");
 
       toast({
-        title: "✅ Prévisions calculées",
+        title: "Prévisions calculées",
         description: `${wizard.file?.name} — modèles exécutés avec succès`,
       });
 
@@ -314,14 +314,14 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
   if (!open) return null;
 
   const mappingFields: { key: keyof ExtendedMapping; label: string; required: boolean }[] = [
-    { key: "dateCol", label: "📅 Colonne Date", required: true },
-    { key: "revenueCol", label: "💰 CA / Chiffre d'affaires", required: false },
-    { key: "quantityCol", label: "📦 Quantité / Volume", required: false },
-    { key: "valueCol", label: "📊 Valeur principale (fallback)", required: false },
-    { key: "productCol", label: "🏷️ Produit / SKU", required: false },
-    { key: "categoryCol", label: "📂 Catégorie", required: false },
-    { key: "familyCol", label: "👨‍👩‍👧 Famille", required: false },
-    { key: "subfamilyCol", label: "🔀 Sous-famille", required: false },
+    { key: "dateCol", label: "Colonne Date", required: true },
+    { key: "revenueCol", label: "CA / Chiffre d'affaires", required: false },
+    { key: "quantityCol", label: "Quantité / Volume", required: false },
+    { key: "valueCol", label: "Valeur principale (fallback)", required: false },
+    { key: "productCol", label: "Produit / SKU", required: false },
+    { key: "categoryCol", label: "Catégorie", required: false },
+    { key: "familyCol", label: "Famille", required: false },
+    { key: "subfamilyCol", label: "Sous-famille", required: false },
   ];
 
   return (
@@ -581,7 +581,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
 
               {/* Forecast targets */}
               <div>
-                <h4 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">🎯 Valeurs à prévoir (multi-sélection)</h4>
+                <h4 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide flex items-center gap-1.5"><Crosshair className="h-3.5 w-3.5" /> Valeurs à prévoir (multi-sélection)</h4>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {TARGET_OPTIONS.map((t) => {
                     const isSelected = wizard.selectedTargets.includes(t.value);
@@ -638,7 +638,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                             : "border-border bg-card text-muted-foreground hover:border-primary/40"
                         )}
                       >
-                        <div className="text-sm mb-0.5">{isSelected ? "✅" : "⬜"}</div>
+                        <div className="text-sm mb-0.5">{isSelected ? <CheckSquare className="h-4 w-4 text-primary" /> : <Square className="h-4 w-4 text-muted-foreground" />}</div>
                         {h.label}
                       </button>
                     );
@@ -648,7 +648,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
 
               {/* Granularity multiselect */}
               <div>
-                <h4 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">📊 Niveaux de prévision (multi-sélection)</h4>
+                <h4 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide flex items-center gap-1.5"><BarChart3 className="h-3.5 w-3.5" /> Niveaux de prévision (multi-sélection)</h4>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                   {GRANULARITY_OPTIONS.map((opt) => {
                     const disabled =
@@ -681,8 +681,8 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                         )}
                       >
                         <div className="flex items-center gap-1.5 mb-1">
-                          <span className="text-sm">{isSelected ? "✅" : "⬜"}</span>
-                          <span className="text-base">{opt.icon}</span>
+                          {isSelected ? <CheckSquare className="h-4 w-4 text-primary" /> : <Square className="h-4 w-4 text-muted-foreground" />}
+                          <span>{opt.icon}</span>
                           <span className="font-display text-xs font-semibold text-card-foreground">{opt.label}</span>
                         </div>
                         <p className="text-[10px] text-muted-foreground mb-1">{opt.desc}</p>
@@ -709,7 +709,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                 {/* Column regressors */}
                 {wizard.prophetRegressors.filter((r) => r.type === "column").length > 0 && (
                   <div className="mb-3">
-                    <p className="text-[10px] font-medium text-card-foreground mb-2">📊 Colonnes contextuelles (promo, prix, etc.)</p>
+                    <p className="text-[10px] font-medium text-card-foreground mb-2 flex items-center gap-1"><Columns3 className="h-3 w-3" /> Colonnes contextuelles (promo, prix, etc.)</p>
                     <div className="flex flex-wrap gap-2">
                       {wizard.prophetRegressors.filter((r) => r.type === "column").map((r) => (
                         <button
@@ -731,7 +731,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
 
                 {/* External events */}
                 <div>
-                  <p className="text-[10px] font-medium text-card-foreground mb-2">📅 Événements & données externes</p>
+                  <p className="text-[10px] font-medium text-card-foreground mb-2 flex items-center gap-1"><CalendarDays className="h-3 w-3" /> Événements & données externes</p>
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
                     {wizard.prophetRegressors.filter((r) => r.type === "external").map((r) => (
                       <button
@@ -755,7 +755,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {uniqueValues.products.length > 0 && (
                   <div className="rounded-lg border border-border bg-muted/20 p-3">
-                    <p className="text-xs font-medium text-card-foreground mb-2">📦 SKU détectés :</p>
+                    <p className="text-xs font-medium text-card-foreground mb-2 flex items-center gap-1"><Package className="h-3.5 w-3.5" /> SKU détectés :</p>
                     <div className="flex flex-wrap gap-1.5">
                       {uniqueValues.products.map((p) => (
                         <span key={p} className="rounded-full bg-accent/10 px-2.5 py-0.5 text-[10px] text-accent font-medium">{p}</span>
@@ -854,26 +854,26 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                   <span className="font-medium text-card-foreground">{wizard.rows.length} × {wizard.columns.length}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">🎯 Cibles</span>
+                  <span className="text-muted-foreground flex items-center gap-1"><Crosshair className="h-3 w-3" /> Cibles</span>
                   <span className="font-medium text-primary">
                     {wizard.selectedTargets.map((t) => t === "revenue" ? "CA (Finance)" : "Quantité (Forecast)").join(", ")}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">📅 Date</span>
+                  <span className="text-muted-foreground flex items-center gap-1"><CalendarDays className="h-3 w-3" /> Date</span>
                   <span className="font-medium text-primary">{wizard.mapping.dateCol || "—"}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">💰 CA</span>
+                  <span className="text-muted-foreground flex items-center gap-1"><DollarSign className="h-3 w-3" /> CA</span>
                   <span className="font-medium text-success">{wizard.mapping.revenueCol || "—"}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">📦 Quantité</span>
+                  <span className="text-muted-foreground flex items-center gap-1"><Hash className="h-3 w-3" /> Quantité</span>
                   <span className="font-medium text-accent">{wizard.mapping.quantityCol || "—"}</span>
                 </div>
                 {wizard.mapping.productCol && (
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">🏷️ Produit</span>
+                    <span className="text-muted-foreground flex items-center gap-1"><Tag className="h-3 w-3" /> Produit</span>
                     <span className="font-medium text-accent">{wizard.mapping.productCol}</span>
                   </div>
                 )}
@@ -967,7 +967,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
               ) : (
                 <CirclePlay className="h-4 w-4" />
               )}
-              {launching ? "Calcul en cours..." : "🚀 Lancer les prévisions"}
+              {launching ? "Calcul en cours..." : "Lancer les prévisions"}
             </button>
           ) : (
             <button
