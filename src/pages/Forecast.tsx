@@ -114,9 +114,15 @@ export default function Forecast() {
 
     // Determine the last historical date to project future dates
     const lastDate = monthly.length > 0 ? new Date(monthly[monthly.length - 1].date) : new Date();
+    const lastRealValue = monthly.length > 0 ? monthly[monthly.length - 1].value : 0;
 
     if (activeFc) {
       activeFc.models.forEach((model) => {
+        // Add the last real value to the last historical point for each model (continuity)
+        if (chartData.length > 0) {
+          chartData[chartData.length - 1][model.name] = lastRealValue;
+        }
+
         model.predictions.forEach((pred, i) => {
           // Generate real future date label (continuing monthly from last data point)
           const futureDate = new Date(lastDate.getFullYear(), lastDate.getMonth() + (i + 1), 1);
