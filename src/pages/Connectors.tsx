@@ -1,8 +1,9 @@
-import { useState } from "react";
-import { Plug, Database, BarChart3, Globe, FileSpreadsheet, CheckCircle2 } from "lucide-react";
+import { useState, useCallback, useRef } from "react";
+import { Plug, Database, BarChart3, Globe, FileSpreadsheet, CheckCircle2, Upload, History, Play, Trash2, Clock } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import ImportWizard from "@/components/ImportWizard";
 import { useData } from "@/context/DataContext";
+import { parseFile, autoMapColumns } from "@/lib/dataParser";
 import { cn } from "@/lib/utils";
 
 const connectors = [
@@ -12,11 +13,70 @@ const connectors = [
   { name: "API REST", icon: Globe, status: "active" as const, desc: "Endpoints pour intégrations externes" },
 ];
 
+interface ImportHistoryEntry {
+  id: string;
+  fileName: string;
+  date: string;
+  rows: number;
+  columns: number;
+  mapping: string;
+  status: "success" | "error";
+}
+
+function getImportHistory(): ImportHistoryEntry[] {
+  try {
+    return JSON.parse(localStorage.getItem("kastai_import_history") || "[]");
+  } catch { return []; }
+}
+
+function addToHistory(entry: Omit<ImportHistoryEntry, "id" | "date">) {
+  const history = getImportHistory();
+  history.unshift({ ...entry, id: crypto.randomUUID(), date: new Date().toISOString() });
+  localStorage.setItem("kastai_import_history", JSON.stringify(history.slice(0, 20)));
+}
+
+function clearHistory() {
+  localStorage.removeItem("kastai_import_history");
+}
+
 export default function Connectors() {
-  const { data, hasData } = useData();
+  const { data, hasData, processData, clearData } = useData();
   const [wizardOpen, setWizardOpen] = useState(false);
+  const [history] = useState(getImportHistory);
+  const [loadingForecast, setLoadingForecast] = useState(false);
+  const [quickLoading, setQuickLoading] = useState(false);
+  const quickInputRef = useRef<HTMLInputElement>(null);
 
   const granLabel = { global: "Global", sku: "Par SKU", family: "Par Famille", subfamily: "Par Sous-famille" }[data.granularity];
+
+  // Quick load: import file + run forecast directly
+  const handleQuickLoad = useCallback(async (file: File) => {
+    setQuickLoading(true);
+    try {
+      const { rows, columns } = await parseFile(file);
+      if (rows.length === 0) { setQuickLoading(false); return; }
+      const mapping = autoMapColumns(columns, rows);
+      const granularity = mapping.productCol ? "sku" : "global";
+      await processData(rows, columns, mapping, file.name, granularity);
+      addToHistory({ fileName: file.name, rows: rows.length, columns: columns.length, mapping: `${mapping.dateCol} → ${mapping.valueCol}`, status: "success" });
+    } catch (err) {
+      console.error("Quick load error:", err);
+      addToHistory({ fileName: file.name, rows: 0, columns: 0, mapping: "Erreur", status: "error" });
+    }
+    setQuickLoading(false);
+  }, [processData]);
+
+  // Re-run forecast on current data
+  const handleReloadForecast = useCallback(async () => {
+    if (!hasData) return;
+    setLoadingForecast(true);
+    try {
+      await processData(data.raw, data.columns, data.mapping!, data.fileName!, data.granularity);
+    } catch (err) {
+      console.error("Reload forecast error:", err);
+    }
+    setLoadingForecast(false);
+  }, [hasData, data, processData]);
 
   return (
     <div className="animate-fade-in">
@@ -33,18 +93,45 @@ export default function Connectors() {
         {hasData ? (
           <div className="flex items-center justify-center gap-3">
             <CheckCircle2 className="h-8 w-8 text-success" />
-            <div className="text-left">
+            <div className="text-left flex-1">
               <p className="font-display text-sm font-semibold text-foreground">{data.fileName} — importé ✓</p>
               <p className="text-xs text-muted-foreground">
-                {data.timeSeries.length} points · Mapping: {data.mapping?.dateCol} → {data.mapping?.valueCol}
+                {data.timeSeries.length} points · Mapping: {data.mapping?.dateCol} → {data.mapping?.valueCol || (data.mapping as any)?.revenueCol || (data.mapping as any)?.quantityCol}
                 {data.mapping?.productCol && ` · Produit: ${data.mapping.productCol}`}
                 {data.mapping?.categoryCol && ` · Catégorie: ${data.mapping.categoryCol}`}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
                 Granularité: {granLabel}
                 {data.groupForecasts.length > 0 && ` · ${data.groupForecasts.length} groupes analysés`}
-                {" · "}Meilleur modèle: {data.forecasts?.bestModel} (MAPE: {data.forecasts?.models[0].mape.toFixed(1)}%)
+                {data.forecasts && ` · Meilleur modèle: ${data.forecasts.bestModel} (MAPE: ${data.forecasts.models[0].mape.toFixed(1)}%)`}
               </p>
+            </div>
+            <div className="flex gap-2 shrink-0">
+              <button
+                onClick={(e) => { e.stopPropagation(); handleReloadForecast(); }}
+                disabled={loadingForecast}
+                className="flex items-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-xs font-medium text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {loadingForecast ? (
+                  <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
+                ) : (
+                  <Play className="h-3.5 w-3.5" />
+                )}
+                Relancer prévisions
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); setWizardOpen(true); }}
+                className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-card-foreground hover:bg-muted/50 transition-colors"
+              >
+                <Upload className="h-3.5 w-3.5" />
+                Nouvel import
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); clearData(); }}
+                className="flex items-center gap-1.5 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
             </div>
           </div>
         ) : (
@@ -59,6 +146,46 @@ export default function Connectors() {
         )}
       </div>
 
+      {/* Quick Load: CSV/Excel → forecast in one click */}
+      <div className="mb-6 rounded-xl border border-border bg-card p-5 shadow-card">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Play className="h-4 w-4 text-primary" />
+            <h3 className="font-display text-sm font-semibold text-card-foreground">Chargement rapide</h3>
+          </div>
+          <span className="text-[10px] text-muted-foreground">Import + prévisions automatiques</span>
+        </div>
+        <input
+          ref={quickInputRef}
+          type="file"
+          accept=".csv,.tsv,.txt,.xlsx,.xls"
+          className="hidden"
+          onChange={(e) => { const f = e.target.files?.[0]; if (f) handleQuickLoad(f); }}
+        />
+        <button
+          onClick={() => quickInputRef.current?.click()}
+          disabled={quickLoading}
+          className={cn(
+            "w-full flex items-center justify-center gap-2 rounded-lg border-2 border-dashed p-6 text-sm font-medium transition-all",
+            quickLoading
+              ? "border-primary/30 bg-primary/5 text-primary"
+              : "border-border hover:border-primary/40 hover:bg-primary/5 text-muted-foreground hover:text-card-foreground cursor-pointer"
+          )}
+        >
+          {quickLoading ? (
+            <>
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+              Analyse et calcul des prévisions...
+            </>
+          ) : (
+            <>
+              <Upload className="h-4 w-4" />
+              Charger un fichier CSV/Excel → Load prévision
+            </>
+          )}
+        </button>
+      </div>
+
       {/* Mapping info */}
       {hasData && data.mapping && (
         <div className="mb-6 rounded-xl border border-border bg-card p-5 shadow-card">
@@ -66,7 +193,7 @@ export default function Connectors() {
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {[
               { label: "Date", value: data.mapping.dateCol, emoji: "📅" },
-              { label: "Valeur", value: data.mapping.valueCol, emoji: "📊" },
+              { label: "Valeur", value: data.mapping.valueCol || (data.mapping as any)?.revenueCol || (data.mapping as any)?.quantityCol, emoji: "📊" },
               { label: "Produit/SKU", value: data.mapping.productCol, emoji: "📦" },
               { label: "Catégorie", value: data.mapping.categoryCol, emoji: "🏷️" },
             ].map((m) => (
@@ -80,6 +207,50 @@ export default function Connectors() {
           </div>
         </div>
       )}
+
+      {/* Import History */}
+      <div className="mb-6 rounded-xl border border-border bg-card p-5 shadow-card">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <History className="h-4 w-4 text-muted-foreground" />
+            <h3 className="font-display text-sm font-semibold text-card-foreground">Historique des imports</h3>
+          </div>
+          {history.length > 0 && (
+            <button
+              onClick={() => { clearHistory(); window.location.reload(); }}
+              className="text-[10px] text-muted-foreground hover:text-destructive transition-colors"
+            >
+              Vider l'historique
+            </button>
+          )}
+        </div>
+        {history.length === 0 ? (
+          <p className="text-xs text-muted-foreground text-center py-4">Aucun import effectué</p>
+        ) : (
+          <div className="space-y-2">
+            {history.slice(0, 5).map((entry) => (
+              <div key={entry.id} className="flex items-center gap-3 rounded-lg bg-muted/30 px-4 py-3 text-xs">
+                <div className={cn(
+                  "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
+                  entry.status === "success" ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
+                )}>
+                  {entry.status === "success" ? <CheckCircle2 className="h-4 w-4" /> : <FileSpreadsheet className="h-4 w-4" />}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-card-foreground truncate">{entry.fileName}</p>
+                  <p className="text-muted-foreground">
+                    {entry.rows} lignes · {entry.columns} col · {entry.mapping}
+                  </p>
+                </div>
+                <div className="flex items-center gap-1 text-muted-foreground shrink-0">
+                  <Clock className="h-3 w-3" />
+                  {new Date(entry.date).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Other connectors */}
       <h3 className="font-display text-sm font-semibold text-foreground mb-4">Autres connecteurs</h3>
