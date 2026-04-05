@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo } from "react";
+import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { CloudUpload, FileUp, CircleCheck, ChevronRight, ChevronLeft, CirclePlay, X, TriangleAlert, Zap, BrainCircuit, Loader2, ServerCog, CalendarRange, CloudSun, Globe, Package, Tag, GitBranch, DollarSign, Hash, CalendarDays, BarChart3, Crosshair, Rocket, CheckSquare, Square, Columns3 } from "lucide-react";
 import { parseFile, autoMapColumns, ColumnMapping } from "@/lib/dataParser";
 import { useData } from "@/context/DataContext";
@@ -93,9 +93,15 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
   const [launchMode, setLaunchMode] = useState<"local" | "server">("local");
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const [dragActive, setDragActive] = useState(false);
 
   const stepIdx = STEPS.indexOf(step);
+
+  // Scroll content to top on step change
+  useEffect(() => {
+    contentRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  }, [step]);
 
   // AI-powered smart mapping
   const runAIMapping = useCallback(async (columns: string[], rows: Record<string, any>[], fileName: string) => {
@@ -362,7 +368,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto px-6 py-5">
+        <div ref={contentRef} className="flex-1 overflow-y-auto px-6 py-5">
           {error && (
             <div className="mb-4 flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
               <TriangleAlert className="h-4 w-4 shrink-0" />
