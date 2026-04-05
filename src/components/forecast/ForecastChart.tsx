@@ -44,10 +44,10 @@ export default function ForecastChart({ chartData, models, title, subtitle }: Fo
           <Tooltip contentStyle={{ borderRadius: 12, fontSize: 12, border: "1px solid hsl(214, 20%, 90%)" }} />
           <Legend wrapperStyle={{ fontSize: 11 }} />
           {/* Historical actual (train) */}
-          <Line type="monotone" dataKey="réel" stroke="hsl(215, 25%, 20%)" strokeWidth={2.5} dot={{ r: 3, fill: "hsl(215, 25%, 20%)" }} connectNulls={false} name="Réel (train)" />
-          {/* Test set actual */}
+          <Line type="monotone" dataKey="réel" stroke="hsl(215, 25%, 20%)" strokeWidth={2.5} dot={{ r: 3, fill: "hsl(215, 25%, 20%)" }} connectNulls name="Réel (train)" />
+          {/* Test set actual — connectNulls for seamless bridge from train */}
           {hasTestSet && (
-            <Line type="monotone" dataKey="réel (test)" stroke="hsl(280, 60%, 55%)" strokeWidth={2.5} strokeDasharray="4 4" dot={{ r: 4, fill: "hsl(280, 60%, 55%)", strokeWidth: 2, stroke: "white" }} connectNulls={false} name="Réel (test 20%)" />
+            <Line type="monotone" dataKey="réel (test)" stroke="hsl(280, 60%, 55%)" strokeWidth={2.5} strokeDasharray="4 4" dot={{ r: 4, fill: "hsl(280, 60%, 55%)", strokeWidth: 2, stroke: "white" }} connectNulls name="Réel (test 20%)" />
           )}
           {/* Backtest predictions on test set — only selected models */}
           {backtestKeys.map((key, i) => {
