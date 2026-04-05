@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
-import { CloudUpload, FileUp, CircleCheck, ChevronRight, ChevronLeft, CirclePlay, X, TriangleAlert, Zap, BrainCircuit, Loader2, ServerCog, CalendarRange, CloudSun, Globe, Package, Tag, GitBranch, DollarSign, Hash, CalendarDays, BarChart3, Crosshair, Rocket, CheckSquare, Square, Columns3 } from "lucide-react";
+import { CloudUpload, FileUp, CircleCheck, ChevronRight, ChevronLeft, CirclePlay, X, TriangleAlert, Zap, Loader2, ServerCog, CalendarRange, CloudSun, Globe, Package, Tag, GitBranch, DollarSign, Hash, CalendarDays, BarChart3, Crosshair, Rocket, CheckSquare, Square, Columns3 } from "lucide-react";
+import logoIcon from "@/assets/logo-icon.png";
 import { parseFile, autoMapColumns, ColumnMapping } from "@/lib/dataParser";
 import { useData } from "@/context/DataContext";
 import { supabase } from "@/integrations/supabase/client";
