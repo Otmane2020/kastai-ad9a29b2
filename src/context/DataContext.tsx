@@ -172,6 +172,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
           bestModel: serverResult.best_model || serverResult.bestModel || serverResult.models[0]?.name || "Unknown",
           horizon: serverResult.horizon || horizon,
           historicalLength: serverResult.historical_length || timeSeries.length,
+          lowerBound: serverResult.lower_bound || [],
+          upperBound: serverResult.upper_bound || [],
         };
         forecasts.models.sort((a, b) => a.mape - b.mape);
         forecasts.bestModel = forecasts.models[0]?.name || forecasts.bestModel;

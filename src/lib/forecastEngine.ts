@@ -11,6 +11,8 @@ export interface ForecastResult {
   bestModel: string;
   horizon: number;
   historicalLength: number;
+  lowerBound?: number[];
+  upperBound?: number[];
 }
 
 // ============================================================

@@ -89,7 +89,7 @@ export default function Forecast() {
     }
   }, [viewLevel, groups]);
 
-  const { chartData, models, backtestData, forecastInfo, lastDate } = useMemo(() => {
+  const { chartData, models, backtestData, forecastInfo, lastDate, lastHistoricalPeriod } = useMemo(() => {
     if (!hasData || !data.forecasts) {
       const demoData = Array.from({ length: 12 }, (_, i) => {
         const base = 400 + i * 15 + Math.sin(i / 3) * 40;
@@ -233,6 +233,7 @@ export default function Forecast() {
       name: m.name,
       mape: `${m.mape.toFixed(1)}%`,
       bias: `${m.bias >= 0 ? "+" : ""}${m.bias.toFixed(1)}%`,
+      mae: m.mae,
       mapeNum: m.mape,
       selected: selectedModels.has(m.name) || (selectedModels.size === 0 && m.name === activeFc.models[0]?.name),
       predictions: m.predictions,
@@ -243,10 +244,13 @@ export default function Forecast() {
       { p: "Test set (20%)", r: `${testSize} mois`, pr: activeFc.bestModel, e: `Biais ${activeFc.models[0].bias >= 0 ? "+" : ""}${activeFc.models[0].bias.toFixed(1)}%` },
     ];
 
+    const lastHistoricalPeriod = monthly.length > 0 ? monthly[monthly.length - 1].label : undefined;
+
     return {
       chartData, models, backtestData,
       forecastInfo: { bestModel: activeFc.bestModel, points: activeTs.length, horizon: activeFc.horizon },
       lastDate: lastDateResult,
+      lastHistoricalPeriod,
     };
   }, [hasData, data, viewLevel, selectedGroup, selectedModels]);
 
@@ -306,6 +310,9 @@ export default function Forecast() {
         models={models}
         title={`Prévisions multi-modèles${viewLevel !== "global" && selectedGroup ? ` — ${selectedGroup}` : ""}`}
         subtitle={`${targetLabel} (${targetUnit})${viewLevel === "global" ? " — Données agrégées (mensuel)" : ` — Niveau: ${VIEW_LABELS[viewLevel]}`}`}
+        lastHistoricalPeriod={lastHistoricalPeriod}
+        lowerBound={data.forecasts?.lowerBound}
+        upperBound={data.forecasts?.upperBound}
       />
 
       {/* Detailed tables */}

@@ -5,6 +5,7 @@ interface ModelInfo {
   name: string;
   mape: string;
   bias: string;
+  mae?: number;
   selected: boolean;
 }
 
@@ -29,7 +30,7 @@ export default function ModelCards({ models, onToggle }: ModelCardsProps) {
         >
           <div className="flex items-center justify-between mb-2">
             <span className="font-display text-xs font-semibold text-card-foreground truncate">{m.name}</span>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 shrink-0">
               {models.indexOf(m) === 0 && (
                 <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">Best</span>
               )}
@@ -39,9 +40,17 @@ export default function ModelCards({ models, onToggle }: ModelCardsProps) {
               }
             </div>
           </div>
-          <div className="flex gap-3 text-xs">
-            <div><span className="text-muted-foreground">MAPE: </span><span className="font-medium text-card-foreground">{m.mape}</span></div>
-            <div><span className="text-muted-foreground">Biais: </span><span className="font-medium text-card-foreground">{m.bias}</span></div>
+          <div className="flex flex-col gap-0.5 text-xs">
+            <div className="flex gap-3">
+              <span><span className="text-muted-foreground">MAPE </span><span className="font-medium text-card-foreground">{m.mape}</span></span>
+              <span><span className="text-muted-foreground">Biais </span><span className="font-medium text-card-foreground">{m.bias}</span></span>
+            </div>
+            {m.mae != null && m.mae > 0 && (
+              <div>
+                <span className="text-muted-foreground">MAE </span>
+                <span className="font-medium text-card-foreground">{m.mae.toFixed(0)}</span>
+              </div>
+            )}
           </div>
         </div>
       ))}

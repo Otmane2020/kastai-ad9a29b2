@@ -8,6 +8,7 @@ interface ModelInfo {
   name: string;
   mape: string;
   bias: string;
+  mae?: number;
   mapeNum?: number;
   selected: boolean;
   predictions?: number[];
@@ -22,10 +23,11 @@ function formatDate(baseDate: Date, offsetMonths: number): string {
   return d.toLocaleDateString("fr-FR", { month: "short", year: "2-digit" });
 }
 
-// Table: Prévisions par horizon with real values
+// Table: Prévisions par horizon — colonnes jusqu'au vrai horizon (plus de cap à 6)
 function HorizonTable({ models, horizon, lastDate }: { models: ModelInfo[]; horizon: HorizonFilter; lastDate?: Date }) {
   const horizonSteps = { "1W": 1, "1M": 1, "3M": 3, "6M": 6, "12M": 12, "24M": 24 };
-  const steps = Math.min(horizonSteps[horizon] || 6, 6);
+  const maxPreds = models[0]?.predictions?.length || 6;
+  const steps = Math.min(horizonSteps[horizon] || 6, maxPreds);
   const base = lastDate || new Date();
 
   return (
@@ -49,9 +51,13 @@ function HorizonTable({ models, horizon, lastDate }: { models: ModelInfo[]; hori
           <tbody>
             {models.map((m) => (
               <tr key={m.name} className={cn("border-b border-border/50", m.selected && "bg-primary/5")}>
-                <td className="py-3 text-card-foreground font-medium flex items-center gap-2">
-                  {m.name}
-                  {m.selected && <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[9px] text-primary font-bold">Best</span>}
+                <td className="py-3 text-card-foreground font-medium">
+                  <div className="flex items-center gap-2">
+                    {m.name}
+                    {m.selected && (
+                      <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[9px] text-primary font-bold">Best</span>
+                    )}
+                  </div>
                 </td>
                 {Array.from({ length: steps }, (_, i) => (
                   <td key={i} className="py-3 text-right text-card-foreground font-medium">
@@ -70,12 +76,12 @@ function HorizonTable({ models, horizon, lastDate }: { models: ModelInfo[]; hori
   );
 }
 
-// Table: Comparaison modèles
+// Table: Comparaison modèles — avec colonne MAE
 function ModelComparisonTable({ models }: { models: ModelInfo[] }) {
   return (
     <div className="rounded-xl border border-border bg-card p-5 shadow-card">
       <h3 className="font-display text-sm font-semibold text-card-foreground mb-4">
-        🏆 Comparaison des modèles
+        Comparaison des modèles
       </h3>
       <table className="w-full text-sm">
         <thead>
@@ -83,6 +89,7 @@ function ModelComparisonTable({ models }: { models: ModelInfo[] }) {
             <th className="pb-3 text-left text-xs font-medium text-muted-foreground">Modèle</th>
             <th className="pb-3 text-right text-xs font-medium text-muted-foreground">MAPE (%)</th>
             <th className="pb-3 text-right text-xs font-medium text-muted-foreground">Biais (%)</th>
+            <th className="pb-3 text-right text-xs font-medium text-muted-foreground">MAE</th>
             <th className="pb-3 text-right text-xs font-medium text-muted-foreground">Rang</th>
           </tr>
         </thead>
@@ -92,6 +99,9 @@ function ModelComparisonTable({ models }: { models: ModelInfo[] }) {
               <td className="py-3 text-card-foreground font-medium">{m.name}</td>
               <td className="py-3 text-right text-success font-medium">{m.mape}</td>
               <td className="py-3 text-right text-card-foreground">{m.bias}</td>
+              <td className="py-3 text-right text-muted-foreground">
+                {m.mae != null && m.mae > 0 ? m.mae.toFixed(0) : "—"}
+              </td>
               <td className="py-3 text-right">
                 <span className={cn(
                   "rounded-full px-2 py-0.5 text-xs font-bold",
@@ -106,7 +116,7 @@ function ModelComparisonTable({ models }: { models: ModelInfo[] }) {
   );
 }
 
-// Table: Prévisions par SKU with all forecast periods
+// Table: Prévisions par SKU
 function SKUTable({ groupForecasts, lastDate }: { groupForecasts: GroupForecast[]; lastDate?: Date }) {
   if (groupForecasts.length === 0) return null;
   const maxPreds = Math.min(6, Math.max(...groupForecasts.map(gf => gf.forecasts.models[0]?.predictions?.length || 0)));
@@ -166,7 +176,7 @@ function SKUTable({ groupForecasts, lastDate }: { groupForecasts: GroupForecast[
 function BacktestTable({ data }: { data: BacktestRow[] }) {
   return (
     <div className="rounded-xl border border-border bg-card p-5 shadow-card">
-      <h3 className="font-display text-sm font-semibold text-card-foreground mb-4">🔬 Résultats du backtesting (20%)</h3>
+      <h3 className="font-display text-sm font-semibold text-card-foreground mb-4">Résultats du backtesting (20%)</h3>
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-border">
@@ -191,16 +201,17 @@ function BacktestTable({ data }: { data: BacktestRow[] }) {
   );
 }
 
-// MAPE bar chart
+// MAPE bar chart — hauteur dynamique (34px par modèle, min 200px)
 function MAPEBarChart({ models }: { models: ModelInfo[] }) {
+  const chartHeight = Math.max(200, models.length * 34);
   return (
     <div className="rounded-xl border border-border bg-card p-5 shadow-card">
       <h3 className="font-display text-sm font-semibold text-card-foreground mb-4">Comparaison MAPE (%)</h3>
-      <ResponsiveContainer width="100%" height={180}>
-        <BarChart data={models} layout="vertical" margin={{ right: 50 }}>
+      <ResponsiveContainer width="100%" height={chartHeight}>
+        <BarChart data={models} layout="vertical" margin={{ right: 55 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(214, 20%, 90%)" />
           <XAxis type="number" tick={{ fontSize: 11 }} stroke="hsl(215, 15%, 50%)" unit="%" />
-          <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={100} stroke="hsl(215, 15%, 50%)" />
+          <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={125} stroke="hsl(215, 15%, 50%)" />
           <Tooltip contentStyle={{ borderRadius: 12, fontSize: 12 }} formatter={(v: number) => `${v.toFixed(1)}%`} />
           <Bar dataKey="mapeNum" radius={[0, 6, 6, 0]}>
             {models.map((m, i) => (
