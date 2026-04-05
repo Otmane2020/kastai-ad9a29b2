@@ -304,7 +304,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
 
         if (!res.ok) {
           const errText = await res.text().catch(() => "");
-          throw new Error(`Serveur Python: ${res.status} ${errText}`);
+          throw new Error(`Serveur ML Railway: ${res.status} ${errText}`);
         }
 
         setLaunchProgress(70);
@@ -404,7 +404,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
     return { products: products.slice(0, 20), categories: categories.slice(0, 20), families: families.slice(0, 20), subfamilies: subfamilies.slice(0, 20) };
   }, [wizard.rows, wizard.mapping]);
 
-  const serverConfigured = !!localStorage.getItem("kastai_server_url");
+  const serverConfigured = true; // Railway API connected via edge function
 
   const toggleRegressor = (key: string) => {
     setWizard((prev) => ({
