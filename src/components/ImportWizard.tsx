@@ -280,7 +280,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
       setLaunching(false);
       setLaunchProgress(0);
       toast({
-        title: "❌ Erreur de prévision",
+        title: "Erreur de prévision",
         description: err.message || "Vérifiez vos données et réessayez.",
         variant: "destructive",
       });

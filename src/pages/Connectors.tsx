@@ -68,7 +68,7 @@ export default function Connectors() {
     } catch (err) {
       console.error("Quick load error:", err);
       addToHistory({ fileName: file.name, rows: 0, columns: 0, mapping: "Erreur", status: "error" });
-      toast({ title: "❌ Erreur", description: "Impossible de traiter le fichier.", variant: "destructive" });
+      toast({ title: "Erreur", description: "Impossible de traiter le fichier.", variant: "destructive" });
     }
     setQuickLoading(false);
   }, [processData, navigate, toast]);
@@ -83,7 +83,7 @@ export default function Connectors() {
       navigate("/forecast");
     } catch (err) {
       console.error("Reload forecast error:", err);
-      toast({ title: "❌ Erreur", description: "Impossible de relancer les prévisions.", variant: "destructive" });
+      toast({ title: "Erreur", description: "Impossible de relancer les prévisions.", variant: "destructive" });
     }
     setLoadingForecast(false);
   }, [hasData, data, processData, navigate, toast]);

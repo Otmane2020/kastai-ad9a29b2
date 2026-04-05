@@ -48,11 +48,11 @@ export default function SuperAdmin() {
         addLog(`Connecté — version ${data.version || "?"}`);
       } else {
         setConfig((prev) => ({ ...prev, status: "error", lastPing: null }));
-        addLog(`❌ Erreur ${res.status}: ${res.statusText}`);
+        addLog(`Erreur ${res.status}: ${res.statusText}`);
       }
     } catch (err: any) {
       setConfig((prev) => ({ ...prev, status: "error", lastPing: null }));
-      addLog(`❌ Connexion échouée: ${err.message || "timeout"}`);
+      addLog(`Connexion échouée: ${err.message || "timeout"}`);
     }
   };
 
