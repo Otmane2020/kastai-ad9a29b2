@@ -59,6 +59,8 @@ const initialWizard: WizardState = {
   columns: [],
   mapping: { dateCol: null, valueCol: null, productCol: null, categoryCol: null },
   granularity: "global",
+  selectedHorizons: ["6M"],
+  selectedGranularities: ["global"],
   preview: [],
   aiMapping: null,
   aiAnalyzing: false,
