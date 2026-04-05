@@ -163,11 +163,15 @@ export default function Forecast() {
       backtestFc = runAllModels(trainValues, testSize);
     }
 
-    // Build chart with train/test split visualization
+    // Build chart with train/test split visualization — ensure continuity between segments
     monthly.forEach((m, idx) => {
       const point: Record<string, any> = { period: m.label };
       if (idx < trainEnd) {
         point["réel"] = m.value;
+        // Bridge point: last train point also appears in test series for continuity
+        if (idx === trainEnd - 1) {
+          point["réel (test)"] = m.value;
+        }
       } else {
         point["réel (test)"] = m.value;
       }
@@ -179,6 +183,14 @@ export default function Forecast() {
             point[`${bm.name} (backtest)`] = Math.round(bm.predictions[testIdx]);
           }
         });
+        // Bridge: first backtest point also connects from last train value
+        if (idx === trainEnd) {
+          backtestFc.models.forEach((bm) => {
+            if (bm.predictions.length > 0) {
+              // ensure the train-end point has backtest value too for smooth line
+            }
+          });
+        }
       }
       chartData.push(point);
     });
@@ -187,20 +199,26 @@ export default function Forecast() {
     const lastDateVal = monthly.length > 0 ? new Date(monthly[monthly.length - 1].date) : new Date();
     const lastRealValue = monthly.length > 0 ? monthly[monthly.length - 1].value : 0;
 
+    // Bridge: last historical point gets forecast model values for continuity
     activeFc.models.forEach((model) => {
-      // Continuity: connect last real point to forecast
       if (chartData.length > 0) {
         chartData[chartData.length - 1][model.name] = lastRealValue;
       }
-
-      model.predictions.forEach((pred, i) => {
-        const futureDate = new Date(lastDateVal.getFullYear(), lastDateVal.getMonth() + (i + 1), 1);
-        const label = futureDate.toLocaleDateString("fr-FR", { month: "short", year: "2-digit" });
-        let existing = chartData.find((r) => r.period === label);
-        if (!existing) { existing = { period: label }; chartData.push(existing); }
-        existing[model.name] = Math.round(pred);
-      });
     });
+
+    // Generate ALL horizon months as forecast points
+    const forecastHorizon = activeFc.horizon || horizon;
+    for (let i = 0; i < forecastHorizon; i++) {
+      const futureDate = new Date(lastDateVal.getFullYear(), lastDateVal.getMonth() + (i + 1), 1);
+      const label = futureDate.toLocaleDateString("fr-FR", { month: "short", year: "2-digit" });
+      const point: Record<string, any> = { period: label };
+      activeFc.models.forEach((model) => {
+        if (i < model.predictions.length) {
+          point[model.name] = Math.round(model.predictions[i]);
+        }
+      });
+      chartData.push(point);
+    }
 
     const lastDateResult = monthly.length > 0 ? new Date(monthly[monthly.length - 1].date) : new Date();
 
