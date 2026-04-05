@@ -271,6 +271,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
   const handleLaunch = useCallback(async () => {
     setLaunching(true);
     setLaunchProgress(10);
+    const maxHorizon = getMaxHorizonMonths(wizard.selectedHorizons);
     setError(null);
 
     try {
