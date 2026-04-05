@@ -1,8 +1,13 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine } from "recharts";
 
 const MODEL_COLORS = [
   "hsl(152, 69%, 40%)", "hsl(217, 91%, 50%)", "hsl(199, 89%, 48%)",
   "hsl(38, 92%, 50%)", "hsl(0, 84%, 60%)",
+];
+
+const BACKTEST_COLORS = [
+  "hsl(152, 69%, 60%)", "hsl(217, 91%, 70%)", "hsl(199, 89%, 68%)",
+  "hsl(38, 92%, 70%)", "hsl(0, 84%, 75%)",
 ];
 
 interface ForecastChartProps {
@@ -13,6 +18,12 @@ interface ForecastChartProps {
 }
 
 export default function ForecastChart({ chartData, models, title, subtitle }: ForecastChartProps) {
+  // Detect backtest keys
+  const backtestKeys = models.map(m => `${m.name} (backtest)`).filter(key =>
+    chartData.some(d => d[key] != null)
+  );
+  const hasTestSet = chartData.some(d => d["réel (test)"] != null);
+
   return (
     <div className="rounded-xl border border-border bg-card p-5 shadow-card">
       <div className="flex items-center justify-between mb-4">
@@ -26,7 +37,26 @@ export default function ForecastChart({ chartData, models, title, subtitle }: Fo
           <YAxis tick={{ fontSize: 11 }} stroke="hsl(215, 15%, 50%)" />
           <Tooltip contentStyle={{ borderRadius: 12, fontSize: 12, border: "1px solid hsl(214, 20%, 90%)" }} />
           <Legend wrapperStyle={{ fontSize: 11 }} />
-          <Line type="monotone" dataKey="réel" stroke="hsl(215, 25%, 20%)" strokeWidth={2.5} dot={{ r: 3, fill: "hsl(215, 25%, 20%)" }} connectNulls={false} />
+          {/* Historical actual (train) */}
+          <Line type="monotone" dataKey="réel" stroke="hsl(215, 25%, 20%)" strokeWidth={2.5} dot={{ r: 3, fill: "hsl(215, 25%, 20%)" }} connectNulls={false} name="Réel (train)" />
+          {/* Test set actual */}
+          {hasTestSet && (
+            <Line type="monotone" dataKey="réel (test)" stroke="hsl(280, 60%, 55%)" strokeWidth={2.5} strokeDasharray="4 4" dot={{ r: 4, fill: "hsl(280, 60%, 55%)", strokeWidth: 2, stroke: "white" }} connectNulls={false} name="Réel (test 20%)" />
+          )}
+          {/* Backtest predictions on test set */}
+          {backtestKeys.map((key, i) => (
+            <Line
+              key={key}
+              type="monotone"
+              dataKey={key}
+              stroke={BACKTEST_COLORS[i % BACKTEST_COLORS.length]}
+              strokeWidth={1.5}
+              strokeDasharray="3 3"
+              dot={{ r: 3, fill: BACKTEST_COLORS[i % BACKTEST_COLORS.length], strokeWidth: 1, stroke: "white" }}
+              connectNulls={false}
+            />
+          ))}
+          {/* Future forecast lines */}
           {models.map((m, i) => (
             <Line
               key={m.name}

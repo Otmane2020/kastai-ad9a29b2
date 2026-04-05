@@ -10,16 +10,23 @@ interface ModelInfo {
   bias: string;
   mapeNum?: number;
   selected: boolean;
+  predictions?: number[];
 }
 
 interface BacktestRow {
   p: string; r: string; pr: string; e: string;
 }
 
-// Table: Prévisions par horizon
-function HorizonTable({ models, horizon }: { models: ModelInfo[]; horizon: HorizonFilter }) {
+function formatDate(baseDate: Date, offsetMonths: number): string {
+  const d = new Date(baseDate.getFullYear(), baseDate.getMonth() + offsetMonths, 1);
+  return d.toLocaleDateString("fr-FR", { month: "short", year: "2-digit" });
+}
+
+// Table: Prévisions par horizon with real values
+function HorizonTable({ models, horizon, lastDate }: { models: ModelInfo[]; horizon: HorizonFilter; lastDate?: Date }) {
   const horizonSteps = { "1W": 1, "1M": 1, "3M": 3, "6M": 6, "12M": 12, "24M": 24 };
-  const steps = horizonSteps[horizon] || 6;
+  const steps = Math.min(horizonSteps[horizon] || 6, 6);
+  const base = lastDate || new Date();
 
   return (
     <div className="rounded-xl border border-border bg-card p-5 shadow-card">
@@ -31,8 +38,10 @@ function HorizonTable({ models, horizon }: { models: ModelInfo[]; horizon: Horiz
           <thead>
             <tr className="border-b border-border">
               <th className="pb-3 text-left text-xs font-medium text-muted-foreground">Modèle</th>
-              {Array.from({ length: Math.min(steps, 6) }, (_, i) => (
-                <th key={i} className="pb-3 text-right text-xs font-medium text-muted-foreground">P+{i + 1}</th>
+              {Array.from({ length: steps }, (_, i) => (
+                <th key={i} className="pb-3 text-right text-xs font-medium text-muted-foreground">
+                  {formatDate(base, i + 1)}
+                </th>
               ))}
               <th className="pb-3 text-right text-xs font-medium text-muted-foreground">MAPE</th>
             </tr>
@@ -44,8 +53,12 @@ function HorizonTable({ models, horizon }: { models: ModelInfo[]; horizon: Horiz
                   {m.name}
                   {m.selected && <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[9px] text-primary font-bold">Best</span>}
                 </td>
-                {Array.from({ length: Math.min(steps, 6) }, (_, i) => (
-                  <td key={i} className="py-3 text-right text-card-foreground">—</td>
+                {Array.from({ length: steps }, (_, i) => (
+                  <td key={i} className="py-3 text-right text-card-foreground font-medium">
+                    {m.predictions && m.predictions[i] != null
+                      ? Math.round(m.predictions[i]).toLocaleString("fr-FR")
+                      : "—"}
+                  </td>
                 ))}
                 <td className="py-3 text-right font-medium text-success">{m.mape}</td>
               </tr>
@@ -93,9 +106,11 @@ function ModelComparisonTable({ models }: { models: ModelInfo[] }) {
   );
 }
 
-// Table: Prévisions par SKU
-function SKUTable({ groupForecasts }: { groupForecasts: GroupForecast[] }) {
+// Table: Prévisions par SKU with all forecast periods
+function SKUTable({ groupForecasts, lastDate }: { groupForecasts: GroupForecast[]; lastDate?: Date }) {
   if (groupForecasts.length === 0) return null;
+  const maxPreds = Math.min(6, Math.max(...groupForecasts.map(gf => gf.forecasts.models[0]?.predictions?.length || 0)));
+  const base = lastDate || new Date();
 
   return (
     <div className="rounded-xl border border-border bg-card p-5 shadow-card">
@@ -108,11 +123,14 @@ function SKUTable({ groupForecasts }: { groupForecasts: GroupForecast[] }) {
             <tr className="border-b border-border">
               <th className="pb-3 text-left text-xs font-medium text-muted-foreground">Groupe</th>
               <th className="pb-3 text-right text-xs font-medium text-muted-foreground">Points</th>
-              <th className="pb-3 text-right text-xs font-medium text-muted-foreground">Total historique</th>
-              <th className="pb-3 text-right text-xs font-medium text-muted-foreground">Meilleur modèle</th>
+              <th className="pb-3 text-right text-xs font-medium text-muted-foreground">Total hist.</th>
+              <th className="pb-3 text-right text-xs font-medium text-muted-foreground">Modèle</th>
               <th className="pb-3 text-right text-xs font-medium text-muted-foreground">MAPE</th>
-              <th className="pb-3 text-right text-xs font-medium text-muted-foreground">Biais</th>
-              <th className="pb-3 text-right text-xs font-medium text-muted-foreground">P+1</th>
+              {Array.from({ length: maxPreds }, (_, i) => (
+                <th key={i} className="pb-3 text-right text-xs font-medium text-muted-foreground">
+                  {formatDate(base, i + 1)}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
@@ -124,12 +142,13 @@ function SKUTable({ groupForecasts }: { groupForecasts: GroupForecast[] }) {
                   <td className="py-3 text-card-foreground font-medium">{gf.groupKey}</td>
                   <td className="py-3 text-right text-muted-foreground">{gf.timeSeries.length}</td>
                   <td className="py-3 text-right text-card-foreground font-medium">{Math.round(total).toLocaleString("fr-FR")}</td>
-                  <td className="py-3 text-right text-primary font-medium">{gf.forecasts.bestModel}</td>
+                  <td className="py-3 text-right text-primary font-medium text-xs">{gf.forecasts.bestModel}</td>
                   <td className="py-3 text-right text-success font-medium">{best.mape.toFixed(1)}%</td>
-                  <td className="py-3 text-right text-card-foreground">{best.bias >= 0 ? "+" : ""}{best.bias.toFixed(1)}%</td>
-                  <td className="py-3 text-right text-card-foreground font-semibold">
-                    {best.predictions[0] ? Math.round(best.predictions[0]).toLocaleString("fr-FR") : "—"}
-                  </td>
+                  {Array.from({ length: maxPreds }, (_, i) => (
+                    <td key={i} className="py-3 text-right text-card-foreground font-semibold">
+                      {best.predictions[i] != null ? Math.round(best.predictions[i]).toLocaleString("fr-FR") : "—"}
+                    </td>
+                  ))}
                 </tr>
               );
             })}
@@ -147,7 +166,7 @@ function SKUTable({ groupForecasts }: { groupForecasts: GroupForecast[] }) {
 function BacktestTable({ data }: { data: BacktestRow[] }) {
   return (
     <div className="rounded-xl border border-border bg-card p-5 shadow-card">
-      <h3 className="font-display text-sm font-semibold text-card-foreground mb-4">Résultats du backtesting</h3>
+      <h3 className="font-display text-sm font-semibold text-card-foreground mb-4">🔬 Résultats du backtesting (20%)</h3>
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-border">
