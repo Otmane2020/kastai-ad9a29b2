@@ -1,5 +1,6 @@
-import { Package, AlertTriangle, TrendingDown, TrendingUp } from "lucide-react";
+import { Package } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
+import DataUploadBanner from "@/components/DataUploadBanner";
 import { cn } from "@/lib/utils";
 
 const inventory = [
