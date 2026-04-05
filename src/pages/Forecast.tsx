@@ -2,7 +2,7 @@ import { LineChart as LineChartIcon } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import DataUploadBanner from "@/components/DataUploadBanner";
 import { useData, TimeSeriesPoint } from "@/context/DataContext";
-import { ForecastResult } from "@/lib/forecastEngine";
+import { ForecastResult, runAllModels } from "@/lib/forecastEngine";
 import { useCallback, useMemo, useState } from "react";
 import ForecastFilters, { ViewLevel, VIEW_LABELS, HorizonFilter } from "@/components/forecast/ForecastFilters";
 import ForecastChart from "@/components/forecast/ForecastChart";
