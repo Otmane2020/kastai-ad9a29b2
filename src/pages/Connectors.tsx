@@ -43,6 +43,8 @@ function clearHistory() {
 
 export default function Connectors() {
   const { data, hasData, processData, clearData } = useData();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [wizardOpen, setWizardOpen] = useState(false);
   const [history] = useState(getImportHistory);
   const [loadingForecast, setLoadingForecast] = useState(false);
