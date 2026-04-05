@@ -423,8 +423,10 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
             granularity: wizard.granularity,
             horizon: maxHorizon,
             total_points: wizard.rows.length,
-            best_model: "SES",
-            models_results: {} as any,
+            best_model: serverResult?.best_model || serverResult?.bestModel || "SES",
+            best_mape: serverResult?.models?.[0]?.mape ?? null,
+            group_count: serverResult?.groups?.length ?? 0,
+            models_results: serverResult || {} as any,
           });
         }
       } catch (histErr) {
