@@ -3,7 +3,7 @@ import PageHeader from "@/components/PageHeader";
 import DataUploadBanner from "@/components/DataUploadBanner";
 import { useData, TimeSeriesPoint } from "@/context/DataContext";
 import { ForecastResult } from "@/lib/forecastEngine";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import ForecastFilters, { ViewLevel, VIEW_LABELS, HorizonFilter } from "@/components/forecast/ForecastFilters";
 import ForecastChart from "@/components/forecast/ForecastChart";
 import { HorizonTable, ModelComparisonTable, SKUTable, BacktestTable, MAPEBarChart } from "@/components/forecast/ForecastTables";
@@ -47,6 +47,19 @@ export default function Forecast() {
   const [viewLevel, setViewLevel] = useState<ViewLevel>("global");
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [selectedHorizon, setSelectedHorizon] = useState<HorizonFilter>("6M");
+  const [selectedModels, setSelectedModels] = useState<Set<string>>(new Set());
+
+  const handleToggleModel = useCallback((name: string) => {
+    setSelectedModels((prev) => {
+      const next = new Set(prev);
+      if (next.has(name)) {
+        if (next.size > 1) next.delete(name);
+      } else {
+        next.add(name);
+      }
+      return next;
+    });
+  }, []);
 
   const availableLevels = useMemo(() => {
     const levels: ViewLevel[] = ["global"];
@@ -177,12 +190,19 @@ export default function Forecast() {
 
     const lastDateResult = monthly.length > 0 ? new Date(monthly[monthly.length - 1].date) : new Date();
 
-    const models = activeFc.models.map((m, i) => ({
+    const modelNames = activeFc.models.map(m => m.name);
+    if (selectedModels.size === 0 || !modelNames.some(n => selectedModels.has(n))) {
+      // Auto-select best model on first load
+      const bestName = activeFc.models[0]?.name;
+      if (bestName) setSelectedModels(new Set([bestName]));
+    }
+
+    const models = activeFc.models.map((m) => ({
       name: m.name,
       mape: `${m.mape.toFixed(1)}%`,
       bias: `${m.bias >= 0 ? "+" : ""}${m.bias.toFixed(1)}%`,
       mapeNum: m.mape,
-      selected: i === 0,
+      selected: selectedModels.has(m.name) || (selectedModels.size === 0 && m.name === activeFc.models[0]?.name),
       predictions: m.predictions,
     }));
 
@@ -196,7 +216,7 @@ export default function Forecast() {
       forecastInfo: { bestModel: activeFc.bestModel, points: activeTs.length, horizon: activeFc.horizon },
       lastDate: lastDateResult,
     };
-  }, [hasData, data, viewLevel, selectedGroup]);
+  }, [hasData, data, viewLevel, selectedGroup, selectedModels]);
 
   return (
     <div className="animate-fade-in space-y-6">
@@ -218,7 +238,7 @@ export default function Forecast() {
         <GroupCards groups={groups} selectedGroup={selectedGroup} setSelectedGroup={setSelectedGroup} groupForecasts={data.groupForecasts} />
       )}
 
-      <ModelCards models={models} />
+      <ModelCards models={models} onToggle={handleToggleModel} />
 
       <ForecastChart
         chartData={chartData}
