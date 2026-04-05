@@ -156,29 +156,73 @@ export function DataProvider({ children }: { children: ReactNode }) {
     try {
       const timeSeries = buildTimeSeries(rows, mapping, forecastTarget);
 
-      const monthlyGlobal = aggregateToMonthly(timeSeries);
-      const monthlyValues = monthlyGlobal.map((m) => m.value);
-      const forecasts = monthlyValues.length >= 4 ? runAllModels(monthlyValues, horizon) : null;
+      let forecasts: ForecastResult | null = null;
+      let groupForecasts: GroupForecast[] = [];
 
-      const groups = new Map<string, TimeSeriesPoint[]>();
-      if (granularity !== "global") {
-        for (const point of timeSeries) {
-          const key = getGroupKey(point, granularity);
-          if (!groups.has(key)) groups.set(key, []);
-          groups.get(key)!.push(point);
+      if (serverResult && serverResult.models && Array.isArray(serverResult.models)) {
+        // Use server results (13 ML models from Railway)
+        forecasts = {
+          models: serverResult.models.map((m: any) => ({
+            name: m.name || m.model_name || "Unknown",
+            predictions: m.predictions || m.forecast || [],
+            mape: m.mape ?? m.metrics?.mape ?? 0,
+            bias: m.bias ?? m.metrics?.bias ?? 0,
+            mae: m.mae ?? m.metrics?.mae ?? 0,
+          })),
+          bestModel: serverResult.best_model || serverResult.bestModel || serverResult.models[0]?.name || "Unknown",
+          horizon: serverResult.horizon || horizon,
+          historicalLength: serverResult.historical_length || timeSeries.length,
+        };
+        forecasts.models.sort((a, b) => a.mape - b.mape);
+        forecasts.bestModel = forecasts.models[0]?.name || forecasts.bestModel;
+
+        // Use server group forecasts if available
+        if (serverResult.groups && Array.isArray(serverResult.groups)) {
+          groupForecasts = serverResult.groups.map((g: any) => ({
+            groupKey: g.group_key || g.groupKey || "Unknown",
+            timeSeries: timeSeries.filter((p) => {
+              const key = getGroupKey(p, granularity);
+              return key === (g.group_key || g.groupKey);
+            }),
+            forecasts: {
+              models: (g.models || []).map((m: any) => ({
+                name: m.name || m.model_name || "Unknown",
+                predictions: m.predictions || m.forecast || [],
+                mape: m.mape ?? m.metrics?.mape ?? 0,
+                bias: m.bias ?? m.metrics?.bias ?? 0,
+                mae: m.mae ?? m.metrics?.mae ?? 0,
+              })),
+              bestModel: g.best_model || g.models?.[0]?.name || "Unknown",
+              horizon: g.horizon || horizon,
+              historicalLength: g.historical_length || 0,
+            },
+          }));
         }
-      }
+      } else {
+        // Fallback: local JS models
+        const monthlyGlobal = aggregateToMonthly(timeSeries);
+        const monthlyValues = monthlyGlobal.map((m) => m.value);
+        forecasts = monthlyValues.length >= 4 ? runAllModels(monthlyValues, horizon) : null;
 
-      const groupForecasts: GroupForecast[] = [];
-      for (const [groupKey, pts] of groups.entries()) {
-        const monthlyGroup = aggregateToMonthly(pts);
-        const gValues = monthlyGroup.map((m) => m.value);
-        if (gValues.length >= 4) {
-          groupForecasts.push({
-            groupKey,
-            timeSeries: pts,
-            forecasts: runAllModels(gValues, horizon),
-          });
+        const groups = new Map<string, TimeSeriesPoint[]>();
+        if (granularity !== "global") {
+          for (const point of timeSeries) {
+            const key = getGroupKey(point, granularity);
+            if (!groups.has(key)) groups.set(key, []);
+            groups.get(key)!.push(point);
+          }
+        }
+
+        for (const [groupKey, pts] of groups.entries()) {
+          const monthlyGroup = aggregateToMonthly(pts);
+          const gValues = monthlyGroup.map((m) => m.value);
+          if (gValues.length >= 4) {
+            groupForecasts.push({
+              groupKey,
+              timeSeries: pts,
+              forecasts: runAllModels(gValues, horizon),
+            });
+          }
         }
       }
 

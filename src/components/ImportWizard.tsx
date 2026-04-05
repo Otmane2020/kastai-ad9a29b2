@@ -112,7 +112,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
   const [parsing, setParsing] = useState(false);
   const [launching, setLaunching] = useState(false);
   const [launchProgress, setLaunchProgress] = useState(0);
-  const [launchMode, setLaunchMode] = useState<"local" | "server">("local");
+  const [launchMode, setLaunchMode] = useState<"local" | "server">("server");
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
