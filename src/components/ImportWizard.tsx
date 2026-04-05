@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useMemo } from "react";
-import { CloudUpload, FileUp, CircleCheck, ChevronRight, ChevronLeft, CirclePlay, X, TriangleAlert, Zap, BrainCircuit, Loader2, ServerCog, CalendarRange, CloudSun } from "lucide-react";
+import { CloudUpload, FileUp, CircleCheck, ChevronRight, ChevronLeft, CirclePlay, X, TriangleAlert, Zap, BrainCircuit, Loader2, ServerCog, CalendarRange, CloudSun, Globe, Package, Tag, GitBranch, DollarSign, Hash, CalendarDays, BarChart3, Crosshair, Rocket, CheckSquare, Square, Columns3 } from "lucide-react";
 import { parseFile, autoMapColumns, ColumnMapping } from "@/lib/dataParser";
 import { useData } from "@/context/DataContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,16 +35,16 @@ export const HORIZON_OPTIONS: { value: ForecastHorizon; label: string }[] = [
   { value: "24M", label: "24 Mois" },
 ];
 
-export const GRANULARITY_OPTIONS: { value: ForecastGranularity; label: string; icon: string; desc: string }[] = [
-  { value: "global", label: "Global (agrégé)", icon: "🌐", desc: "Prévision sur le total des ventes" },
-  { value: "sku", label: "Par SKU / Produit", icon: "📦", desc: "Prévision par référence produit" },
-  { value: "family", label: "Par Famille produit", icon: "🏷️", desc: "Prévision par famille / catégorie" },
-  { value: "subfamily", label: "Par Sous-famille", icon: "🔀", desc: "Croisement produit + catégorie" },
+export const GRANULARITY_OPTIONS: { value: ForecastGranularity; label: string; icon: React.ReactNode; desc: string }[] = [
+  { value: "global", label: "Global (agrégé)", icon: <Globe className="h-4 w-4" />, desc: "Prévision sur le total des ventes" },
+  { value: "sku", label: "Par SKU / Produit", icon: <Package className="h-4 w-4" />, desc: "Prévision par référence produit" },
+  { value: "family", label: "Par Famille produit", icon: <Tag className="h-4 w-4" />, desc: "Prévision par famille / catégorie" },
+  { value: "subfamily", label: "Par Sous-famille", icon: <GitBranch className="h-4 w-4" />, desc: "Croisement produit + catégorie" },
 ];
 
-export const TARGET_OPTIONS: { value: ForecastTarget; label: string; icon: string; tab: string }[] = [
-  { value: "revenue", label: "Chiffre d'affaires (CA)", icon: "💰", tab: "Finance" },
-  { value: "quantity", label: "Quantité", icon: "📦", tab: "Forecast" },
+export const TARGET_OPTIONS: { value: ForecastTarget; label: string; icon: React.ReactNode; tab: string }[] = [
+  { value: "revenue", label: "Chiffre d'affaires (CA)", icon: <DollarSign className="h-4 w-4" />, tab: "Finance" },
+  { value: "quantity", label: "Quantité", icon: <Hash className="h-4 w-4" />, tab: "Forecast" },
 ];
 
 interface WizardState {
