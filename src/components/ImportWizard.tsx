@@ -292,7 +292,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
         // Convert parsed rows to CSV string to send as a "file" in JSON
         const csvHeader = wizard.columns.join(",");
         const dateCol = wizard.mapping.dateCol;
-        const csvRows = wizard.rows.slice(0, 5000).map(row =>
+        const csvRows = wizard.rows.map(row =>
           wizard.columns.map(col => {
             const val = row[col];
             let str: string;
