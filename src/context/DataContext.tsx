@@ -36,7 +36,7 @@ export interface DataState {
 
 interface DataContextType {
   data: DataState;
-  processData: (rows: DataRow[], columns: string[], mapping: ColumnMapping, fileName: string, granularity: Granularity) => Promise<void>;
+  processData: (rows: DataRow[], columns: string[], mapping: ColumnMapping, fileName: string, granularity: Granularity, serverResult?: any) => Promise<void>;
   clearData: () => void;
   hasData: boolean;
 }
@@ -92,7 +92,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<DataState>(initialState);
 
   const processData = useCallback(async (
-    rows: DataRow[], columns: string[], mapping: ColumnMapping, fileName: string, granularity: Granularity
+    rows: DataRow[], columns: string[], mapping: ColumnMapping, fileName: string, granularity: Granularity, serverResult?: any
   ) => {
     setData((prev) => ({ ...prev, isProcessing: true }));
 
