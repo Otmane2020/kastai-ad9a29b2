@@ -235,27 +235,43 @@ export default function Connectors() {
         </div>
       )}
 
-      {/* Import Clock4 */}
+      {/* Fichiers importés (base de données) */}
       <div className="mb-6 rounded-xl border border-border bg-card p-5 shadow-card">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Clock4 className="h-4 w-4 text-muted-foreground" />
             <h3 className="font-display text-sm font-semibold text-card-foreground">Historique des imports</h3>
           </div>
-          {history.length > 0 && (
-            <button
-              onClick={() => { clearHistory(); window.location.reload(); }}
-              className="text-[10px] text-muted-foreground hover:text-destructive transition-colors"
-            >
-              Vider l'historique
-            </button>
-          )}
+          <span className="text-[10px] text-muted-foreground">{dbFiles.length} fichier(s) enregistré(s)</span>
         </div>
-        {history.length === 0 ? (
+        {dbFiles.length === 0 && history.length === 0 ? (
           <p className="text-xs text-muted-foreground text-center py-4">Aucun import effectué</p>
         ) : (
           <div className="space-y-2">
-            {history.slice(0, 5).map((entry) => (
+            {/* DB files first */}
+            {dbFiles.map((f) => {
+              const mapping = f.mapping as any;
+              const mappingLabel = mapping ? `${mapping.dateCol || "?"} → ${mapping.valueCol || mapping.revenueCol || mapping.quantityCol || "?"}` : "—";
+              return (
+                <div key={f.id} className="flex items-center gap-3 rounded-lg bg-muted/30 px-4 py-3 text-xs">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-success/10 text-success">
+                    <CircleCheck className="h-4 w-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-card-foreground truncate">{f.file_name}</p>
+                    <p className="text-muted-foreground">
+                      {f.row_count ?? "?"} lignes · {f.column_count ?? "?"} col · {mappingLabel} · {f.granularity ?? "global"}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1 text-muted-foreground shrink-0">
+                    <Timer className="h-3 w-3" />
+                    {f.uploaded_at ? new Date(f.uploaded_at).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "—"}
+                  </div>
+                </div>
+              );
+            })}
+            {/* Fallback: localStorage entries not in DB */}
+            {history.filter(h => !dbFiles.some(f => f.file_name === h.fileName)).slice(0, 5).map((entry) => (
               <div key={entry.id} className="flex items-center gap-3 rounded-lg bg-muted/30 px-4 py-3 text-xs">
                 <div className={cn(
                   "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
