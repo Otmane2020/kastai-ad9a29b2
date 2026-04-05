@@ -103,10 +103,60 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
     contentRef.current?.scrollTo({ top: 0, behavior: "smooth" });
   }, [step]);
 
-  // AI-powered smart mapping
+  // Helper: generate a hash from columns to identify same file structure
+  const getColumnsHash = (cols: string[]) => cols.slice().sort().join("|");
+
+  // Apply AI result to wizard state
+  const applyAIResult = useCallback((aiResult: AIMapping) => {
+    const contextRoles = ["price", "promo", "discount", "region", "store", "channel", "cost", "margin"];
+    const columnRegressors: ProphetRegressor[] = (aiResult.allColumns || [])
+      .filter((c) => contextRoles.includes(c.role) || c.role === "other")
+      .map((c) => ({ key: c.name, label: `${c.name} (${c.role})`, enabled: contextRoles.includes(c.role), type: "column" as const }));
+
+    setWizard((prev) => ({
+      ...prev,
+      aiAnalyzing: false,
+      aiMapping: aiResult,
+      mapping: {
+        dateCol: aiResult.dateCol,
+        valueCol: aiResult.valueCol,
+        revenueCol: aiResult.revenueCol || aiResult.valueCol,
+        quantityCol: aiResult.quantityCol || null,
+        productCol: aiResult.productCol,
+        categoryCol: aiResult.categoryCol,
+        familyCol: aiResult.familyCol || null,
+        subfamilyCol: aiResult.subfamilyCol || null,
+      },
+      granularity: aiResult.suggestedGranularity || (aiResult.productCol ? "sku" : "global"),
+      allColumnInfos: aiResult.allColumns || [],
+      businessContext: aiResult.businessContext || "",
+      prophetRegressors: [...columnRegressors, ...DEFAULT_PROPHET_EXTERNAL_EVENTS],
+    }));
+  }, []);
+
+  // AI-powered smart mapping with cache
   const runAIMapping = useCallback(async (columns: string[], rows: Record<string, any>[], fileName: string) => {
     setWizard((prev) => ({ ...prev, aiAnalyzing: true }));
+    const hash = getColumnsHash(columns);
+
     try {
+      // Check cache: look for a previous AI mapping with same columns_hash
+      const { data: cached } = await supabase
+        .from("uploaded_files")
+        .select("ai_mapping")
+        .eq("columns_hash", hash)
+        .not("ai_mapping", "is", null)
+        .order("uploaded_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (cached?.ai_mapping) {
+        console.log("AI mapping loaded from cache (tokens saved)");
+        applyAIResult(cached.ai_mapping as unknown as AIMapping);
+        return;
+      }
+
+      // No cache: call AI
       const { data, error } = await supabase.functions.invoke("smart-mapping", {
         body: { columns, sampleRows: rows.slice(0, 2), fileName },
       });
@@ -114,32 +164,36 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
       if (error) throw error;
 
       const aiResult = data as AIMapping;
+      applyAIResult(aiResult);
 
-      // Build Prophet column regressors from detected context columns
-      const contextRoles = ["price", "promo", "discount", "region", "store", "channel", "cost", "margin"];
-      const columnRegressors: ProphetRegressor[] = (aiResult.allColumns || [])
-        .filter((c) => contextRoles.includes(c.role) || c.role === "other")
-        .map((c) => ({ key: c.name, label: `${c.name} (${c.role})`, enabled: contextRoles.includes(c.role), type: "column" as const }));
-
-      setWizard((prev) => ({
-        ...prev,
-        aiAnalyzing: false,
-        aiMapping: aiResult,
-        mapping: {
-          dateCol: aiResult.dateCol,
-          valueCol: aiResult.valueCol,
-          revenueCol: aiResult.revenueCol || aiResult.valueCol,
-          quantityCol: aiResult.quantityCol || null,
-          productCol: aiResult.productCol,
-          categoryCol: aiResult.categoryCol,
-          familyCol: aiResult.familyCol || null,
-          subfamilyCol: aiResult.subfamilyCol || null,
-        },
-        granularity: aiResult.suggestedGranularity || (aiResult.productCol ? "sku" : "global"),
-        allColumnInfos: aiResult.allColumns || [],
-        businessContext: aiResult.businessContext || "",
-        prophetRegressors: [...columnRegressors, ...DEFAULT_PROPHET_EXTERNAL_EVENTS],
-      }));
+      // Save to cache in background
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase.from("uploaded_files").insert({
+            user_id: user.id,
+            file_name: fileName,
+            row_count: rows.length,
+            column_count: columns.length,
+            columns: columns as any,
+            columns_hash: hash,
+            ai_mapping: aiResult as any,
+            mapping: {
+              dateCol: aiResult.dateCol,
+              valueCol: aiResult.valueCol,
+              revenueCol: aiResult.revenueCol,
+              quantityCol: aiResult.quantityCol,
+              productCol: aiResult.productCol,
+              categoryCol: aiResult.categoryCol,
+              familyCol: aiResult.familyCol,
+              subfamilyCol: aiResult.subfamilyCol,
+            } as any,
+            granularity: aiResult.suggestedGranularity || "global",
+          });
+        }
+      } catch (saveErr) {
+        console.warn("Failed to cache AI mapping:", saveErr);
+      }
     } catch (err) {
       console.warn("AI mapping failed, using regex fallback:", err);
       const fallback = autoMapColumns(columns, rows);
@@ -235,30 +289,46 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
 
       setLaunchProgress(100);
       
-      // Save to history
+      // Save forecast run to history (file may already be saved from AI cache step)
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
-          const { data: fileRecord } = await supabase.from("uploaded_files").insert({
-            user_id: user.id,
-            file_name: wizard.file!.name,
-            row_count: wizard.rows.length,
-            column_count: wizard.columns.length,
-            columns: wizard.columns,
-            mapping: wizard.mapping as any,
-            granularity: wizard.granularity,
-          }).select("id").single();
+          const hash = getColumnsHash(wizard.columns);
+          // Find or create the file record
+          const { data: existingFile } = await supabase
+            .from("uploaded_files")
+            .select("id")
+            .eq("user_id", user.id)
+            .eq("columns_hash", hash)
+            .eq("file_name", wizard.file!.name)
+            .order("uploaded_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
 
-          // Get forecast results from context after processing
-          const bestModel = "SES"; // Will be updated from actual results
+          let fileId = existingFile?.id;
+          if (!fileId) {
+            const { data: newFile } = await supabase.from("uploaded_files").insert({
+              user_id: user.id,
+              file_name: wizard.file!.name,
+              row_count: wizard.rows.length,
+              column_count: wizard.columns.length,
+              columns: wizard.columns as any,
+              columns_hash: hash,
+              mapping: wizard.mapping as any,
+              ai_mapping: wizard.aiMapping as any,
+              granularity: wizard.granularity,
+            }).select("id").single();
+            fileId = newFile?.id;
+          }
+
           await supabase.from("forecast_runs").insert({
             user_id: user.id,
-            file_id: fileRecord?.id || null,
+            file_id: fileId || null,
             file_name: wizard.file!.name,
             granularity: wizard.granularity,
             horizon: 6,
             total_points: wizard.rows.length,
-            best_model: bestModel,
+            best_model: "SES",
             models_results: {} as any,
           });
         }
