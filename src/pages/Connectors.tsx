@@ -5,6 +5,8 @@ import ImportWizard from "@/components/ImportWizard";
 import { useData } from "@/context/DataContext";
 import { parseFile, autoMapColumns } from "@/lib/dataParser";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 const connectors = [
   { name: "ERP (SAP, Oracle)", icon: DatabaseZap, status: "available" as const, desc: "Connexion directe aux systèmes ERP" },
@@ -41,6 +43,8 @@ function clearHistory() {
 
 export default function Connectors() {
   const { data, hasData, processData, clearData } = useData();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [wizardOpen, setWizardOpen] = useState(false);
   const [history] = useState(getImportHistory);
   const [loadingForecast, setLoadingForecast] = useState(false);
@@ -59,12 +63,15 @@ export default function Connectors() {
       const granularity = mapping.productCol ? "sku" : "global";
       await processData(rows, columns, mapping, file.name, granularity);
       addToHistory({ fileName: file.name, rows: rows.length, columns: columns.length, mapping: `${mapping.dateCol} → ${mapping.valueCol}`, status: "success" });
+      toast({ title: "✅ Prévisions calculées", description: `${file.name} — modèles exécutés avec succès` });
+      navigate("/forecast");
     } catch (err) {
       console.error("Quick load error:", err);
       addToHistory({ fileName: file.name, rows: 0, columns: 0, mapping: "Erreur", status: "error" });
+      toast({ title: "❌ Erreur", description: "Impossible de traiter le fichier.", variant: "destructive" });
     }
     setQuickLoading(false);
-  }, [processData]);
+  }, [processData, navigate, toast]);
 
   // Re-run forecast on current data
   const handleReloadForecast = useCallback(async () => {
@@ -72,11 +79,14 @@ export default function Connectors() {
     setLoadingForecast(true);
     try {
       await processData(data.raw, data.columns, data.mapping!, data.fileName!, data.granularity);
+      toast({ title: "✅ Prévisions relancées", description: "Modèles recalculés avec succès" });
+      navigate("/forecast");
     } catch (err) {
       console.error("Reload forecast error:", err);
+      toast({ title: "❌ Erreur", description: "Impossible de relancer les prévisions.", variant: "destructive" });
     }
     setLoadingForecast(false);
-  }, [hasData, data, processData]);
+  }, [hasData, data, processData, navigate, toast]);
 
   return (
     <div className="animate-fade-in">

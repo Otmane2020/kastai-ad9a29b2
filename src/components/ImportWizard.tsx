@@ -5,6 +5,9 @@ import { useData } from "@/context/DataContext";
 import { supabase } from "@/integrations/supabase/client";
 import { AIMapping, ColumnInfo, ExtendedMapping, ProphetRegressor, DEFAULT_PROPHET_EXTERNAL_EVENTS, buildForecastPayload } from "@/lib/forecastPayload";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { Progress } from "@/components/ui/progress";
 
 type Step = "upload" | "mapping" | "granularity" | "launch";
 
@@ -80,10 +83,13 @@ const initialWizard: WizardState = {
 
 export default function ImportWizard({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { processData } = useData();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [step, setStep] = useState<Step>("upload");
   const [wizard, setWizard] = useState<WizardState>(initialWizard);
   const [parsing, setParsing] = useState(false);
   const [launching, setLaunching] = useState(false);
+  const [launchProgress, setLaunchProgress] = useState(0);
   const [launchMode, setLaunchMode] = useState<"local" | "server">("local");
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -184,9 +190,11 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
 
   const handleLaunch = useCallback(async () => {
     setLaunching(true);
+    setLaunchProgress(10);
     setError(null);
 
     try {
+      setLaunchProgress(25);
       if (launchMode === "server") {
         const serverUrl = localStorage.getItem("kastai_server_url") || "http://localhost:8000";
         const serverKey = localStorage.getItem("kastai_server_key") || "";
@@ -195,6 +203,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
           wizard.selectedTargets, wizard.prophetRegressors
         );
 
+        setLaunchProgress(40);
         const res = await fetch(`${serverUrl}/api/forecast`, {
           method: "POST",
           headers: {
@@ -210,21 +219,42 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
           throw new Error(`Serveur Python: ${res.status} ${errText}`);
         }
 
+        setLaunchProgress(70);
         const serverResult = await res.json();
         await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity, serverResult);
       } else {
+        setLaunchProgress(50);
         await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity);
       }
 
+      setLaunchProgress(100);
+      
+      // Small delay for visual satisfaction
+      await new Promise((r) => setTimeout(r, 400));
+
       setLaunching(false);
+      setLaunchProgress(0);
       onClose();
       setWizard(initialWizard);
       setStep("upload");
+
+      toast({
+        title: "✅ Prévisions calculées",
+        description: `${wizard.file?.name} — modèles exécutés avec succès`,
+      });
+
+      navigate("/forecast");
     } catch (err: any) {
       setError(err.message || "Erreur lors du calcul des prévisions.");
       setLaunching(false);
+      setLaunchProgress(0);
+      toast({
+        title: "❌ Erreur de prévision",
+        description: err.message || "Vérifiez vos données et réessayez.",
+        variant: "destructive",
+      });
     }
-  }, [wizard, processData, onClose, launchMode]);
+  }, [wizard, processData, onClose, launchMode, navigate, toast]);
 
   const uniqueValues = useMemo(() => {
     if (!wizard.rows.length) return { products: [], categories: [], families: [], subfamilies: [] };
@@ -861,11 +891,17 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
               </div>
 
               {launching && (
-                <div className="flex items-center justify-center gap-3">
-                  <Loader2 className="h-5 w-5 text-primary animate-spin" />
-                  <span className="text-sm font-medium text-primary">
-                    {launchMode === "server" ? "Envoi au serveur Python..." : "Calcul des prévisions..."}
-                  </span>
+                <div className="space-y-3">
+                  <Progress value={launchProgress} className="h-2" />
+                  <div className="flex items-center justify-center gap-3">
+                    <Loader2 className="h-5 w-5 text-primary animate-spin" />
+                    <span className="text-sm font-medium text-primary">
+                      {launchProgress < 30 ? "Préparation des données..." :
+                       launchProgress < 60 ? "Calcul des modèles..." :
+                       launchProgress < 90 ? "Backtesting & métriques..." :
+                       "Finalisation ✨"}
+                    </span>
+                  </div>
                 </div>
               )}
             </div>
@@ -889,10 +925,18 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
             <button
               onClick={handleLaunch}
               disabled={launching}
-              className="flex items-center gap-2 rounded-lg gradient-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50"
+              className={cn(
+                "flex items-center gap-2 rounded-lg gradient-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground transition-all disabled:opacity-50",
+                !launching && "hover:opacity-90 hover:scale-105 hover:shadow-lg active:scale-95",
+                launching && "animate-pulse"
+              )}
             >
-              <CirclePlay className="h-4 w-4" />
-              {launching ? "En cours..." : "Lancer les prévisions"}
+              {launching ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <CirclePlay className="h-4 w-4" />
+              )}
+              {launching ? "Calcul en cours..." : "🚀 Lancer les prévisions"}
             </button>
           ) : (
             <button
