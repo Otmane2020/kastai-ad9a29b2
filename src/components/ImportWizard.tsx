@@ -995,9 +995,9 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                     <div className="flex items-center gap-2 mb-1">
                       <ServerCog className="h-4 w-4 text-accent" />
                       <span className="font-display text-sm font-semibold text-card-foreground">Serveur Python</span>
-                      {!serverConfigured && <span className="text-[9px] text-warning bg-warning/10 rounded-full px-1.5 py-0.5">Non configuré</span>}
+                      {serverConfigured && <span className="text-[9px] text-success bg-success/10 rounded-full px-1.5 py-0.5">Railway ✓</span>}
                     </div>
-                    <p className="text-xs text-muted-foreground">ARIMA, Prophet + régresseurs, XGBoost, LSTM</p>
+                    <p className="text-xs text-muted-foreground">13 modèles ML : ARIMA, Prophet, XGBoost, LSTM…</p>
                   </button>
                 </div>
               </div>
