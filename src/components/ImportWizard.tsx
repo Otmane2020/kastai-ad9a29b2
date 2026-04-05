@@ -383,7 +383,22 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
 
         setLaunchProgress(75);
         serverResult = await forecastRes.json();
-        await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity, maxHorizon, wizard.primaryTarget, serverResult);
+        
+        // Validate server results - check for bad data (epoch dates, all-zero metrics)
+        const hasBadDates = serverResult.forecast_dates?.some((d: string) => d.startsWith("1970-"));
+        const allMetricsZero = serverResult.all_model_rankings?.every((m: any) => m.mape === 0 && m.mae === 0);
+        
+        if (hasBadDates || allMetricsZero) {
+          console.warn("Server returned invalid results (epoch dates or all-zero metrics), falling back to local models");
+          serverResult = null;
+          toast({ title: "Serveur ML indisponible", description: "Résultats serveur invalides — calcul local activé.", variant: "default" });
+        }
+        
+        if (serverResult) {
+          await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity, maxHorizon, wizard.primaryTarget, serverResult);
+        } else {
+          await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity, maxHorizon, wizard.primaryTarget);
+        }
       } else {
         setLaunchProgress(50);
         await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity, maxHorizon, wizard.primaryTarget);
