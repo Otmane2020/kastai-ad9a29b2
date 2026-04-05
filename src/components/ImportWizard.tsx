@@ -304,10 +304,10 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
 
         setLaunchProgress(70);
         const serverResult = await res.json();
-        await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity, maxHorizon, serverResult);
+        await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity, maxHorizon, wizard.primaryTarget, serverResult);
       } else {
         setLaunchProgress(50);
-        await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity, maxHorizon);
+        await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity, maxHorizon, wizard.primaryTarget);
       }
 
       setLaunchProgress(100);
