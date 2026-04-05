@@ -17,12 +17,35 @@ const STEP_LABELS: Record<Step, string> = {
 
 const STEPS: Step[] = ["upload", "mapping", "granularity", "launch"];
 
+export type ForecastHorizon = "1D" | "1W" | "2W" | "1M" | "3M" | "6M" | "12M" | "24M";
+export type ForecastGranularity = "global" | "sku" | "family" | "subfamily";
+
+export const HORIZON_OPTIONS: { value: ForecastHorizon; label: string }[] = [
+  { value: "1D", label: "Jour" },
+  { value: "1W", label: "1 Semaine" },
+  { value: "2W", label: "2 Semaines" },
+  { value: "1M", label: "1 Mois" },
+  { value: "3M", label: "3 Mois" },
+  { value: "6M", label: "6 Mois" },
+  { value: "12M", label: "12 Mois" },
+  { value: "24M", label: "24 Mois" },
+];
+
+export const GRANULARITY_OPTIONS: { value: ForecastGranularity; label: string; icon: string }[] = [
+  { value: "global", label: "Global (agrégé)", icon: "🌐" },
+  { value: "sku", label: "Par SKU / Produit", icon: "📦" },
+  { value: "family", label: "Par Famille produit", icon: "🏷️" },
+  { value: "subfamily", label: "Par Sous-famille", icon: "🔀" },
+];
+
 interface WizardState {
   file: File | null;
   rows: Record<string, any>[];
   columns: string[];
   mapping: ColumnMapping;
-  granularity: "global" | "sku" | "family" | "subfamily";
+  granularity: ForecastGranularity;
+  selectedHorizons: ForecastHorizon[];
+  selectedGranularities: ForecastGranularity[];
   preview: Record<string, any>[];
   aiMapping: AIMapping | null;
   aiAnalyzing: boolean;
