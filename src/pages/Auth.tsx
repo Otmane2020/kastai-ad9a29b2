@@ -2,7 +2,8 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { BrainCircuit, LogIn, UserPlus, Loader2, Mail, Lock, User } from "lucide-react";
+import { LogIn, UserPlus, Loader2, Mail, Lock, User } from "lucide-react";
+import logoIcon from "@/assets/logo-icon.png";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -55,8 +56,8 @@ export default function Auth() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-4">
-            <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center">
-              <BrainCircuit className="h-6 w-6 text-primary-foreground" />
+            <div className="h-10 w-10 rounded-xl overflow-hidden">
+              <img src={logoIcon} alt="KastAI" className="h-full w-full object-cover" />
             </div>
             <span className="text-2xl font-bold text-foreground tracking-tight" style={{ fontFamily: "Space Grotesk" }}>
               Kast<span className="text-primary">AI</span>
