@@ -196,16 +196,22 @@ function MAPEBarChart({ models }: { models: ModelInfo[] }) {
   return (
     <div className="rounded-xl border border-border bg-card p-5 shadow-card">
       <h3 className="font-display text-sm font-semibold text-card-foreground mb-4">Comparaison MAPE (%)</h3>
-      <ResponsiveContainer width="100%" height={160}>
-        <BarChart data={models} layout="vertical">
+      <ResponsiveContainer width="100%" height={180}>
+        <BarChart data={models} layout="vertical" margin={{ right: 50 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(214, 20%, 90%)" />
-          <XAxis type="number" tick={{ fontSize: 11 }} stroke="hsl(215, 15%, 50%)" />
+          <XAxis type="number" tick={{ fontSize: 11 }} stroke="hsl(215, 15%, 50%)" unit="%" />
           <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={100} stroke="hsl(215, 15%, 50%)" />
-          <Tooltip contentStyle={{ borderRadius: 12, fontSize: 12 }} />
+          <Tooltip contentStyle={{ borderRadius: 12, fontSize: 12 }} formatter={(v: number) => `${v.toFixed(1)}%`} />
           <Bar dataKey="mapeNum" radius={[0, 6, 6, 0]}>
             {models.map((m, i) => (
               <Cell key={i} fill={m.selected ? "hsl(152, 69%, 40%)" : "hsl(217, 91%, 50%)"} />
             ))}
+            <LabelList
+              dataKey="mape"
+              position="right"
+              style={{ fontSize: 11, fontWeight: 600 }}
+              fill="hsl(215, 25%, 35%)"
+            />
           </Bar>
         </BarChart>
       </ResponsiveContainer>
