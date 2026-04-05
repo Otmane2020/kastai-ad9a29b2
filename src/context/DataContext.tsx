@@ -3,6 +3,7 @@ import { ColumnMapping } from "@/lib/dataParser";
 import { runAllModels, ForecastResult } from "@/lib/forecastEngine";
 
 export type Granularity = "global" | "sku" | "family" | "subfamily";
+export type ForecastTarget = "revenue" | "quantity";
 
 export interface DataRow {
   [key: string]: string | number | Date | null;
@@ -33,11 +34,12 @@ export interface DataState {
   groupForecasts: GroupForecast[];
   groupKeys: string[];
   horizon: number;
+  forecastTarget: ForecastTarget;
 }
 
 interface DataContextType {
   data: DataState;
-  processData: (rows: DataRow[], columns: string[], mapping: ColumnMapping, fileName: string, granularity: Granularity, horizon?: number, serverResult?: any) => Promise<void>;
+  processData: (rows: DataRow[], columns: string[], mapping: ColumnMapping, fileName: string, granularity: Granularity, horizon?: number, forecastTarget?: ForecastTarget, serverResult?: any) => Promise<void>;
   clearData: () => void;
   hasData: boolean;
 }
@@ -54,16 +56,24 @@ const initialState: DataState = {
   groupForecasts: [],
   groupKeys: [],
   horizon: 6,
+  forecastTarget: "revenue",
 };
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
-function buildTimeSeries(rows: DataRow[], mapping: ColumnMapping): TimeSeriesPoint[] {
+function buildTimeSeries(rows: DataRow[], mapping: ColumnMapping, forecastTarget: ForecastTarget): TimeSeriesPoint[] {
   const timeSeries: TimeSeriesPoint[] = [];
   if (!mapping.dateCol) return timeSeries;
 
   const extMapping = mapping as any;
-  const valueColumn = mapping.valueCol || extMapping.revenueCol || extMapping.quantityCol;
+
+  // Pick value column based on target
+  let valueColumn: string | null = null;
+  if (forecastTarget === "quantity") {
+    valueColumn = extMapping.quantityCol || mapping.valueCol || extMapping.revenueCol;
+  } else {
+    valueColumn = extMapping.revenueCol || mapping.valueCol || extMapping.quantityCol;
+  }
   if (!valueColumn) return timeSeries;
 
   const productCol = mapping.productCol || extMapping.familyCol;
@@ -112,7 +122,6 @@ function buildTimeSeries(rows: DataRow[], mapping: ColumnMapping): TimeSeriesPoi
   return timeSeries;
 }
 
-/** Aggregate raw time series points into monthly sums */
 function aggregateToMonthly(points: TimeSeriesPoint[]): { date: Date; value: number }[] {
   const buckets = new Map<string, { date: Date; total: number }>();
   for (const p of points) {
@@ -140,19 +149,17 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<DataState>(initialState);
 
   const processData = useCallback(async (
-    rows: DataRow[], columns: string[], mapping: ColumnMapping, fileName: string, granularity: Granularity, horizon: number = 6, serverResult?: any
+    rows: DataRow[], columns: string[], mapping: ColumnMapping, fileName: string, granularity: Granularity, horizon: number = 6, forecastTarget: ForecastTarget = "revenue", serverResult?: any
   ) => {
     setData((prev) => ({ ...prev, isProcessing: true }));
 
     try {
-      const timeSeries = buildTimeSeries(rows, mapping);
+      const timeSeries = buildTimeSeries(rows, mapping, forecastTarget);
 
-      // Aggregate to monthly BEFORE forecasting so predictions match chart scale
       const monthlyGlobal = aggregateToMonthly(timeSeries);
       const monthlyValues = monthlyGlobal.map((m) => m.value);
       const forecasts = monthlyValues.length >= 4 ? runAllModels(monthlyValues, horizon) : null;
 
-      // Group forecasts
       const groups = new Map<string, TimeSeriesPoint[]>();
       if (granularity !== "global") {
         for (const point of timeSeries) {
@@ -164,7 +171,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
       const groupForecasts: GroupForecast[] = [];
       for (const [groupKey, pts] of groups.entries()) {
-        // Aggregate group to monthly before forecasting
         const monthlyGroup = aggregateToMonthly(pts);
         const gValues = monthlyGroup.map((m) => m.value);
         if (gValues.length >= 4) {
@@ -176,7 +182,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      // Sort groups by total value descending
       groupForecasts.sort((a, b) => {
         const totalA = a.timeSeries.reduce((s, p) => s + p.value, 0);
         const totalB = b.timeSeries.reduce((s, p) => s + p.value, 0);
@@ -195,6 +200,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         groupForecasts,
         groupKeys: groupForecasts.map((g) => g.groupKey),
         horizon,
+        forecastTarget,
       });
     } catch (err) {
       console.error("Processing error:", err);

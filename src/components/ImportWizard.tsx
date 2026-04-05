@@ -76,6 +76,7 @@ interface WizardState {
   selectedHorizons: ForecastHorizon[];
   selectedGranularities: ForecastGranularity[];
   selectedTargets: ForecastTarget[];
+  primaryTarget: ForecastTarget;
   preview: Record<string, any>[];
   aiMapping: AIMapping | null;
   aiAnalyzing: boolean;
@@ -93,6 +94,7 @@ const initialWizard: WizardState = {
   selectedHorizons: ["6M"],
   selectedGranularities: ["global"],
   selectedTargets: ["revenue", "quantity"],
+  primaryTarget: "revenue",
   preview: [],
   aiMapping: null,
   aiAnalyzing: false,
@@ -302,10 +304,10 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
 
         setLaunchProgress(70);
         const serverResult = await res.json();
-        await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity, maxHorizon, serverResult);
+        await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity, maxHorizon, wizard.primaryTarget, serverResult);
       } else {
         setLaunchProgress(50);
-        await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity, maxHorizon);
+        await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity, maxHorizon, wizard.primaryTarget);
       }
 
       setLaunchProgress(100);
@@ -699,6 +701,38 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                 </p>
               </div>
 
+              {/* Primary forecast target */}
+              <div>
+                <h4 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide flex items-center gap-1.5"><Rocket className="h-3.5 w-3.5" /> Prévision principale</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  {TARGET_OPTIONS.map((t) => {
+                    const isActive = wizard.primaryTarget === t.value;
+                    const colMapped = t.value === "revenue" ? wizard.mapping.revenueCol : wizard.mapping.quantityCol;
+                    return (
+                      <button
+                        key={t.value}
+                        onClick={() => setWizard((prev) => ({ ...prev, primaryTarget: t.value }))}
+                        className={cn(
+                          "rounded-xl border p-4 text-left transition-all",
+                          isActive
+                            ? "border-primary bg-primary/10 shadow-elevated ring-1 ring-primary/30"
+                            : "border-border bg-card hover:border-primary/40 cursor-pointer"
+                        )}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-lg">{t.icon}</span>
+                          <span className="font-display text-sm font-semibold text-card-foreground">{t.label}</span>
+                          {isActive && <span className="rounded-full bg-primary px-2 py-0.5 text-[9px] font-bold text-primary-foreground">Principal</span>}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Colonne : {colMapped || "non mappée"}
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
               {/* Forecast targets */}
               <div>
                 <h4 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide flex items-center gap-1.5"><Crosshair className="h-3.5 w-3.5" /> Valeurs à prévoir (multi-sélection)</h4>
@@ -1009,6 +1043,10 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                     <span className="font-medium text-warning">{wizard.mapping.subfamilyCol}</span>
                   </div>
                 )}
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground flex items-center gap-1"><Rocket className="h-3 w-3" /> Prévision principale</span>
+                  <span className="font-medium text-primary">{wizard.primaryTarget === "revenue" ? "CA (€)" : "Quantité"}</span>
+                </div>
                 <div className="border-t border-border pt-2 flex justify-between">
                   <span className="text-muted-foreground">Granularités</span>
                   <span className="font-medium text-card-foreground">

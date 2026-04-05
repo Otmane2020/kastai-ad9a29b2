@@ -1,4 +1,4 @@
-import { LineChart as LineChartIcon } from "lucide-react";
+import { LineChart as LineChartIcon, DollarSign, Hash } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import DataUploadBanner from "@/components/DataUploadBanner";
 import { useData, TimeSeriesPoint } from "@/context/DataContext";
@@ -207,9 +207,27 @@ export default function Forecast() {
     };
   }, [hasData, data, viewLevel, selectedGroup, selectedModels]);
 
+  const targetLabel = data.forecastTarget === "quantity" ? "Quantité" : "Chiffre d'affaires (CA)";
+  const targetUnit = data.forecastTarget === "quantity" ? "unités" : "€";
+  const TargetIcon = data.forecastTarget === "quantity" ? Hash : DollarSign;
+
   return (
     <div className="animate-fade-in space-y-6">
       <PageHeader title="Prévisions" description="Visualisation des forecasts et comparaison des modèles" icon={<LineChartIcon className="h-5 w-5" />} />
+
+      {/* Target & horizon badge */}
+      {hasData && (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 border border-primary/20 px-3 py-1 text-xs font-semibold text-primary">
+            <TargetIcon className="h-3.5 w-3.5" />
+            {targetLabel}
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-accent/60 border border-border px-3 py-1 text-xs font-medium text-foreground">
+            Horizon : {data.horizon} mois
+          </span>
+        </div>
+      )}
+
       <DataUploadBanner />
 
       {hasData && availableLevels.length > 1 && (
@@ -233,7 +251,7 @@ export default function Forecast() {
         chartData={chartData}
         models={models}
         title={`Prévisions multi-modèles${viewLevel !== "global" && selectedGroup ? ` — ${selectedGroup}` : ""}`}
-        subtitle={viewLevel === "global" ? "Données agrégées (mensuel) — zone test 20% en pointillés" : `Niveau: ${VIEW_LABELS[viewLevel]}`}
+        subtitle={`${targetLabel} (${targetUnit})${viewLevel === "global" ? " — Données agrégées (mensuel)" : ` — Niveau: ${VIEW_LABELS[viewLevel]}`}`}
       />
 
       {/* Detailed tables */}
