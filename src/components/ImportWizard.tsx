@@ -412,14 +412,37 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
 
           {/* Step 2: Mapping */}
           {step === "mapping" && (
-            <div className="space-y-5">
-              {/* AI analysis status */}
+            <div className="relative space-y-5 min-h-[300px]">
+              {/* AI analysis overlay */}
               {wizard.aiAnalyzing && (
-                <div className="flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 p-4 animate-pulse">
-                  <Loader2 className="h-5 w-5 text-primary animate-spin" />
-                  <div>
-                    <p className="text-sm font-medium text-primary">IA en cours d'analyse...</p>
-                    <p className="text-xs text-muted-foreground">Analyse des 2 premières lignes pour comprendre le contexte de vos données</p>
+                <div className="absolute inset-0 z-10 flex items-center justify-center bg-card/80 backdrop-blur-sm rounded-2xl animate-fade-in">
+                  <div className="flex flex-col items-center gap-5 max-w-sm text-center p-8 rounded-2xl border border-primary/20 bg-card shadow-elevated">
+                    <div className="relative">
+                      <div className="h-16 w-16 rounded-full border-[3px] border-primary/20 flex items-center justify-center">
+                        <BrainCircuit className="h-8 w-8 text-primary animate-pulse" />
+                      </div>
+                      <div className="absolute inset-0 h-16 w-16 rounded-full border-[3px] border-t-primary border-r-transparent border-b-transparent border-l-transparent animate-spin" />
+                    </div>
+                    <div className="space-y-2">
+                      <h3 className="font-display text-base font-bold text-card-foreground">IA en cours d'analyse</h3>
+                      <p className="text-sm text-muted-foreground">Lecture des <span className="font-semibold text-primary">2 premières lignes</span> pour comprendre le contexte de vos données</p>
+                    </div>
+                    <div className="w-full space-y-2">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Columns3 className="h-3.5 w-3.5 text-primary animate-pulse" />
+                        <span>Détection des colonnes et rôles sémantiques...</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Crosshair className="h-3.5 w-3.5 text-primary animate-pulse [animation-delay:300ms]" />
+                        <span>Identification de la granularité optimale...</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <BarChart3 className="h-3.5 w-3.5 text-primary animate-pulse [animation-delay:600ms]" />
+                        <span>Préparation du contexte métier...</span>
+                      </div>
+                    </div>
+                    <Progress value={45} className="w-full h-1.5" />
+                    <p className="text-[10px] text-muted-foreground">Vous pourrez ajuster le mapping manuellement ensuite</p>
                   </div>
                 </div>
               )}
