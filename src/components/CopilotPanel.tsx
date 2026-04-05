@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageSquare, SendHorizonal, X, Zap } from "lucide-react";
+import { MessageSquare, SendHorizonal, X, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLocation } from "react-router-dom";
 
