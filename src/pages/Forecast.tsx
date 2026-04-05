@@ -125,68 +125,57 @@ export default function Forecast() {
 
     const monthly = aggregateMonthly(activeTs);
     const chartData: Record<string, any>[] = [];
+    const horizon = activeFc.horizon;
 
     // Backtesting: split historical data 80/20
-    const testSize = Math.max(2, Math.min(Math.floor(monthly.length * 0.2), 6));
+    const testSize = Math.max(2, Math.min(Math.floor(monthly.length * 0.2), horizon));
     const trainEnd = monthly.length - testSize;
+
+    // Re-run models on train data to get proper backtest predictions
+    const trainValues = monthly.slice(0, trainEnd).map(m => m.value);
+    let backtestFc: ForecastResult | null = null;
+    if (trainValues.length >= 4) {
+      backtestFc = runAllModels(trainValues, testSize);
+    }
 
     // Build chart with train/test split visualization
     monthly.forEach((m, idx) => {
-      const point: Record<string, any> = { period: m.label, réel: m.value };
-      // Mark test set points
-      if (idx >= trainEnd) {
+      const point: Record<string, any> = { period: m.label };
+      if (idx < trainEnd) {
+        point["réel"] = m.value;
+      } else {
         point["réel (test)"] = m.value;
+      }
+      // Add backtest predictions on test period
+      if (idx >= trainEnd && backtestFc) {
+        const testIdx = idx - trainEnd;
+        backtestFc.models.forEach((bm) => {
+          if (testIdx < bm.predictions.length) {
+            point[`${bm.name} (backtest)`] = Math.round(bm.predictions[testIdx]);
+          }
+        });
       }
       chartData.push(point);
     });
 
-    // Add backtest predictions on the test set for best model
-    if (activeFc) {
-      const bestModel = activeFc.models[0];
-      // Re-run predictions on train data to get backtest predictions for test period
-      // The backtest is already computed in the engine, but we need the predictions on test set
-      // We approximate: use the last `testSize` predictions shifted back
-      const trainValues = monthly.slice(0, trainEnd).map(m => m.value);
-      
-      // For backtest overlay, compute predictions from train data for each model
-      activeFc.models.forEach((model) => {
-        // The model was trained on all data; for backtest viz, we show predictions on test period
-        // We use a simple approach: the model's fitted values on the test set
-        // Since we have predictions array (future), we need the backtest predictions
-        // Approximate by scaling: use the ratio approach
-        if (trainValues.length >= 3) {
-          // Simple backtest: use last trainEnd values to predict testSize ahead
-          const lastTrainVal = trainValues[trainValues.length - 1];
-          model.predictions.slice(0, testSize).forEach((pred, i) => {
-            const testIdx = trainEnd + i;
-            if (testIdx < chartData.length) {
-              // Scale prediction relative to the actual forecast
-              const ratio = monthly[testIdx].value / (monthly[trainEnd - 1]?.value || 1);
-              chartData[testIdx][`${model.name} (backtest)`] = Math.round(pred * ratio);
-            }
-          });
-        }
+    // Future forecast lines from last real value
+    const lastDateVal = monthly.length > 0 ? new Date(monthly[monthly.length - 1].date) : new Date();
+    const lastRealValue = monthly.length > 0 ? monthly[monthly.length - 1].value : 0;
+
+    activeFc.models.forEach((model) => {
+      // Continuity: connect last real point to forecast
+      if (chartData.length > 0) {
+        chartData[chartData.length - 1][model.name] = lastRealValue;
+      }
+
+      model.predictions.forEach((pred, i) => {
+        const futureDate = new Date(lastDateVal.getFullYear(), lastDateVal.getMonth() + (i + 1), 1);
+        const label = futureDate.toLocaleDateString("fr-FR", { month: "short", year: "2-digit" });
+        let existing = chartData.find((r) => r.period === label);
+        if (!existing) { existing = { period: label }; chartData.push(existing); }
+        existing[model.name] = Math.round(pred);
       });
-
-      // Future forecast lines
-      const lastDateVal = monthly.length > 0 ? new Date(monthly[monthly.length - 1].date) : new Date();
-      const lastRealValue = monthly.length > 0 ? monthly[monthly.length - 1].value : 0;
-
-      activeFc.models.forEach((model) => {
-        // Continuity: add last real value to last historical point
-        if (chartData.length > 0) {
-          chartData[chartData.length - 1][model.name] = lastRealValue;
-        }
-
-        model.predictions.forEach((pred, i) => {
-          const futureDate = new Date(lastDateVal.getFullYear(), lastDateVal.getMonth() + (i + 1), 1);
-          const label = futureDate.toLocaleDateString("fr-FR", { month: "short", year: "2-digit" });
-          let existing = chartData.find((r) => r.period === label);
-          if (!existing) { existing = { period: label }; chartData.push(existing); }
-          existing[model.name] = Math.round(pred);
-        });
-      });
-    }
+    });
 
     const lastDateResult = monthly.length > 0 ? new Date(monthly[monthly.length - 1].date) : new Date();
 
