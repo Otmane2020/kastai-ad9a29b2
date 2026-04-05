@@ -3,20 +3,14 @@ import { CloudUpload, FileUp, CircleCheck, X, Zap } from "lucide-react";
 import { useData } from "@/context/DataContext";
 import ImportWizard from "@/components/ImportWizard";
 import { cn } from "@/lib/utils";
+import ForecastLoadingOverlay from "@/components/forecast/ForecastLoadingOverlay";
 
 export default function DataUploadBanner() {
   const { data, clearData, hasData } = useData();
   const [wizardOpen, setWizardOpen] = useState(false);
 
   if (data.isProcessing) {
-    return (
-      <div className="mb-4 rounded-xl border border-primary/30 bg-primary/5 p-4 animate-pulse">
-        <div className="flex items-center gap-3">
-          <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-          <span className="text-sm font-medium text-primary">Analyse en cours... mapping automatique et prévisions</span>
-        </div>
-      </div>
-    );
+    return <ForecastLoadingOverlay />;
   }
 
   if (hasData) {
