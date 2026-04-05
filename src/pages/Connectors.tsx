@@ -66,7 +66,7 @@ export default function Connectors() {
           .limit(20),
         supabase
           .from("forecast_runs")
-          .select("id, file_id, best_model, best_mape, total_points, group_count, created_at")
+          .select("id, file_id, best_model, best_mape, total_points, group_count, created_at, models_results, granularity, horizon, file_name")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false }),
       ]);
@@ -84,23 +84,38 @@ export default function Connectors() {
     setLaunchingFileId(fileId);
     try {
       const run = forecastRuns[fileId];
-      if (run) {
-        // Already calculated — navigate directly
+      const file = dbFiles.find(f => f.id === fileId);
+      
+      if (run && run.models_results && file) {
+        // Already calculated — load stored results into DataContext
+        const serverResult = run.models_results as any;
+        const mapping = file.mapping as any;
+        
+        if (hasData && data.raw.length > 0 && data.fileName === file.file_name) {
+          // Data already in memory, just re-process with stored server results
+          await processData(data.raw, data.columns, mapping, file.file_name, (file.granularity || "global") as any, run.horizon || 6, "revenue", serverResult);
+        } else {
+          // No raw data in memory — just navigate, forecast page will show what's available
+          await processData([], file.mapping ? Object.values(mapping).filter(Boolean).map(String) : [], mapping, file.file_name, (file.granularity || "global") as any, run.horizon || 6, "revenue", serverResult);
+        }
         navigate("/forecast");
-        toast({ title: "Prévisions disponibles", description: `Résultats déjà calculés (${run.best_model}, MAPE ${run.best_mape?.toFixed(1)}%)` });
-      } else {
-        // Need to re-run: reload data via current context if same file, else tell user
-        if (hasData && data.fileName === dbFiles.find(f => f.id === fileId)?.file_name) {
+        toast({ title: "Prévisions chargées", description: `Résultats restaurés (${run.best_model})` });
+      } else if (!run) {
+        // No forecast yet — need to re-run
+        if (hasData && data.fileName === file?.file_name) {
           await processData(data.raw, data.columns, data.mapping!, data.fileName!, data.granularity);
           navigate("/forecast");
           toast({ title: "Prévisions calculées", description: "Modèles exécutés avec succès" });
         } else {
           toast({ title: "Réimportation nécessaire", description: "Veuillez réimporter ce fichier pour lancer les prévisions.", variant: "destructive" });
         }
+      } else {
+        // Run exists but no models_results stored
+        toast({ title: "Données incomplètes", description: "Les résultats détaillés ne sont pas stockés. Relancez les prévisions.", variant: "destructive" });
       }
     } catch (err) {
       console.error("Launch from file error:", err);
-      toast({ title: "Erreur", description: "Impossible de lancer les prévisions.", variant: "destructive" });
+      toast({ title: "Erreur", description: "Impossible de charger les prévisions.", variant: "destructive" });
     }
     setLaunchingFileId(null);
   }, [forecastRuns, hasData, data, processData, navigate, toast, dbFiles]);

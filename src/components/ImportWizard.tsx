@@ -275,6 +275,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
     setLaunchProgress(10);
     const maxHorizon = getMaxHorizonMonths(wizard.selectedHorizons);
     setError(null);
+    let serverResult: any = null;
 
     try {
       setLaunchProgress(25);
@@ -374,7 +375,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
         }
 
         setLaunchProgress(75);
-        const serverResult = await forecastRes.json();
+        serverResult = await forecastRes.json();
         await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity, maxHorizon, wizard.primaryTarget, serverResult);
       } else {
         setLaunchProgress(50);
@@ -422,8 +423,10 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
             granularity: wizard.granularity,
             horizon: maxHorizon,
             total_points: wizard.rows.length,
-            best_model: "SES",
-            models_results: {} as any,
+            best_model: serverResult?.best_model || serverResult?.bestModel || "SES",
+            best_mape: serverResult?.models?.[0]?.mape ?? null,
+            group_count: serverResult?.groups?.length ?? 0,
+            models_results: serverResult || {} as any,
           });
         }
       } catch (histErr) {
