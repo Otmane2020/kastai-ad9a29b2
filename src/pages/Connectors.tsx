@@ -66,7 +66,7 @@ export default function Connectors() {
           .limit(20),
         supabase
           .from("forecast_runs")
-          .select("id, file_id, best_model, best_mape, total_points, group_count, created_at")
+          .select("id, file_id, best_model, best_mape, total_points, group_count, created_at, models_results, granularity, horizon, file_name")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false }),
       ]);
