@@ -275,8 +275,9 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
     setLaunchProgress(10);
     const maxHorizon = getMaxHorizonMonths(wizard.selectedHorizons);
     setError(null);
+    let serverResult: any = null;
 
-    try {
+    try:
       setLaunchProgress(25);
       if (launchMode === "server") {
         const payload = buildForecastPayload(
