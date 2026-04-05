@@ -87,7 +87,7 @@ export default function CopilotPanel({ open, onClose }: CopilotPanelProps) {
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-primary">
-            <Zap className="h-4 w-4 text-primary-foreground" />
+            <Sparkles className="h-4 w-4 text-primary-foreground" />
           </div>
           <div>
             <p className="font-display text-sm font-semibold text-foreground">Copilot IA</p>
