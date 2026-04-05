@@ -284,11 +284,48 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
           wizard.selectedTargets, wizard.prophetRegressors
         );
 
-        setLaunchProgress(40);
+        setLaunchProgress(30);
 
-        // Call Railway API through edge function proxy
+        // Step 1: Upload file to Railway via proxy
         const proxyUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/railway-proxy`;
-        const res = await fetch(proxyUrl, {
+        const uploadRes = await fetch(proxyUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({
+            endpoint: "/api/upload",
+            method: "POST",
+            payload: {
+              file_name: wizard.file!.name,
+              columns: wizard.columns,
+              mapping: wizard.mapping,
+              all_columns: payload.allColumns,
+              context_columns: payload.contextColumns,
+              business_context: payload.businessContext,
+              granularity: payload.granularity,
+              total_rows: payload.totalRows,
+              data: payload.data.slice(0, 500), // Send sample for server analysis
+              date_range: payload.dateRange,
+            },
+          }),
+          signal: AbortSignal.timeout(60000),
+        });
+
+        if (!uploadRes.ok) {
+          const errText = await uploadRes.text().catch(() => "");
+          throw new Error(`Upload Railway: ${uploadRes.status} ${errText}`);
+        }
+
+        const uploadResult = await uploadRes.json();
+        const uploadId = uploadResult.upload_id || uploadResult.id;
+        if (!uploadId) throw new Error("Le serveur n'a pas retourné d'upload_id");
+
+        setLaunchProgress(50);
+
+        // Step 2: Launch forecast with upload_id
+        const forecastRes = await fetch(proxyUrl, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -297,18 +334,24 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
           body: JSON.stringify({
             endpoint: "/api/forecast",
             method: "POST",
-            payload,
+            payload: {
+              upload_id: uploadId,
+              horizon: maxHorizon,
+              granularity: payload.granularity,
+              forecast_targets: payload.forecastTargets,
+              prophet_regressors: payload.prophetRegressors.filter(r => r.enabled).map(r => ({ key: r.key, type: r.type })),
+            },
           }),
-          signal: AbortSignal.timeout(120000),
+          signal: AbortSignal.timeout(180000),
         });
 
-        if (!res.ok) {
-          const errText = await res.text().catch(() => "");
-          throw new Error(`Serveur ML Railway: ${res.status} ${errText}`);
+        if (!forecastRes.ok) {
+          const errText = await forecastRes.text().catch(() => "");
+          throw new Error(`Serveur ML Railway: ${forecastRes.status} ${errText}`);
         }
 
-        setLaunchProgress(70);
-        const serverResult = await res.json();
+        setLaunchProgress(75);
+        const serverResult = await forecastRes.json();
         await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity, maxHorizon, wizard.primaryTarget, serverResult);
       } else {
         setLaunchProgress(50);
