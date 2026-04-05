@@ -659,9 +659,15 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
                   </div>
                 )}
                 <div className="border-t border-border pt-2 flex justify-between text-sm">
-                  <span className="text-muted-foreground">Granularité</span>
+                  <span className="text-muted-foreground">Granularités</span>
                   <span className="font-medium text-card-foreground">
-                    {{ global: "Global", sku: "Par SKU", family: "Par Famille", subfamily: "Par Sous-famille" }[wizard.granularity]}
+                    {wizard.selectedGranularities.map((g) => ({ global: "Global", sku: "SKU", family: "Famille", subfamily: "Sous-famille" }[g])).join(", ")}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Horizons</span>
+                  <span className="font-medium text-card-foreground">
+                    {wizard.selectedHorizons.join(", ")}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
