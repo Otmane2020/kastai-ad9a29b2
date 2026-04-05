@@ -291,10 +291,20 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
         
         // Convert parsed rows to CSV string to send as a "file" in JSON
         const csvHeader = wizard.columns.join(",");
+        const dateCol = wizard.mapping.dateCol;
         const csvRows = wizard.rows.slice(0, 5000).map(row =>
           wizard.columns.map(col => {
             const val = row[col];
-            const str = val instanceof Date ? val.toISOString() : String(val ?? "");
+            let str: string;
+            if (val instanceof Date) {
+              // Format as YYYY-MM-DD to avoid pandas infer_datetime_format issues
+              str = `${val.getFullYear()}-${String(val.getMonth() + 1).padStart(2, "0")}-${String(val.getDate()).padStart(2, "0")}`;
+            } else if (col === dateCol && typeof val === "string" && val.includes("T")) {
+              // ISO string like "2024-01-31T22:59:39.000Z" → "2024-01-31"
+              str = val.split("T")[0];
+            } else {
+              str = String(val ?? "");
+            }
             return str.includes(",") || str.includes('"') ? `"${str.replace(/"/g, '""')}"` : str;
           }).join(",")
         );
