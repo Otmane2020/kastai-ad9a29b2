@@ -302,10 +302,34 @@ export default function Connectors() {
                     <p className="text-muted-foreground">
                       {f.row_count ?? "?"} lignes · {f.column_count ?? "?"} col · {mappingLabel} · {f.granularity ?? "global"}
                     </p>
+                    {forecastRuns[f.id] && (
+                      <p className="text-success mt-0.5">
+                        ✓ {forecastRuns[f.id].best_model} · MAPE {forecastRuns[f.id].best_mape?.toFixed(1)}% · {forecastRuns[f.id].group_count ?? 0} groupes
+                      </p>
+                    )}
                   </div>
-                  <div className="flex items-center gap-1 text-muted-foreground shrink-0">
-                    <Timer className="h-3 w-3" />
-                    {f.uploaded_at ? new Date(f.uploaded_at).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "—"}
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={() => handleLaunchFromFile(f.id)}
+                      disabled={launchingFileId === f.id}
+                      className={cn(
+                        "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all",
+                        forecastRuns[f.id]
+                          ? "bg-success/10 text-success hover:bg-success/20"
+                          : "bg-primary/10 text-primary hover:bg-primary/20"
+                      )}
+                    >
+                      {launchingFileId === f.id ? (
+                        <div className="h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                      ) : (
+                        <CirclePlay className="h-3 w-3" />
+                      )}
+                      {forecastRuns[f.id] ? "Voir" : "Lancer"}
+                    </button>
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <Timer className="h-3 w-3" />
+                      {f.uploaded_at ? new Date(f.uploaded_at).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "—"}
+                    </div>
                   </div>
                 </div>
               );
