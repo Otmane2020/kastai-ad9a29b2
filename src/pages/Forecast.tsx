@@ -47,6 +47,19 @@ export default function Forecast() {
   const [viewLevel, setViewLevel] = useState<ViewLevel>("global");
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [selectedHorizon, setSelectedHorizon] = useState<HorizonFilter>("6M");
+  const [selectedModels, setSelectedModels] = useState<Set<string>>(new Set());
+
+  const handleToggleModel = useCallback((name: string) => {
+    setSelectedModels((prev) => {
+      const next = new Set(prev);
+      if (next.has(name)) {
+        if (next.size > 1) next.delete(name);
+      } else {
+        next.add(name);
+      }
+      return next;
+    });
+  }, []);
 
   const availableLevels = useMemo(() => {
     const levels: ViewLevel[] = ["global"];
