@@ -96,8 +96,10 @@ export type Database = {
       }
       uploaded_files: {
         Row: {
+          ai_mapping: Json | null
           column_count: number | null
           columns: Json | null
+          columns_hash: string | null
           file_name: string
           granularity: string | null
           id: string
@@ -107,8 +109,10 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          ai_mapping?: Json | null
           column_count?: number | null
           columns?: Json | null
+          columns_hash?: string | null
           file_name: string
           granularity?: string | null
           id?: string
@@ -118,8 +122,10 @@ export type Database = {
           user_id: string
         }
         Update: {
+          ai_mapping?: Json | null
           column_count?: number | null
           columns?: Json | null
+          columns_hash?: string | null
           file_name?: string
           granularity?: string | null
           id?: string
