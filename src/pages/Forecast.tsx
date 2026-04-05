@@ -63,9 +63,13 @@ export default function Forecast() {
 
   const availableLevels = useMemo(() => {
     const levels: ViewLevel[] = ["global"];
-    if (hasData && data.mapping?.productCol) levels.push("sku");
-    if (hasData && data.mapping?.categoryCol) levels.push("family");
-    if (hasData && data.mapping?.productCol && data.mapping?.categoryCol) levels.push("subfamily");
+    if (!hasData || !data.mapping) return levels;
+    const ext = data.mapping as any;
+    const hasProduct = !!(data.mapping.productCol || ext.familyCol);
+    const hasCategory = !!(data.mapping.categoryCol || ext.subfamilyCol);
+    if (hasProduct) levels.push("sku");
+    if (hasCategory) levels.push("family");
+    if (hasProduct && hasCategory) levels.push("subfamily");
     return levels;
   }, [hasData, data.mapping]);
 
@@ -118,9 +122,30 @@ export default function Forecast() {
       activeFc = data.forecasts;
       activeTs = data.timeSeries;
     } else {
+      // Try pre-computed group forecasts first
       const gf = data.groupForecasts.find((g) => g.groupKey === selectedGroup);
-      if (gf) { activeFc = gf.forecasts; activeTs = gf.timeSeries; }
-      else { activeFc = data.forecasts; activeTs = data.timeSeries; }
+      if (gf) {
+        activeFc = gf.forecasts;
+        activeTs = gf.timeSeries;
+      } else if (selectedGroup) {
+        // Compute on-the-fly for the selected group
+        const groupPts = data.timeSeries.filter((p) => {
+          const ext = data.mapping as any;
+          switch (viewLevel) {
+            case "sku": return (p.product || "Inconnu") === selectedGroup;
+            case "family": return (p.category || "Inconnu") === selectedGroup;
+            case "subfamily": return `${p.product || "?"}×${p.category || "?"}` === selectedGroup;
+            default: return true;
+          }
+        });
+        activeTs = groupPts;
+        const monthly = aggregateMonthly(groupPts);
+        const vals = monthly.map((m) => m.value);
+        activeFc = vals.length >= 4 ? runAllModels(vals, data.horizon) : data.forecasts;
+      } else {
+        activeFc = data.forecasts;
+        activeTs = data.timeSeries;
+      }
     }
 
     const monthly = aggregateMonthly(activeTs);
