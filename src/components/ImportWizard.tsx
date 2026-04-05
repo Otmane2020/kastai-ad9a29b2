@@ -891,11 +891,17 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
               </div>
 
               {launching && (
-                <div className="flex items-center justify-center gap-3">
-                  <Loader2 className="h-5 w-5 text-primary animate-spin" />
-                  <span className="text-sm font-medium text-primary">
-                    {launchMode === "server" ? "Envoi au serveur Python..." : "Calcul des prévisions..."}
-                  </span>
+                <div className="space-y-3">
+                  <Progress value={launchProgress} className="h-2" />
+                  <div className="flex items-center justify-center gap-3">
+                    <Loader2 className="h-5 w-5 text-primary animate-spin" />
+                    <span className="text-sm font-medium text-primary">
+                      {launchProgress < 30 ? "Préparation des données..." :
+                       launchProgress < 60 ? "Calcul des modèles..." :
+                       launchProgress < 90 ? "Backtesting & métriques..." :
+                       "Finalisation ✨"}
+                    </span>
+                  </div>
                 </div>
               )}
             </div>
