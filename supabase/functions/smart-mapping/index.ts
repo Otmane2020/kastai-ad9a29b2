@@ -23,14 +23,19 @@ ${JSON.stringify(sampleRows, null, 2)}
 Your task:
 1. Identify which column contains DATES (timestamps, periods, months, years)
 2. Identify which column contains the main NUMERIC VALUE to forecast (sales, revenue, quantity, amount)
-3. Identify which column contains PRODUCT/SKU identifiers (product name, SKU, item, reference)
-4. Identify which column contains CATEGORY/FAMILY (product family, category, group, segment)
-5. Identify ALL other columns and their semantic role (price, region, store, channel, etc.)
-6. Describe the business context of this dataset in 1-2 sentences
-7. Suggest the best forecasting granularity: "global", "sku", "family", or "subfamily"
+3. Identify which column contains REVENUE / CA (chiffre d'affaires, montant, turnover)
+4. Identify which column contains QUANTITY (quantité, volume, units, pièces)
+5. Identify which column contains PRODUCT/SKU identifiers (product name, SKU, item, reference)
+6. Identify which column contains CATEGORY (catégorie, type, segment)
+7. Identify which column contains FAMILY (famille, product family, gamme)
+8. Identify which column contains SUBFAMILY (sous-famille, sub-family, sous-gamme)
+9. Identify ALL other columns and their semantic role (price, promo, region, store, channel, cost, margin, etc.)
+10. Describe the business context of this dataset in 1-2 sentences
+11. Suggest the best forecasting granularity: "global", "sku", "family", or "subfamily"
 
-Be smart: a column named "Mois" is a date, "CA" is revenue, "Réf" is a product reference, etc.
-Consider the actual data values, not just column names.`;
+Be smart: a column named "Mois" is a date, "CA" is revenue, "Réf" is a product reference, "Qté" is quantity, "Promo" is a promotion flag, etc.
+Consider the actual data values, not just column names.
+ALL other columns (price, promo, region, discount, etc.) should be included as context for forecasting regressors.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -55,15 +60,19 @@ Consider the actual data values, not just column names.`;
                 properties: {
                   dateCol: { type: "string", description: "Column name for dates/periods. null if not found." },
                   valueCol: { type: "string", description: "Column name for the main numeric value to forecast." },
+                  revenueCol: { type: "string", description: "Column for revenue/CA/turnover. null if not found." },
+                  quantityCol: { type: "string", description: "Column for quantity/volume. null if not found." },
                   productCol: { type: "string", description: "Column name for product/SKU identifiers. null if not found." },
-                  categoryCol: { type: "string", description: "Column name for category/family. null if not found." },
+                  categoryCol: { type: "string", description: "Column name for category. null if not found." },
+                  familyCol: { type: "string", description: "Column name for product family. null if not found." },
+                  subfamilyCol: { type: "string", description: "Column name for sub-family. null if not found." },
                   allColumns: {
                     type: "array",
                     items: {
                       type: "object",
                       properties: {
                         name: { type: "string" },
-                        role: { type: "string", enum: ["date", "value", "product", "category", "price", "region", "store", "channel", "quantity", "cost", "margin", "other"] },
+                        role: { type: "string", enum: ["date", "value", "revenue", "quantity", "product", "category", "family", "subfamily", "price", "promo", "discount", "region", "store", "channel", "cost", "margin", "other"] },
                         description: { type: "string" },
                       },
                       required: ["name", "role", "description"],
@@ -74,7 +83,7 @@ Consider the actual data values, not just column names.`;
                   suggestedGranularity: { type: "string", enum: ["global", "sku", "family", "subfamily"] },
                   confidence: { type: "number", description: "Confidence score 0-100 for the mapping" },
                 },
-                required: ["dateCol", "valueCol", "productCol", "categoryCol", "allColumns", "businessContext", "suggestedGranularity", "confidence"],
+                required: ["dateCol", "valueCol", "revenueCol", "quantityCol", "productCol", "categoryCol", "familyCol", "subfamilyCol", "allColumns", "businessContext", "suggestedGranularity", "confidence"],
                 additionalProperties: false,
               },
             },
