@@ -286,30 +286,24 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
 
         setLaunchProgress(30);
 
-        // Step 1: Upload file to Railway via proxy
+        // Step 1: Upload file to Railway via proxy using FormData
         const proxyUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/railway-proxy`;
+        const formData = new FormData();
+        formData.append("file", wizard.file!);
+        formData.append("mapping", JSON.stringify(wizard.mapping));
+        formData.append("all_columns", JSON.stringify(payload.allColumns));
+        formData.append("context_columns", JSON.stringify(payload.contextColumns));
+        formData.append("business_context", payload.businessContext);
+        formData.append("granularity", payload.granularity);
+        formData.append("forecast_targets", JSON.stringify(payload.forecastTargets));
+
         const uploadRes = await fetch(proxyUrl, {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
             Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            "x-railway-endpoint": "/api/upload",
           },
-          body: JSON.stringify({
-            endpoint: "/api/upload",
-            method: "POST",
-            payload: {
-              file_name: wizard.file!.name,
-              columns: wizard.columns,
-              mapping: wizard.mapping,
-              all_columns: payload.allColumns,
-              context_columns: payload.contextColumns,
-              business_context: payload.businessContext,
-              granularity: payload.granularity,
-              total_rows: payload.totalRows,
-              data: payload.data.slice(0, 500), // Send sample for server analysis
-              date_range: payload.dateRange,
-            },
-          }),
+          body: formData,
           signal: AbortSignal.timeout(60000),
         });
 
