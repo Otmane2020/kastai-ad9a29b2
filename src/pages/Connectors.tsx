@@ -47,7 +47,23 @@ export default function Connectors() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [wizardOpen, setWizardOpen] = useState(false);
-  const [history] = useState(getImportHistory);
+  const [history, setHistory] = useState<ImportHistoryEntry[]>(getImportHistory);
+  const [dbFiles, setDbFiles] = useState<any[]>([]);
+
+  // Fetch uploaded files from database
+  useEffect(() => {
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: files } = await supabase
+        .from("uploaded_files")
+        .select("id, file_name, row_count, column_count, granularity, uploaded_at, mapping")
+        .eq("user_id", user.id)
+        .order("uploaded_at", { ascending: false })
+        .limit(20);
+      if (files) setDbFiles(files);
+    })();
+  }, [wizardOpen]);
   const [loadingForecast, setLoadingForecast] = useState(false);
   const [quickLoading, setQuickLoading] = useState(false);
   const quickInputRef = useRef<HTMLInputElement>(null);
