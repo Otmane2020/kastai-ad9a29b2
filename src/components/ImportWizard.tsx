@@ -36,6 +36,25 @@ export const HORIZON_OPTIONS: { value: ForecastHorizon; label: string }[] = [
   { value: "24M", label: "24 Mois" },
 ];
 
+export function horizonToMonths(h: ForecastHorizon): number {
+  switch (h) {
+    case "1D": return 1;
+    case "1W": return 1;
+    case "2W": return 1;
+    case "1M": return 1;
+    case "3M": return 3;
+    case "6M": return 6;
+    case "12M": return 12;
+    case "24M": return 24;
+    default: return 6;
+  }
+}
+
+function getMaxHorizonMonths(horizons: ForecastHorizon[]): number {
+  if (horizons.length === 0) return 6;
+  return Math.max(...horizons.map(horizonToMonths));
+}
+
 export const GRANULARITY_OPTIONS: { value: ForecastGranularity; label: string; icon: React.ReactNode; desc: string }[] = [
   { value: "global", label: "Global (agrégé)", icon: <Globe className="h-4 w-4" />, desc: "Prévision sur le total des ventes" },
   { value: "sku", label: "Par SKU / Produit", icon: <Package className="h-4 w-4" />, desc: "Prévision par référence produit" },
@@ -252,6 +271,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
   const handleLaunch = useCallback(async () => {
     setLaunching(true);
     setLaunchProgress(10);
+    const maxHorizon = getMaxHorizonMonths(wizard.selectedHorizons);
     setError(null);
 
     try {
@@ -282,10 +302,10 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
 
         setLaunchProgress(70);
         const serverResult = await res.json();
-        await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity, serverResult);
+        await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity, maxHorizon, serverResult);
       } else {
         setLaunchProgress(50);
-        await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity);
+        await processData(wizard.rows, wizard.columns, wizard.mapping, wizard.file!.name, wizard.granularity, maxHorizon);
       }
 
       setLaunchProgress(100);
@@ -327,7 +347,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
             file_id: fileId || null,
             file_name: wizard.file!.name,
             granularity: wizard.granularity,
-            horizon: 6,
+            horizon: maxHorizon,
             total_points: wizard.rows.length,
             best_model: "SES",
             models_results: {} as any,

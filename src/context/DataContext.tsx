@@ -32,11 +32,12 @@ export interface DataState {
   granularity: Granularity;
   groupForecasts: GroupForecast[];
   groupKeys: string[];
+  horizon: number;
 }
 
 interface DataContextType {
   data: DataState;
-  processData: (rows: DataRow[], columns: string[], mapping: ColumnMapping, fileName: string, granularity: Granularity, serverResult?: any) => Promise<void>;
+  processData: (rows: DataRow[], columns: string[], mapping: ColumnMapping, fileName: string, granularity: Granularity, horizon?: number, serverResult?: any) => Promise<void>;
   clearData: () => void;
   hasData: boolean;
 }
@@ -52,6 +53,7 @@ const initialState: DataState = {
   granularity: "global",
   groupForecasts: [],
   groupKeys: [],
+  horizon: 6,
 };
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -60,12 +62,10 @@ function buildTimeSeries(rows: DataRow[], mapping: ColumnMapping): TimeSeriesPoi
   const timeSeries: TimeSeriesPoint[] = [];
   if (!mapping.dateCol) return timeSeries;
 
-  // Resolve value column: valueCol > revenueCol > quantityCol
   const extMapping = mapping as any;
   const valueColumn = mapping.valueCol || extMapping.revenueCol || extMapping.quantityCol;
   if (!valueColumn) return timeSeries;
 
-  // Detect product/category columns including extended mapping
   const productCol = mapping.productCol || extMapping.familyCol;
   const categoryCol = mapping.categoryCol || extMapping.subfamilyCol;
 
@@ -74,16 +74,13 @@ function buildTimeSeries(rows: DataRow[], mapping: ColumnMapping): TimeSeriesPoi
     const valueRaw = row[valueColumn];
     if (dateRaw == null || valueRaw == null) continue;
 
-    // Robust date parsing: handle European formats (DD/MM/YYYY), Excel serial numbers
     let date: Date;
     if (dateRaw instanceof Date) {
       date = dateRaw;
     } else if (typeof dateRaw === "number") {
-      // Excel serial date
       date = new Date((dateRaw - 25569) * 86400 * 1000);
     } else {
       const s = String(dateRaw).trim();
-      // Try DD/MM/YYYY or DD-MM-YYYY
       const euMatch = s.match(/^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{2,4})$/);
       if (euMatch) {
         const [, d, m, y] = euMatch;
@@ -94,7 +91,6 @@ function buildTimeSeries(rows: DataRow[], mapping: ColumnMapping): TimeSeriesPoi
       }
     }
 
-    // Robust value parsing: handle comma decimals, spaces
     let value: number;
     if (typeof valueRaw === "number") {
       value = valueRaw;
@@ -129,14 +125,14 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<DataState>(initialState);
 
   const processData = useCallback(async (
-    rows: DataRow[], columns: string[], mapping: ColumnMapping, fileName: string, granularity: Granularity, serverResult?: any
+    rows: DataRow[], columns: string[], mapping: ColumnMapping, fileName: string, granularity: Granularity, horizon: number = 6, serverResult?: any
   ) => {
     setData((prev) => ({ ...prev, isProcessing: true }));
 
     try {
       const timeSeries = buildTimeSeries(rows, mapping);
       const values = timeSeries.map((t) => t.value);
-      const forecasts = values.length >= 6 ? runAllModels(values, 6) : null;
+      const forecasts = values.length >= 6 ? runAllModels(values, horizon) : null;
 
       // Group forecasts
       const groups = new Map<string, TimeSeriesPoint[]>();
@@ -156,13 +152,12 @@ export function DataProvider({ children }: { children: ReactNode }) {
           groupForecasts.push({
             groupKey,
             timeSeries: pts,
-            forecasts: runAllModels(gValues, 6),
+            forecasts: runAllModels(gValues, horizon),
           });
           groupKeys.push(groupKey);
         }
       }
 
-      // Sort groups by total value descending
       groupForecasts.sort((a, b) => {
         const totalA = a.timeSeries.reduce((s, p) => s + p.value, 0);
         const totalB = b.timeSeries.reduce((s, p) => s + p.value, 0);
@@ -180,6 +175,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         granularity,
         groupForecasts,
         groupKeys: groupForecasts.map((g) => g.groupKey),
+        horizon,
       });
     } catch (err) {
       console.error("Processing error:", err);
