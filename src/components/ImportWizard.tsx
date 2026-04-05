@@ -93,6 +93,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
   const [launchMode, setLaunchMode] = useState<"local" | "server">("local");
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const [dragActive, setDragActive] = useState(false);
 
   const stepIdx = STEPS.indexOf(step);
@@ -362,7 +363,7 @@ export default function ImportWizard({ open, onClose }: { open: boolean; onClose
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto px-6 py-5">
+        <div ref={contentRef} className="flex-1 overflow-y-auto px-6 py-5">
           {error && (
             <div className="mb-4 flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
               <TriangleAlert className="h-4 w-4 shrink-0" />
