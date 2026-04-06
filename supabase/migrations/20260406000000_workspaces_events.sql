@@ -29,6 +29,9 @@ CREATE TABLE public.events (
   impact_value DOUBLE PRECISION DEFAULT 0,
   start_date DATE NOT NULL,
   end_date DATE NOT NULL,
+  sku TEXT,                                    -- SKU / référence produit ciblé
+  famille TEXT,                                -- famille produit
+  sous_famille TEXT,                           -- sous-famille produit
   affected_products TEXT[],                    -- null = all
   affected_categories TEXT[],
   notes TEXT,

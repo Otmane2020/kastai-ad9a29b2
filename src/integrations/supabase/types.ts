@@ -107,6 +107,7 @@ export type Database = {
           row_count: number | null
           uploaded_at: string | null
           user_id: string
+          workspace_id: string | null
         }
         Insert: {
           ai_mapping?: Json | null
@@ -120,6 +121,7 @@ export type Database = {
           row_count?: number | null
           uploaded_at?: string | null
           user_id: string
+          workspace_id?: string | null
         }
         Update: {
           ai_mapping?: Json | null
@@ -133,6 +135,106 @@ export type Database = {
           row_count?: number | null
           uploaded_at?: string | null
           user_id?: string
+          workspace_id?: string | null
+        }
+        Relationships: []
+      }
+      workspaces: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          description: string | null
+          color: string | null
+          icon: string | null
+          is_default: boolean | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          description?: string | null
+          color?: string | null
+          icon?: string | null
+          is_default?: boolean | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          description?: string | null
+          color?: string | null
+          icon?: string | null
+          is_default?: boolean | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      events: {
+        Row: {
+          id: string
+          workspace_id: string | null
+          user_id: string
+          name: string
+          type: string
+          impact_type: string
+          impact_value: number | null
+          start_date: string
+          end_date: string
+          sku: string | null
+          famille: string | null
+          sous_famille: string | null
+          affected_products: string[] | null
+          affected_categories: string[] | null
+          notes: string | null
+          source: string | null
+          color: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          workspace_id?: string | null
+          user_id: string
+          name: string
+          type?: string
+          impact_type?: string
+          impact_value?: number | null
+          start_date: string
+          end_date: string
+          sku?: string | null
+          famille?: string | null
+          sous_famille?: string | null
+          affected_products?: string[] | null
+          affected_categories?: string[] | null
+          notes?: string | null
+          source?: string | null
+          color?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          workspace_id?: string | null
+          user_id?: string
+          name?: string
+          type?: string
+          impact_type?: string
+          impact_value?: number | null
+          start_date?: string
+          end_date?: string
+          sku?: string | null
+          famille?: string | null
+          sous_famille?: string | null
+          affected_products?: string[] | null
+          affected_categories?: string[] | null
+          notes?: string | null
+          source?: string | null
+          color?: string | null
+          created_at?: string | null
         }
         Relationships: []
       }

@@ -20,6 +20,9 @@ interface CalendarEvent {
   impact_value: number;
   start_date: string;
   end_date: string;
+  sku?: string;
+  famille?: string;
+  sous_famille?: string;
   notes?: string;
   source: string;
   color: string;
@@ -45,7 +48,7 @@ const TYPE_COLORS: Record<EventType, string> = {
 
 /* ── CSV export helper ──────────────────────────────────────────────────────── */
 function eventsToCSV(events: CalendarEvent[]): string {
-  const headers = ["name", "type", "impact_type", "impact_value", "start_date", "end_date", "notes"];
+  const headers = ["name", "type", "sku", "famille", "sous_famille", "impact_type", "impact_value", "start_date", "end_date", "notes"];
   const rows = events.map((e) =>
     headers.map((h) => JSON.stringify((e as any)[h] ?? "")).join(",")
   );
@@ -64,6 +67,9 @@ function parseEventsCSV(text: string): Partial<CalendarEvent>[] {
     return {
       name: obj.name || obj.nom || obj.event || "Événement",
       type: (obj.type || "other") as EventType,
+      sku: obj.sku || obj.reference || obj.ref || "",
+      famille: obj.famille || obj.family || obj.categorie || "",
+      sous_famille: obj.sous_famille || obj.sousfamille || obj.subcategory || obj.sous_categorie || "",
       impact_type: (obj.impact_type || obj.impacttype || "percent") as ImpactType,
       impact_value: parseFloat(obj.impact_value || obj.impactvalue || "0") || 0,
       start_date: obj.start_date || obj.startdate || obj.debut || "",
@@ -84,51 +90,81 @@ function EventForm({ onSave, onCancel }: { onSave: (e: Partial<CalendarEvent>) =
   });
   const set = (k: string, v: any) => setForm((p) => ({ ...p, [k]: v }));
 
+  const inp = "mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/30";
+
   return (
     <div className="rounded-xl border border-border bg-card p-5 space-y-4 animate-fade-in">
-      <h3 className="font-semibold text-sm text-foreground">Nouvel événement</h3>
+      <h3 className="font-semibold text-sm text-foreground">Nouvel événement / promotion</h3>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+
+        {/* Nom */}
         <div className="sm:col-span-2">
           <label className="text-xs text-muted-foreground">Nom de l'événement *</label>
           <input value={form.name ?? ""} onChange={(e) => set("name", e.target.value)}
-            placeholder="ex: Promo Ramadan, Saisonnalité été…"
-            className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/30" />
+            placeholder="ex: Promo Ramadan, Saisonnalité été…" className={inp} />
         </div>
+
+        {/* Type */}
         <div>
           <label className="text-xs text-muted-foreground">Type</label>
           <select value={form.type} onChange={(e) => { set("type", e.target.value); set("color", TYPE_COLORS[e.target.value as EventType]); }}
-            className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none">
+            className={inp}>
             {Object.entries(TYPE_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
           </select>
         </div>
+
+        {/* Impact */}
         <div>
-          <label className="text-xs text-muted-foreground">Impact</label>
+          <label className="text-xs text-muted-foreground">Impact estimé</label>
           <div className="mt-1 flex gap-2">
             <select value={form.impact_type} onChange={(e) => set("impact_type", e.target.value)}
               className="rounded-lg border border-border bg-background px-2 py-2 text-sm outline-none">
               <option value="percent">%</option>
-              <option value="absolute">Valeur</option>
+              <option value="absolute">Valeur absolue</option>
             </select>
             <input type="number" value={form.impact_value ?? 0} onChange={(e) => set("impact_value", parseFloat(e.target.value))}
               className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/30" />
           </div>
         </div>
+
+        {/* Dates */}
         <div>
           <label className="text-xs text-muted-foreground">Date début *</label>
-          <input type="date" value={form.start_date ?? ""} onChange={(e) => set("start_date", e.target.value)}
-            className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/30" />
+          <input type="date" value={form.start_date ?? ""} onChange={(e) => set("start_date", e.target.value)} className={inp} />
         </div>
         <div>
           <label className="text-xs text-muted-foreground">Date fin *</label>
-          <input type="date" value={form.end_date ?? ""} onChange={(e) => set("end_date", e.target.value)}
-            className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/30" />
+          <input type="date" value={form.end_date ?? ""} onChange={(e) => set("end_date", e.target.value)} className={inp} />
         </div>
+
+        {/* Ciblage produit */}
         <div className="sm:col-span-2">
+          <p className="text-xs font-medium text-muted-foreground mb-2 mt-1 uppercase tracking-wide">Ciblage produit (optionnel)</p>
+        </div>
+        <div>
+          <label className="text-xs text-muted-foreground">SKU / Référence</label>
+          <input value={form.sku ?? ""} onChange={(e) => set("sku", e.target.value)}
+            placeholder="ex: REF-001, SKU-XYZ…" className={inp} />
+        </div>
+        <div>
+          <label className="text-xs text-muted-foreground">Famille</label>
+          <input value={form.famille ?? ""} onChange={(e) => set("famille", e.target.value)}
+            placeholder="ex: Électronique, Vêtements…" className={inp} />
+        </div>
+        <div>
+          <label className="text-xs text-muted-foreground">Sous-famille</label>
+          <input value={form.sous_famille ?? ""} onChange={(e) => set("sous_famille", e.target.value)}
+            placeholder="ex: Smartphones, T-shirts…" className={inp} />
+        </div>
+
+        {/* Notes */}
+        <div>
           <label className="text-xs text-muted-foreground">Notes</label>
           <textarea value={form.notes ?? ""} onChange={(e) => set("notes", e.target.value)} rows={2}
-            placeholder="Description, produits affectés…"
+            placeholder="Description complémentaire…"
             className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/30 resize-none" />
         </div>
+
       </div>
       <div className="flex justify-end gap-2">
         <button onClick={onCancel} className="rounded-lg border border-border px-4 py-2 text-sm hover:bg-muted transition-colors">Annuler</button>
@@ -237,8 +273,8 @@ export default function Events() {
       {/* CSV format hint */}
       <div className="rounded-lg border border-dashed border-border bg-muted/30 px-4 py-3">
         <p className="text-xs text-muted-foreground">
-          <strong>Format CSV attendu :</strong> name, type (promo/season/holiday/launch/disruption), impact_type (percent/absolute), impact_value, start_date (YYYY-MM-DD), end_date, notes
-          · L'IA mappe automatiquement les colonnes non-standard.
+          <strong>Format CSV attendu :</strong> name, type (promo/season/holiday/launch/disruption), sku, famille, sous_famille, impact_type (percent/absolute), impact_value, start_date (YYYY-MM-DD), end_date, notes
+          · L'IA mappe automatiquement les colonnes non-standard (référence, catégorie, famille…).
         </p>
       </div>
 
@@ -276,18 +312,29 @@ export default function Events() {
                 </span>
                 <span className={cn("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold",
                   ev.impact_value >= 0 ? "bg-emerald-500/10 text-emerald-600" : "bg-red-500/10 text-red-600")}>
+                  <Percent className="h-2.5 w-2.5" />
                   {ev.impact_value >= 0 ? "+" : ""}{ev.impact_value}{ev.impact_type === "percent" ? "%" : ""}
                 </span>
+                {ev.sku && (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-border bg-muted/60 px-2 py-0.5 text-[10px] text-muted-foreground font-mono">
+                    <Hash className="h-2.5 w-2.5" />{ev.sku}
+                  </span>
+                )}
                 {ev.source === "csv" && (
                   <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 text-primary px-2 py-0.5 text-[10px]">
                     <Sparkles className="h-2.5 w-2.5" />IA
                   </span>
                 )}
               </div>
-              <p className="mt-2 text-xs text-muted-foreground">
+              {(ev.famille || ev.sous_famille) && (
+                <p className="mt-1.5 text-[10px] text-muted-foreground/70">
+                  {[ev.famille, ev.sous_famille].filter(Boolean).join(" › ")}
+                </p>
+              )}
+              <p className="mt-1.5 text-xs text-muted-foreground">
                 {ev.start_date} → {ev.end_date}
               </p>
-              {ev.notes && <p className="mt-1 text-xs text-muted-foreground/70 line-clamp-1">{ev.notes}</p>}
+              {ev.notes && <p className="mt-0.5 text-xs text-muted-foreground/70 line-clamp-1">{ev.notes}</p>}
             </div>
           ))}
         </div>
