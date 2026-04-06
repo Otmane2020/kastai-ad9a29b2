@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { DataProvider } from "@/context/DataContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { WorkspaceProvider } from "@/context/WorkspaceContext";
+import { PlanProvider } from "@/context/PlanContext";
 import Events from "@/pages/Events";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import AppLayout from "@/components/AppLayout";
@@ -24,6 +25,7 @@ import Inventory from "@/pages/Inventory";
 import Connectors from "@/pages/Connectors";
 import UserManagement from "@/pages/UserManagement";
 import SuperAdmin from "@/pages/SuperAdmin";
+import Settings from "@/pages/Settings";
 import Auth from "@/pages/Auth";
 import Landing from "@/pages/Landing";
 import NotFound from "@/pages/NotFound";
@@ -34,6 +36,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AuthProvider>
+        <PlanProvider>
         <WorkspaceProvider>
         <DataProvider>
           <Toaster />
@@ -59,12 +62,14 @@ const App = () => (
                 <Route path="/connectors" element={<Connectors />} />
                 <Route path="/users" element={<UserManagement />} />
                 <Route path="/superadmin" element={<SuperAdmin />} />
+                <Route path="/settings" element={<Settings />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
         </DataProvider>
         </WorkspaceProvider>
+        </PlanProvider>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>

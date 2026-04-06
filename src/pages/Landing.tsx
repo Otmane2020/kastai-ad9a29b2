@@ -439,32 +439,20 @@ function SocialProof() {
 }
 
 /* ─── PRICING ─── */
-const plans = [
-  {
-    name: "Gratuit", price: "0", period: "", badge: "",
-    features: ["1 jeu de données", "1 000 lignes", "Prévision basique", "Tableau de bord simple"],
-    limits: ["Pas d'alertes", "Pas de Copilot"],
-    cta: "Commencer gratuitement", highlight: false
-  },
-  {
-    name: "Starter", price: "29", period: "/mois", badge: "",
-    features: ["3 jeux de données", "10 000 lignes", "Prévision automatique", "Tableau de bord complet", "Export CSV", "Intégration Shopify"],
-    limits: ["Copilot +19€"],
-    cta: "Démarrer", highlight: false
-  },
-  {
-    name: "Pro", price: "79", period: "/mois", badge: "Le plus populaire",
-    features: ["10 jeux de données", "100 000 lignes", "Backtesting avancé", "Alertes intelligentes", "Recommandations d'achat", "Accès API", "Copilot IA inclus"],
-    limits: [],
-    cta: "Essai Pro gratuit", highlight: true
-  },
-  {
-    name: "Business", price: "199", period: "/mois", badge: "",
-    features: ["Données illimitées", "Prévision multi-SKU", "Intégration S&OP", "Multi-utilisateurs", "3 connecteurs", "Copilot illimité", "Support prioritaire"],
-    limits: [],
-    cta: "Contacter les ventes", highlight: false
-  },
-];
+import { PLAN_ORDER, PLANS } from "@/lib/plans";
+const plans = PLAN_ORDER.map((id) => {
+  const p = PLANS[id];
+  return {
+    name: p.name,
+    price: String(p.price),
+    period: p.period,
+    badge: p.badge,
+    features: p.featureLabels,
+    limits: p.limits,
+    cta: p.cta,
+    highlight: p.highlight,
+  };
+});
 
 function Pricing() {
   const navigate = useNavigate();
@@ -501,23 +489,23 @@ function Pricing() {
               {plan.badge && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                   <Badge className="px-4 py-1 text-xs font-semibold border-0"
-                    style={{ background: `linear-gradient(135deg, ${C.accent}, ${C.accentDeep})`, color: "white", boxShadow: `0 4px 15px ${C.accent}40` }}
+                    style={{ background: plan.highlight ? "rgba(255,255,255,0.25)" : `linear-gradient(135deg, ${C.accent}, ${C.accentDeep})`, color: "white", boxShadow: `0 4px 15px ${C.accent}40`, backdropFilter: plan.highlight ? "blur(6px)" : undefined }}
                   >{plan.badge}</Badge>
                 </div>
               )}
-              <h3 className="font-display text-lg font-semibold" style={{ color: C.white }}>{plan.name}</h3>
+              <h3 className="font-display text-lg font-semibold" style={{ color: plan.highlight ? "#ffffff" : C.white }}>{plan.name}</h3>
               <div className="mt-4 flex items-baseline gap-1">
-                <span className="font-display text-4xl font-bold" style={{ color: C.white }}>${plan.price}</span>
-                {plan.period && <span className="text-sm" style={{ color: C.steel }}>{plan.period}</span>}
+                <span className="font-display text-4xl font-bold" style={{ color: plan.highlight ? "#ffffff" : C.white }}>${plan.price}</span>
+                {plan.period && <span className="text-sm" style={{ color: plan.highlight ? "rgba(255,255,255,0.75)" : C.steel }}>{plan.period}</span>}
               </div>
               <ul className="mt-6 space-y-3">
                 {plan.features.map((f, j) => (
-                  <li key={j} className="flex items-start gap-2 text-sm" style={{ color: C.steel }}>
-                    <Check className="mt-0.5 h-4 w-4 shrink-0" style={{ color: C.azur }} /> {f}
+                  <li key={j} className="flex items-start gap-2 text-sm" style={{ color: plan.highlight ? "rgba(255,255,255,0.92)" : C.steel }}>
+                    <Check className="mt-0.5 h-4 w-4 shrink-0" style={{ color: plan.highlight ? "#67e8f9" : C.azur }} /> {f}
                   </li>
                 ))}
                 {plan.limits.map((l, j) => (
-                  <li key={`l${j}`} className="flex items-start gap-2 text-sm" style={{ color: `${C.steel}60` }}>
+                  <li key={`l${j}`} className="flex items-start gap-2 text-sm" style={{ color: plan.highlight ? "rgba(255,255,255,0.5)" : `${C.steel}60` }}>
                     <span className="mt-0.5 h-4 w-4 shrink-0 text-center">—</span> {l}
                   </li>
                 ))}
@@ -526,7 +514,7 @@ function Pricing() {
                 className="mt-7 w-full font-semibold"
                 onClick={() => navigate("/auth")}
                 style={plan.highlight
-                  ? { background: `linear-gradient(135deg, ${C.accent}, ${C.accentDeep})`, color: "white", boxShadow: `0 4px 20px ${C.accent}30` }
+                  ? { background: "#ffffff", color: C.accentDeep, boxShadow: `0 4px 20px rgba(0,0,0,0.2)` }
                   : { background: "#F0F6FF", color: C.accentDeep, border: "1px solid rgba(43,127,224,0.25)" }
                 }
               >
