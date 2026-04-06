@@ -266,7 +266,7 @@ function DashboardPreview() {
 
 /* ─── RESULTS ─── */
 const results = [
-  { icon: TrendingDown, value: "-30%", label: "Stockouts reduced", color: "text-green-500" },
+  { icon: TrendingDown, value: "-30%", label: "Stockouts reduced", color: "text-success" },
   { icon: PackageCheck, value: "-20%", label: "Overstock eliminated", color: "text-primary" },
   { icon: TrendingUp, value: "+15%", label: "Cash flow improved", color: "text-accent" },
 ];
