@@ -51,18 +51,18 @@ function Nav() {
           </span>
         </div>
         <div className="hidden items-center gap-8 text-sm md:flex" style={{ color: `${C.steel}` }}>
-          <a href="#features" className="transition-colors hover:text-white">Features</a>
-          <a href="#pricing" className="transition-colors hover:text-white">Pricing</a>
+          <a href="#features" className="transition-colors hover:text-white">Fonctionnalités</a>
+          <a href="#pricing" className="transition-colors hover:text-white">Tarifs</a>
           <a href="#faq" className="transition-colors hover:text-white">FAQ</a>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="ghost" className="hover:bg-white/5" style={{ color: C.steel }} onClick={() => navigate("/auth")}>
-            Log in
+            Connexion
           </Button>
           <Button size="sm" onClick={() => navigate("/auth")}
             style={{ background: `linear-gradient(135deg, ${C.accent}, ${C.accentDeep})`, boxShadow: `0 4px 20px ${C.accent}33`, letterSpacing: "0.3px" }}
           >
-            Start free
+            Commencer gratuitement
           </Button>
         </div>
       </div>
@@ -86,7 +86,7 @@ function Hero() {
             <Badge className="mb-8 px-5 py-2 text-sm font-medium border-0"
               style={{ background: `${C.accent}15`, color: C.azur }}
             >
-              <Sparkles className="mr-2 h-3.5 w-3.5" /> 95% forecast accuracy
+              <Sparkles className="mr-2 h-3.5 w-3.5" /> Précision de prévision jusqu'à 95%
             </Badge>
           </motion.div>
 
@@ -95,33 +95,33 @@ function Hero() {
             className="mx-auto max-w-4xl font-display text-5xl font-bold leading-[1.08] tracking-tight sm:text-6xl lg:text-7xl"
             style={{ color: C.white }}
           >
-            Predict your demand.{" "}
+            Anticipez votre demande.{" "}
             <span style={{ background: `linear-gradient(135deg, ${C.accent}, ${C.azur})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-              Eliminate stockouts.
+              Éliminez les ruptures.
             </span>{" "}
-            Maximize profit.
+            Maximisez vos profits.
           </motion.h1>
 
           <motion.p variants={fadeUp} custom={2} className="mx-auto mt-7 max-w-2xl text-lg leading-relaxed" style={{ color: C.steel }}>
-            AI-powered demand forecasting for e-commerce &amp; retail — no data science required.
-            Upload your data. Get predictions in minutes.
+            Prévision de demande pilotée par l'IA pour l'e-commerce et le retail — sans compétences techniques.
+            Importez vos données. Obtenez vos prévisions en quelques minutes.
           </motion.p>
 
           <motion.div variants={fadeUp} custom={3} className="mt-12 flex flex-wrap items-center justify-center gap-4">
             <Button size="lg" className="h-13 px-10 text-base font-semibold" onClick={() => navigate("/auth")}
               style={{ background: `linear-gradient(135deg, ${C.accent}, ${C.accentDeep})`, boxShadow: `0 4px 25px ${C.accent}40`, letterSpacing: "0.3px" }}
             >
-              Start forecasting for free <ArrowRight className="ml-2 h-4 w-4" />
+              Commencer gratuitement <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
             <Button size="lg" variant="ghost" className="h-13 px-8 text-base font-semibold"
               style={{ color: C.steel, border: `1px solid rgba(255,255,255,0.1)` }}
             >
-              <Upload className="mr-2 h-4 w-4" /> Upload your data
+              <Upload className="mr-2 h-4 w-4" /> Importer mes données
             </Button>
           </motion.div>
 
           <motion.div variants={fadeUp} custom={4} className="mt-10 flex items-center justify-center gap-8 text-sm" style={{ color: `${C.steel}99` }}>
-            {["No credit card", "14-day free trial", "Setup in 2 min"].map((t, i) => (
+            {["Sans carte bancaire", "14 jours d'essai gratuit", "Prêt en 2 min"].map((t, i) => (
               <span key={i} className="flex items-center gap-2">
                 <Check className="h-4 w-4" style={{ color: C.azur }} /> {t}
               </span>
@@ -138,9 +138,9 @@ function Hero() {
 
 /* ─── PROBLEM ─── */
 const problems = [
-  { icon: FileSpreadsheet, title: "Excel forecasting", desc: "Manual spreadsheets = human error, outdated models, zero scalability." },
-  { icon: AlertTriangle, title: "Stockouts", desc: "Lost sales, frustrated customers, damaged brand reputation." },
-  { icon: DollarSign, title: "Overstock", desc: "Cash locked in dead inventory. Warehousing costs eating your margins." },
+  { icon: FileSpreadsheet, title: "Prévisions sur Excel", desc: "Tableurs manuels = erreurs humaines, modèles obsolètes, zéro scalabilité." },
+  { icon: AlertTriangle, title: "Ruptures de stock", desc: "Ventes perdues, clients frustrés, image de marque dégradée." },
+  { icon: DollarSign, title: "Surstock", desc: "Trésorerie immobilisée dans des stocks morts. Les coûts d'entrepôt rongent vos marges." },
 ];
 
 function Problem() {
@@ -148,12 +148,12 @@ function Problem() {
     <section className="py-28" style={{ background: C.bgPrimary }}>
       <div className="mx-auto max-w-6xl px-6">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={stagger} className="text-center">
-          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-[0.2em]" style={{ color: "#EF4444" }}>The problem</motion.p>
+          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-[0.2em]" style={{ color: "#EF4444" }}>Le problème</motion.p>
           <motion.h2 variants={fadeUp} className="mt-4 font-display text-3xl font-bold sm:text-4xl" style={{ color: C.white }}>
-            Still relying on intuition to plan demand?
+            Vous planifiez encore votre demande à l'instinct ?
           </motion.h2>
           <motion.p variants={fadeUp} className="mx-auto mt-5 max-w-2xl leading-relaxed" style={{ color: C.steel }}>
-            Most businesses still use Excel or gut feeling. This leads to overstock, lost sales, and poor cash flow.
+            La plupart des entreprises utilisent encore Excel ou leur intuition. Résultat : surstock, ventes perdues, trésorerie sous pression.
           </motion.p>
         </motion.div>
 
@@ -182,13 +182,13 @@ function Solution() {
     <section className="py-28" style={{ background: C.bgSecondary }}>
       <div className="mx-auto max-w-6xl px-6">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center">
-          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-[0.2em]" style={{ color: C.azur }}>The solution</motion.p>
+          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-[0.2em]" style={{ color: C.azur }}>La solution</motion.p>
           <motion.h2 variants={fadeUp} className="mt-4 font-display text-3xl font-bold sm:text-4xl" style={{ color: C.white }}>
-            AI that predicts your sales — automatically
+            Une IA qui prédit vos ventes — automatiquement
           </motion.h2>
           <motion.p variants={fadeUp} className="mx-auto mt-5 max-w-2xl leading-relaxed" style={{ color: C.steel }}>
-            Kast AI uses 13 advanced forecasting models to predict your future demand with high accuracy.
-            No setup. No code. Just upload and forecast.
+            Kast AI utilise 13 modèles de prévision avancés pour anticiper votre demande future avec une haute précision.
+            Zéro configuration. Zéro code. Importez et prévoyez.
           </motion.p>
         </motion.div>
 
@@ -206,10 +206,10 @@ function Solution() {
               <h3 className="font-display text-xl font-bold" style={{ color: C.white }}>How it works</h3>
               <div className="mt-5 space-y-4">
                 {[
-                  "Upload your CSV, Excel, or connect Shopify",
-                  "AI automatically tests 13 models (ARIMA, Prophet, XGBoost, LSTM…)",
-                  "Backtesting selects the most accurate model",
-                  "Get forecasts, alerts, and recommendations instantly"
+                  "Importez votre CSV, Excel ou connectez Shopify",
+                  "L'IA teste automatiquement 13 modèles (ARIMA, Prophet, XGBoost, LSTM…)",
+                  "Le backtesting sélectionne le modèle le plus précis",
+                  "Recevez prévisions, alertes et recommandations instantanément"
                 ].map((step, i) => (
                   <div key={i} className="flex items-start gap-3">
                     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold"
@@ -229,12 +229,12 @@ function Solution() {
 
 /* ─── FEATURES ─── */
 const features = [
-  { icon: BarChart3, title: "AI Forecasting", desc: "13 models compete. The best wins. Automatic model selection based on your data patterns." },
-  { icon: Zap, title: "Backtesting & Accuracy", desc: "80/20 split backtesting with MAPE optimization. Know your forecast precision." },
-  { icon: ShieldAlert, title: "Smart Alerts", desc: "Real-time stockout & overstock risk detection. Never miss a critical threshold." },
-  { icon: PackageCheck, title: "Order Recommendations", desc: "Know what to order, how much, and when. AI-driven purchasing suggestions." },
-  { icon: Layers, title: "S&OP Integration", desc: "Connect forecasts to inventory, production, and financial planning." },
-  { icon: ShoppingCart, title: "Multi-channel", desc: "Shopify, CSV, Excel, ERP. Import from anywhere and forecast all channels." },
+  { icon: BarChart3, title: "Prévision IA", desc: "13 modèles s'affrontent. Le meilleur gagne. Sélection automatique selon vos données." },
+  { icon: Zap, title: "Backtesting & Précision", desc: "Backtesting 80/20 avec optimisation MAPE. Connaissez la précision de vos prévisions." },
+  { icon: ShieldAlert, title: "Alertes intelligentes", desc: "Détection en temps réel des risques de rupture et de surstock. Ne manquez plus aucun seuil critique." },
+  { icon: PackageCheck, title: "Recommandations d'achat", desc: "Sachez quoi commander, combien et quand. Suggestions d'approvisionnement pilotées par l'IA." },
+  { icon: Layers, title: "Intégration S&OP", desc: "Reliez vos prévisions à la gestion des stocks, la production et la planification financière." },
+  { icon: ShoppingCart, title: "Multi-canal", desc: "Shopify, CSV, Excel, ERP. Importez de partout et prévoyez tous vos canaux." },
 ];
 
 function Features() {
@@ -242,9 +242,9 @@ function Features() {
     <section id="features" className="py-28" style={{ background: C.bgPrimary }}>
       <div className="mx-auto max-w-6xl px-6">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center">
-          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-[0.2em]" style={{ color: C.azur }}>Features</motion.p>
+          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-[0.2em]" style={{ color: C.azur }}>Fonctionnalités</motion.p>
           <motion.h2 variants={fadeUp} className="mt-4 font-display text-3xl font-bold sm:text-4xl" style={{ color: C.white }}>
-            Everything you need to master demand
+            Tout ce qu'il faut pour maîtriser votre demande
           </motion.h2>
         </motion.div>
 
@@ -282,9 +282,9 @@ function DashboardPreview() {
     <section className="py-28" style={{ background: C.bgSecondary }}>
       <div className="mx-auto max-w-6xl px-6">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center">
-          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-[0.2em]" style={{ color: C.azur }}>Dashboard</motion.p>
+          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-[0.2em]" style={{ color: C.azur }}>Tableau de bord</motion.p>
           <motion.h2 variants={fadeUp} className="mt-4 font-display text-3xl font-bold sm:text-4xl" style={{ color: C.white }}>
-            Your command center for demand planning
+            Votre centre de commande pour la planification de la demande
           </motion.h2>
         </motion.div>
 
@@ -296,10 +296,10 @@ function DashboardPreview() {
             {/* KPI row */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               {[
-                { label: "Forecast Accuracy", value: "94.2%", change: "+2.1%" },
-                { label: "Revenue Predicted", value: "$1.2M", change: "+18%" },
-                { label: "Stockout Risk", value: "3 SKUs", change: "-40%" },
-                { label: "Overstock Value", value: "$24K", change: "-22%" },
+                { label: "Précision prévision", value: "94,2%", change: "+2,1%" },
+                { label: "CA prédit", value: "1,2M€", change: "+18%" },
+                { label: "Risque rupture", value: "3 SKUs", change: "-40%" },
+                { label: "Valeur surstock", value: "24K€", change: "-22%" },
               ].map((kpi, i) => (
                 <motion.div key={i}
                   className="rounded-xl p-4 group cursor-default"
@@ -340,10 +340,10 @@ function DashboardPreview() {
             </div>
             <div className="mt-4 flex items-center justify-center gap-8 text-xs" style={{ color: `${C.steel}80` }}>
               <span className="flex items-center gap-2">
-                <span className="h-2.5 w-2.5 rounded-sm" style={{ background: `${C.azur}70` }} /> Historical
+                <span className="h-2.5 w-2.5 rounded-sm" style={{ background: `${C.azur}70` }} /> Historique
               </span>
               <span className="flex items-center gap-2">
-                <span className="h-2.5 w-2.5 rounded-sm" style={{ background: C.accent, boxShadow: `0 0 8px ${C.accent}50` }} /> Forecast
+                <span className="h-2.5 w-2.5 rounded-sm" style={{ background: C.accent, boxShadow: `0 0 8px ${C.accent}50` }} /> Prévision
               </span>
             </div>
           </div>
@@ -355,9 +355,9 @@ function DashboardPreview() {
 
 /* ─── RESULTS ─── */
 const results = [
-  { icon: TrendingDown, value: "-30%", label: "Stockouts reduced" },
-  { icon: PackageCheck, value: "-20%", label: "Overstock eliminated" },
-  { icon: TrendingUp, value: "+15%", label: "Cash flow improved" },
+  { icon: TrendingDown, value: "-30%", label: "Ruptures de stock réduites" },
+  { icon: PackageCheck, value: "-20%", label: "Surstock éliminé" },
+  { icon: TrendingUp, value: "+15%", label: "Trésorerie améliorée" },
 ];
 
 function Results() {
@@ -365,9 +365,9 @@ function Results() {
     <section className="py-28" style={{ background: C.bgPrimary }}>
       <div className="mx-auto max-w-6xl px-6">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center">
-          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-[0.2em]" style={{ color: C.azur }}>Results</motion.p>
+          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-[0.2em]" style={{ color: C.azur }}>Résultats</motion.p>
           <motion.h2 variants={fadeUp} className="mt-4 font-display text-3xl font-bold sm:text-4xl" style={{ color: C.white }}>
-            Real impact on your bottom line
+            Un impact réel sur votre résultat net
           </motion.h2>
         </motion.div>
 
@@ -393,9 +393,9 @@ function Results() {
 
 /* ─── SOCIAL PROOF ─── */
 const testimonials = [
-  { name: "Sarah M.", role: "E-commerce Director", text: "This replaced our Excel forecasting completely. We saved 10+ hours per week.", stars: 5 },
-  { name: "Thomas L.", role: "Supply Chain Manager", text: "We finally understand what to order and when. Stockouts dropped by 35%.", stars: 5 },
-  { name: "Amira K.", role: "Retail Operations", text: "The AI picks the best model automatically. Our forecast accuracy went from 60% to 94%.", stars: 5 },
+  { name: "Sarah M.", role: "Directrice E-commerce", text: "Cela a complètement remplacé nos prévisions Excel. On gagne 10h+ par semaine.", stars: 5 },
+  { name: "Thomas L.", role: "Responsable Supply Chain", text: "On sait enfin quoi commander et quand. Les ruptures ont baissé de 35%.", stars: 5 },
+  { name: "Amira K.", role: "Opérations Retail", text: "L'IA choisit le meilleur modèle automatiquement. Notre précision est passée de 60% à 94%.", stars: 5 },
 ];
 
 function SocialProof() {
@@ -403,9 +403,9 @@ function SocialProof() {
     <section className="py-28" style={{ background: C.bgSecondary }}>
       <div className="mx-auto max-w-6xl px-6">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center">
-          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-[0.2em]" style={{ color: C.azur }}>Testimonials</motion.p>
+          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-[0.2em]" style={{ color: C.azur }}>Témoignages</motion.p>
           <motion.h2 variants={fadeUp} className="mt-4 font-display text-3xl font-bold sm:text-4xl" style={{ color: C.white }}>
-            Loved by e-commerce &amp; retail teams
+            Plébiscité par les équipes e-commerce &amp; retail
           </motion.h2>
         </motion.div>
 
@@ -444,28 +444,28 @@ function SocialProof() {
 /* ─── PRICING ─── */
 const plans = [
   {
-    name: "Free", price: "0", period: "", badge: "",
-    features: ["1 dataset", "1,000 rows", "Basic forecasting", "Simple dashboard"],
-    limits: ["No alerts", "No Copilot"],
-    cta: "Start free", highlight: false
+    name: "Gratuit", price: "0", period: "", badge: "",
+    features: ["1 jeu de données", "1 000 lignes", "Prévision basique", "Tableau de bord simple"],
+    limits: ["Pas d'alertes", "Pas de Copilot"],
+    cta: "Commencer gratuitement", highlight: false
   },
   {
-    name: "Starter", price: "29", period: "/mo", badge: "",
-    features: ["3 datasets", "10,000 rows", "Auto forecasting", "Full dashboard", "CSV export", "Shopify integration"],
+    name: "Starter", price: "29", period: "/mois", badge: "",
+    features: ["3 jeux de données", "10 000 lignes", "Prévision automatique", "Tableau de bord complet", "Export CSV", "Intégration Shopify"],
     limits: ["Copilot +19€"],
-    cta: "Get started", highlight: false
+    cta: "Démarrer", highlight: false
   },
   {
-    name: "Pro", price: "79", period: "/mo", badge: "Most popular",
-    features: ["10 datasets", "100,000 rows", "Advanced backtesting", "Smart alerts", "Order recommendations", "API access", "Copilot AI included"],
+    name: "Pro", price: "79", period: "/mois", badge: "Le plus populaire",
+    features: ["10 jeux de données", "100 000 lignes", "Backtesting avancé", "Alertes intelligentes", "Recommandations d'achat", "Accès API", "Copilot IA inclus"],
     limits: [],
-    cta: "Start Pro trial", highlight: true
+    cta: "Essai Pro gratuit", highlight: true
   },
   {
-    name: "Business", price: "199", period: "/mo", badge: "",
-    features: ["Unlimited datasets", "Multi-SKU forecast", "S&OP integration", "Multi-users", "3 connectors", "Copilot unlimited", "Priority support"],
+    name: "Business", price: "199", period: "/mois", badge: "",
+    features: ["Données illimitées", "Prévision multi-SKU", "Intégration S&OP", "Multi-utilisateurs", "3 connecteurs", "Copilot illimité", "Support prioritaire"],
     limits: [],
-    cta: "Contact sales", highlight: false
+    cta: "Contacter les ventes", highlight: false
   },
 ];
 
@@ -475,12 +475,12 @@ function Pricing() {
     <section id="pricing" className="py-28" style={{ background: C.bgPrimary }}>
       <div className="mx-auto max-w-6xl px-6">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center">
-          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-[0.2em]" style={{ color: C.azur }}>Pricing</motion.p>
+          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-[0.2em]" style={{ color: C.azur }}>Tarifs</motion.p>
           <motion.h2 variants={fadeUp} className="mt-4 font-display text-3xl font-bold sm:text-4xl" style={{ color: C.white }}>
-            Simple, transparent pricing
+            Tarification simple et transparente
           </motion.h2>
           <motion.p variants={fadeUp} className="mx-auto mt-5 max-w-xl" style={{ color: C.steel }}>
-            1 stockout avoided = pays your subscription. Start free, upgrade when you're ready.
+            1 rupture évitée = votre abonnement payé. Commencez gratuitement, montez en puissance quand vous êtes prêt.
           </motion.p>
         </motion.div>
 
@@ -540,7 +540,7 @@ function Pricing() {
         </motion.div>
 
         <p className="mt-10 text-center text-sm" style={{ color: `${C.steel}80` }}>
-          14-day free trial on all paid plans · No credit card required · Cancel anytime
+          14 jours d'essai gratuit sur tous les plans payants · Sans carte bancaire · Résiliation à tout moment
         </p>
       </div>
     </section>
@@ -549,12 +549,12 @@ function Pricing() {
 
 /* ─── FAQ ─── */
 const faqs = [
-  { q: "Do I need to code?", a: "Absolutely not. Upload a CSV or connect Shopify, and Kast AI handles everything — model selection, backtesting, and forecasting." },
-  { q: "What file formats are supported?", a: "CSV, Excel (.xlsx), and direct Shopify integration. More connectors coming soon." },
-  { q: "How accurate are the forecasts?", a: "Up to 95% accuracy. Kast AI runs 13 models in parallel and selects the one with the lowest error (MAPE) via backtesting." },
-  { q: "Can I forecast by product / SKU?", a: "Yes! Kast AI supports global, per-SKU, per-family, and per-subfamily granularity." },
-  { q: "What is the Copilot?", a: "An AI assistant embedded in your dashboard that answers questions about your sales, inventory, and forecasts in natural language." },
-  { q: "Is my data secure?", a: "Yes. All data is encrypted at rest and in transit. We never share your data with third parties." },
+  { q: "Faut-il des compétences techniques ?", a: "Absolument pas. Importez un CSV ou connectez Shopify, et Kast AI gère tout — sélection du modèle, backtesting et prévision." },
+  { q: "Quels formats de fichiers sont supportés ?", a: "CSV, Excel (.xlsx) et intégration directe Shopify. D'autres connecteurs arrivent bientôt." },
+  { q: "Quelle est la précision des prévisions ?", a: "Jusqu'à 95% de précision. Kast AI exécute 13 modèles en parallèle et sélectionne celui avec l'erreur la plus faible (MAPE) via backtesting." },
+  { q: "Peut-on prévoir par produit / SKU ?", a: "Oui ! Kast AI supporte les granularités globale, par SKU, par famille et par sous-famille." },
+  { q: "Qu'est-ce que le Copilot ?", a: "Un assistant IA intégré à votre tableau de bord qui répond en langage naturel à vos questions sur vos ventes, stocks et prévisions." },
+  { q: "Mes données sont-elles sécurisées ?", a: "Oui. Toutes les données sont chiffrées au repos et en transit. Nous ne partageons jamais vos données avec des tiers." },
 ];
 
 function FAQ() {
@@ -564,7 +564,7 @@ function FAQ() {
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center">
           <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-[0.2em]" style={{ color: C.azur }}>FAQ</motion.p>
           <motion.h2 variants={fadeUp} className="mt-4 font-display text-3xl font-bold sm:text-4xl" style={{ color: C.white }}>
-            Frequently asked questions
+            Questions fréquentes
           </motion.h2>
         </motion.div>
 
@@ -613,19 +613,19 @@ function FinalCTA() {
               <img src={logoIcon} alt="Kast AI" className="h-10 w-10 rounded-lg" />
             </div>
             <h2 className="font-display text-3xl font-bold sm:text-4xl" style={{ color: C.white }}>
-              Start forecasting now
+              Commencez à prévoir dès maintenant
             </h2>
             <p className="mx-auto mt-5 max-w-lg leading-relaxed" style={{ color: C.steel }}>
-              Join hundreds of e-commerce and retail teams using Kast AI to predict demand, reduce waste, and grow revenue.
+              Rejoignez des centaines d'équipes e-commerce et retail qui utilisent Kast AI pour anticiper la demande, réduire le gaspillage et augmenter leur chiffre d'affaires.
             </p>
             <div className="mt-10">
               <Button size="lg" className="h-13 px-12 text-base font-semibold" onClick={() => navigate("/auth")}
                 style={{ background: `linear-gradient(135deg, ${C.accent}, ${C.accentDeep})`, boxShadow: `0 4px 25px ${C.accent}40` }}
               >
-                Get started for free <ArrowRight className="ml-2 h-4 w-4" />
+                Commencer gratuitement <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
-            <p className="mt-5 text-xs" style={{ color: `${C.steel}80` }}>No credit card required · Free plan available</p>
+            <p className="mt-5 text-xs" style={{ color: `${C.steel}80` }}>Sans carte bancaire · Plan gratuit disponible</p>
           </div>
         </motion.div>
       </div>
@@ -646,12 +646,12 @@ function Footer() {
             </span>
           </div>
           <div className="flex gap-8 text-sm" style={{ color: C.steel }}>
-            <a href="#pricing" className="transition-colors hover:text-white">Pricing</a>
+            <a href="#pricing" className="transition-colors hover:text-white">Tarifs</a>
             <a href="#" className="transition-colors hover:text-white">Documentation</a>
-            <a href="#" className="transition-colors hover:text-white">Privacy</a>
-            <a href="#" className="transition-colors hover:text-white">Terms</a>
+            <a href="#" className="transition-colors hover:text-white">Confidentialité</a>
+            <a href="#" className="transition-colors hover:text-white">CGU</a>
           </div>
-          <p className="text-xs" style={{ color: `${C.steel}80` }}>© 2025 Kast AI. All rights reserved.</p>
+          <p className="text-xs" style={{ color: `${C.steel}80` }}>© 2025 Kast AI. Tous droits réservés.</p>
         </div>
       </div>
     </footer>
