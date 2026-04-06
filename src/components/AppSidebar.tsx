@@ -20,7 +20,7 @@ const sopSubItems = [
 ];
 
 const navItems = [
-  { path: "/", label: "Dashboard", icon: SquareKanban },
+  { path: "/dashboard", label: "Dashboard", icon: SquareKanban },
   { path: "/forecast", label: "Prévisions", icon: LineChart },
   { path: "/events", label: "Événements & Promos", icon: CalendarDays },
   { path: "/alerts", label: "Alertes", icon: ShieldAlert },
