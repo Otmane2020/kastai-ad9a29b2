@@ -117,14 +117,7 @@ export default function Auth() {
 
         {/* Logo */}
         <div className="relative z-10">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center overflow-hidden">
-              <img src={logoIcon} alt="KastAI" className="h-8 w-8 object-cover" />
-            </div>
-            <span className="text-2xl font-bold text-white tracking-tight">
-              Kast<span className="text-indigo-200">AI</span>
-            </span>
-          </div>
+          <img src={logoKastAi} alt="KastAI" className="h-12 w-auto object-contain brightness-0 invert" />
         </div>
 
         {/* Hero */}
@@ -180,11 +173,8 @@ export default function Auth() {
       <div className="flex-1 flex flex-col items-center justify-center p-6 sm:p-10">
 
         {/* Mobile logo */}
-        <div className="lg:hidden mb-8 flex items-center gap-2">
-          <img src={logoIcon} alt="KastAI" className="h-9 w-9 rounded-xl" />
-          <span className="text-2xl font-bold text-slate-800 tracking-tight">
-            Kast<span className="text-indigo-600">AI</span>
-          </span>
+        <div className="lg:hidden mb-8">
+          <img src={logoKastAi} alt="KastAI" className="h-10 w-auto object-contain" />
         </div>
 
         <div className="w-full max-w-sm space-y-8">

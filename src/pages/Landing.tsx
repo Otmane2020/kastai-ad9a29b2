@@ -12,6 +12,7 @@ import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger
 } from "@/components/ui/accordion";
 import logoIcon from "@/assets/logo-icon.png";
+import logoKastAi from "@/assets/logo-kast-ai.png";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -44,11 +45,8 @@ function Nav() {
       style={{ background: `${C.bgPrimary}dd`, backdropFilter: "blur(20px)", borderBottom: `1px solid rgba(59,130,246,0.15)` }}
     >
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <div className="flex items-center gap-2.5">
-          <img src={logoIcon} alt="Kast AI" className="h-8 w-8 rounded-lg" />
-          <span className="font-display text-lg font-bold" style={{ color: C.white }}>
-            Kast<span style={{ color: C.accent }}>AI</span>
-          </span>
+        <div className="flex items-center">
+          <img src={logoKastAi} alt="Kast AI" className="h-9 w-auto object-contain" />
         </div>
         <div className="hidden items-center gap-8 text-sm md:flex" style={{ color: `${C.steel}` }}>
           <a href="#features" className="transition-colors hover:text-white">Fonctionnalités</a>
@@ -639,11 +637,8 @@ function Footer() {
     <footer className="py-12" style={{ background: C.bgPrimary, borderTop: "1px solid rgba(59,130,246,0.15)" }}>
       <div className="mx-auto max-w-6xl px-6">
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
-          <div className="flex items-center gap-2.5">
-            <img src={logoIcon} alt="Kast AI" className="h-8 w-8 rounded-lg" />
-            <span className="font-display text-lg font-bold" style={{ color: C.white }}>
-              Kast<span style={{ color: C.accent }}>AI</span>
-            </span>
+          <div className="flex items-center">
+            <img src={logoKastAi} alt="Kast AI" className="h-8 w-auto object-contain" />
           </div>
           <div className="flex gap-8 text-sm" style={{ color: C.steel }}>
             <a href="#pricing" className="transition-colors hover:text-white">Tarifs</a>
