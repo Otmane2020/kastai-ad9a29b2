@@ -1,12 +1,11 @@
 import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
 import { PlanId, Feature, PLANS, hasFeature, canAccessRoute } from "@/lib/plans";
 
 interface PlanContextType {
   planId: PlanId;
   planName: string;
-  setPlan: (id: PlanId) => Promise<void>;
+  setPlan: (id: PlanId) => void;
   can: (feature: Feature) => boolean;
   canRoute: (route: string) => boolean;
   loading: boolean;
@@ -21,35 +20,19 @@ export function PlanProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!user) { setPlanId("free"); setLoading(false); return; }
-    (async () => {
-      setLoading(true);
-      try {
-        const { data } = await supabase
-          .from("profiles")
-          .select("plan")
-          .eq("id", user.id)
-          .single();
-        const raw = (data as Record<string, unknown>)?.plan;
-        if (raw && typeof raw === "string" && raw in PLANS) {
-          setPlanId(raw as PlanId);
-        } else {
-          setPlanId("free");
-        }
-      } catch {
-        setPlanId("free");
-      } finally {
-        setLoading(false);
-      }
-    })();
+    const stored = localStorage.getItem(`kastai_plan_${user.id}`);
+    if (stored && stored in PLANS) {
+      setPlanId(stored as PlanId);
+    } else {
+      setPlanId("free");
+    }
+    setLoading(false);
   }, [user]);
 
-  const setPlan = useCallback(async (id: PlanId) => {
+  const setPlan = useCallback((id: PlanId) => {
     if (!user) return;
     setPlanId(id);
-    await supabase
-      .from("profiles")
-      .update({ plan: id } as Record<string, unknown>)
-      .eq("id", user.id);
+    localStorage.setItem(`kastai_plan_${user.id}`, id);
   }, [user]);
 
   const can = useCallback((feature: Feature) => hasFeature(planId, feature), [planId]);
