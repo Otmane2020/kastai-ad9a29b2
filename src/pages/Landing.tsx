@@ -68,9 +68,9 @@ function Hero() {
           </motion.div>
 
           <motion.div variants={fadeUp} custom={4} className="mt-8 flex items-center justify-center gap-6 text-sm text-white/50">
-            <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-green-400" /> No credit card</span>
-            <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-green-400" /> 14-day free trial</span>
-            <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-green-400" /> Setup in 2 min</span>
+            <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-success" /> No credit card</span>
+            <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-success" /> 14-day free trial</span>
+            <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-success" /> Setup in 2 min</span>
           </motion.div>
         </motion.div>
       </div>
