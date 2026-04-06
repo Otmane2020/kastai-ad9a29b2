@@ -232,7 +232,7 @@ function DashboardPreview() {
                 <div key={i} className="rounded-xl bg-white/5 backdrop-blur border border-white/10 p-4">
                   <p className="text-xs text-white/50">{kpi.label}</p>
                   <p className="mt-1 font-display text-xl font-bold text-white">{kpi.value}</p>
-                  <p className={`mt-1 text-xs font-medium ${kpi.up ? "text-green-400" : "text-green-400"}`}>
+                  <p className={`mt-1 text-xs font-medium text-success`}>
                     {kpi.change}
                   </p>
                 </div>
