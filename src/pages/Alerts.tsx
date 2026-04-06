@@ -1,4 +1,5 @@
 import { ShieldAlert, TrendingDown, Boxes, BellRing, TrendingUp } from "lucide-react";
+import CopilotInline from "@/components/CopilotInline";
 import PageHeader from "@/components/PageHeader";
 import DataUploadBanner from "@/components/DataUploadBanner";
 import { useData } from "@/context/DataContext";
@@ -147,6 +148,12 @@ export default function Alerts() {
           </div>
         </div>
       </div>
+
+      <CopilotInline
+        context="Page Alertes — anomalies détectées via z-score, ruptures de stock, écarts de prévision"
+        insight="2 alertes critiques nécessitent une action immédiate : rupture SKU #1042 et baisse anormale Textile -23%. Je recommande un réapprovisionnement d'urgence et une révision du modèle de prévision Textile."
+        chips={["Rupture stock", "Anomalies", "Actions prioritaires", "Prévision corrective"]}
+      />
     </div>
   );
 }

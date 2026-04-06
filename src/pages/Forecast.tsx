@@ -9,6 +9,8 @@ import ForecastChart from "@/components/forecast/ForecastChart";
 import { HorizonTable, ModelComparisonTable, SKUTable, BacktestTable, MAPEBarChart } from "@/components/forecast/ForecastTables";
 import GroupCards from "@/components/forecast/GroupCards";
 import ModelCards from "@/components/forecast/ModelCards";
+import ChartInsight, { buildForecastInsights } from "@/components/ChartInsight";
+import CopilotInline from "@/components/CopilotInline";
 
 function aggregateMonthly(ts: TimeSeriesPoint[]): { label: string; value: number; date: Date }[] {
   const buckets = new Map<string, { total: number; date: Date }>();
@@ -315,6 +317,20 @@ export default function Forecast() {
         upperBound={data.forecasts?.upperBound}
       />
 
+      {/* Synthesis + recommendations */}
+      {hasData && forecastInfo && (
+        <ChartInsight
+          insights={buildForecastInsights({
+            bestModel: forecastInfo.bestModel,
+            mape: models[0]?.mapeNum ?? null,
+            bias: data.forecasts?.models[0]?.bias ?? null,
+            lastValue: chartData.filter(d => d["réel"] != null).at(-1)?.["réel"] ?? 0,
+            firstForecast: models[0]?.predictions[0] ?? 0,
+            seriesLength: forecastInfo.points,
+          })}
+        />
+      )}
+
       {/* Detailed tables */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <BacktestTable data={backtestData} />
@@ -327,6 +343,15 @@ export default function Forecast() {
       {hasData && data.groupForecasts.length > 0 && (
         <SKUTable groupForecasts={data.groupForecasts} lastDate={lastDate} />
       )}
+
+      {/* Inline Copilot */}
+      <CopilotInline
+        context={`Prévision — meilleur modèle: ${forecastInfo?.bestModel ?? "N/A"}, MAPE: ${models[0]?.mape ?? "N/A"}, horizon: ${data.horizon} mois, ${forecastInfo?.points ?? 0} points historiques.`}
+        insight={forecastInfo
+          ? `L'ajustement prévisionnel de ${forecastInfo.bestModel} est cohérent avec les tendances historiques. Horizon ${data.horizon} mois sur ${forecastInfo.points} points. Impact CA estimé à analyser selon vos événements.`
+          : undefined}
+        chips={["Impact promo", "Anomalies", "Modèle optimal", "Rupture stock"]}
+      />
     </div>
   );
 }

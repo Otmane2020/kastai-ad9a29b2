@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { DataProvider } from "@/context/DataContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { WorkspaceProvider } from "@/context/WorkspaceContext";
+import Events from "@/pages/Events";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import AppLayout from "@/components/AppLayout";
 import Dashboard from "@/pages/Dashboard";
@@ -32,6 +34,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AuthProvider>
+        <WorkspaceProvider>
         <DataProvider>
           <Toaster />
           <Sonner />
@@ -52,6 +55,7 @@ const App = () => (
                 <Route path="/sop/kpis" element={<SOPKpis />} />
                 <Route path="/sop/scenarios" element={<SOPScenarios />} />
                 <Route path="/inventory" element={<Inventory />} />
+                <Route path="/events" element={<Events />} />
                 <Route path="/connectors" element={<Connectors />} />
                 <Route path="/users" element={<UserManagement />} />
                 <Route path="/superadmin" element={<SuperAdmin />} />
@@ -60,6 +64,7 @@ const App = () => (
             </Routes>
           </BrowserRouter>
         </DataProvider>
+        </WorkspaceProvider>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>

@@ -3,11 +3,12 @@ import { NavLink, useLocation } from "react-router-dom";
 import {
   SquareKanban, LineChart, ShieldAlert, PieChart,
   Wallet, Workflow, Boxes, Cable, UserCog, MessageSquare, ChevronLeft,
-  ChevronRight, Gem, LogOut, ChevronDown, Factory, Activity, ClipboardList, BarChart3, FlaskConical
+  ChevronRight, Gem, LogOut, ChevronDown, Factory, Activity, ClipboardList, BarChart3, FlaskConical, CalendarDays
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import logoKastAi from "@/assets/logo-kast-ai.png";
+import WorkspaceSwitcher from "@/components/WorkspaceSwitcher";
 
 const sopSubItems = [
   { path: "/sop", label: "Vue d'ensemble", icon: Workflow },
@@ -21,6 +22,7 @@ const sopSubItems = [
 const navItems = [
   { path: "/", label: "Dashboard", icon: SquareKanban },
   { path: "/forecast", label: "Prévisions", icon: LineChart },
+  { path: "/events", label: "Événements & Promos", icon: CalendarDays },
   { path: "/alerts", label: "Alertes", icon: ShieldAlert },
   { path: "/kpi", label: "KPI & Rapports", icon: PieChart },
   { path: "/finance", label: "Finance", icon: Wallet },
@@ -69,14 +71,19 @@ export default function AppSidebar({ onToggleCopilot, copilotOpen }: AppSidebarP
       )}
     >
       {/* Logo */}
-      <div className="flex h-16 items-center justify-center px-3">
+      <div className="flex h-16 items-center justify-center px-3 border-b border-sidebar-border">
         <div className={cn("flex items-center justify-center rounded-lg bg-white overflow-hidden", collapsed ? "h-10 w-10 p-1" : "h-10 px-3 py-1")}>
           <img src={logoKastAi} alt="Kast AI" className={cn("object-contain", collapsed ? "h-7 w-7" : "h-8")} />
         </div>
       </div>
 
+      {/* Workspace switcher */}
+      <div className="pt-3">
+        <WorkspaceSwitcher collapsed={collapsed} />
+      </div>
+
       {/* Nav */}
-      <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto">
+      <nav className="flex-1 space-y-1 px-3 py-2 overflow-y-auto">
         {navItems.slice(0, 5).map((item) => renderNavLink(item))}
 
         {/* S&OP expandable section */}

@@ -1,4 +1,6 @@
 import { SquareKanban, LineChart as LineChartIcon, Crosshair, ShieldAlert, ArrowUpRight } from "lucide-react";
+import CopilotInline from "@/components/CopilotInline";
+import ChartInsight from "@/components/ChartInsight";
 import KPICard from "@/components/KPICard";
 import PageHeader from "@/components/PageHeader";
 import DataUploadBanner from "@/components/DataUploadBanner";
@@ -164,6 +166,24 @@ export default function Dashboard() {
           </BarChart>
         </ResponsiveContainer>
       </div>
+
+      {/* Dashboard insights */}
+      {hasData && (
+        <ChartInsight
+          title="Synthèse du tableau de bord"
+          insights={[
+            { label: "Données chargées", message: `${data.timeSeries.length} points temporels · Fichier : ${data.fileName ?? "inconnu"} · Granularité : ${data.granularity}`, severity: "info" },
+            ...(data.forecasts ? [{ label: "Meilleur modèle actif", message: `${data.forecasts.bestModel} sélectionné par backtesting automatique (80/20) sur ${data.forecasts.historicalLength ?? data.timeSeries.length} points.`, severity: "success" as const }] : []),
+          ]}
+        />
+      )}
+
+      {/* Inline Copilot */}
+      <CopilotInline
+        context={`Dashboard — ${data.timeSeries.length} points, fichier: ${data.fileName ?? "démo"}, meilleur modèle: ${data.forecasts?.bestModel ?? "N/A"}`}
+        insight="L'ajustement des prévisions est cohérent avec les tendances passées. Consultez l'onglet Événements pour intégrer vos promotions et améliorer la précision."
+        chips={["Impact promo", "Anomalies", "Tendance", "Risques stock"]}
+      />
     </div>
   );
 }
