@@ -24,15 +24,15 @@ const fadeUp = {
 
 const stagger = { visible: { transition: { staggerChildren: 0.08 } } };
 
-/* ─── PALETTE ─── */
+/* ─── PALETTE (aligned with logo: white bg · navy · blue · cyan) ─── */
 const C = {
-  bgPrimary: "#F0F7FF",
-  bgSecondary: "#E1EFFE",
-  accent: "#3B82F6",
-  accentDeep: "#1D4ED8",
-  steel: "#4B6280",
-  azur: "#2563EB",
-  white: "#0F172A",
+  bgPrimary: "#FFFFFF",
+  bgSecondary: "#F0F6FF",
+  accent: "#2B7FE0",      // logo blue
+  accentDeep: "#0D2B55",  // logo navy
+  steel: "#4A6080",       // body text
+  azur: "#06B6D4",        // logo cyan
+  white: "#0D2B55",       // headings (navy)
 };
 
 /* ─── NAV ─── */
@@ -49,12 +49,12 @@ function Nav() {
           <img src={logoKastAi} alt="Kast AI" className="h-9 w-auto object-contain" />
         </div>
         <div className="hidden items-center gap-8 text-sm md:flex" style={{ color: `${C.steel}` }}>
-          <a href="#features" className="transition-colors hover:text-white">Fonctionnalités</a>
-          <a href="#pricing" className="transition-colors hover:text-white">Tarifs</a>
-          <a href="#faq" className="transition-colors hover:text-white">FAQ</a>
+          <a href="#features" className="transition-colors hover:text-[#0D2B55]">Fonctionnalités</a>
+          <a href="#pricing" className="transition-colors hover:text-[#0D2B55]">Tarifs</a>
+          <a href="#faq" className="transition-colors hover:text-[#0D2B55]">FAQ</a>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="ghost" className="hover:bg-white/5" style={{ color: C.steel }} onClick={() => navigate("/auth")}>
+          <Button variant="ghost" className="hover:bg-slate-100" style={{ color: C.steel }} onClick={() => navigate("/auth")}>
             Connexion
           </Button>
           <Button size="sm" onClick={() => navigate("/auth")}
@@ -159,7 +159,7 @@ function Problem() {
           {problems.map((p, i) => (
             <motion.div key={i} variants={fadeUp} custom={i}
               className="group rounded-2xl p-8 transition-all duration-300 hover:scale-[1.02]"
-              style={{ background: `rgba(255,255,255,0.85)`, backdropFilter: "blur(12px)", border: "1px solid rgba(239,68,68,0.18)" }}
+              style={{ background: "#fff", border: "1px solid rgba(239,68,68,0.2)", boxShadow: "0 2px 12px rgba(13,43,85,0.06)" }}
             >
               <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl" style={{ background: "rgba(239,68,68,0.1)" }}>
                 <p.icon className="h-5 w-5" style={{ color: "#EF4444" }} strokeWidth={1.5} />
@@ -192,7 +192,7 @@ function Solution() {
 
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
           className="mx-auto mt-16 max-w-3xl rounded-2xl p-8"
-          style={{ background: `rgba(255,255,255,0.9)`, backdropFilter: "blur(12px)", border: "1px solid rgba(59,130,246,0.15)" }}
+          style={{ background: "#fff", border: "1px solid rgba(43,127,224,0.18)", boxShadow: "0 2px 16px rgba(13,43,85,0.07)" }}
         >
           <div className="flex items-start gap-6">
             <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl"
@@ -253,10 +253,9 @@ function Features() {
             <motion.div key={i} variants={fadeUp} custom={i}
               className="group rounded-2xl p-7 transition-all duration-300 hover:scale-[1.02]"
               style={{
-                background: `rgba(255,255,255,0.85)`,
-                backdropFilter: "blur(12px)",
-                border: "1px solid rgba(59,130,246,0.12)",
-                boxShadow: "0 10px 30px rgba(59,130,246,0.08)"
+                background: "#fff",
+                border: "1px solid rgba(43,127,224,0.15)",
+                boxShadow: "0 2px 16px rgba(13,43,85,0.06)"
               }}
             >
               <div className="mb-5 inline-flex h-11 w-11 items-center justify-center rounded-xl transition-all duration-300"
@@ -301,7 +300,7 @@ function DashboardPreview() {
               ].map((kpi, i) => (
                 <motion.div key={i}
                   className="rounded-xl p-4 group cursor-default"
-                  style={{ background: `rgba(255,255,255,0.9)`, backdropFilter: "blur(12px)", border: "1px solid rgba(59,130,246,0.15)" }}
+                  style={{ background: "#fff", border: "1px solid rgba(43,127,224,0.18)", boxShadow: "0 2px 16px rgba(13,43,85,0.07)" }}
                   whileHover={{ borderColor: `${C.accent}40` }}
                 >
                   <p className="text-xs" style={{ color: C.steel }}>{kpi.label}</p>
@@ -314,7 +313,7 @@ function DashboardPreview() {
             </div>
             {/* Chart area */}
             <div className="rounded-xl p-6 h-64 flex items-end gap-[3px]"
-              style={{ background: `rgba(255,255,255,0.8)`, border: "1px solid rgba(59,130,246,0.12)" }}
+              style={{ background: "#F0F6FF", border: "1px solid rgba(43,127,224,0.12)" }}
             >
               {Array.from({ length: 28 }).map((_, i) => {
                 const h = 25 + Math.sin(i * 0.4) * 25 + (i > 20 ? 12 : 0);
@@ -411,7 +410,7 @@ function SocialProof() {
           {testimonials.map((t, i) => (
             <motion.div key={i} variants={fadeUp} custom={i}
               className="rounded-2xl p-7"
-              style={{ background: `rgba(255,255,255,0.85)`, backdropFilter: "blur(12px)", border: "1px solid rgba(59,130,246,0.12)" }}
+              style={{ background: "#fff", border: "1px solid rgba(43,127,224,0.15)", boxShadow: "0 2px 12px rgba(13,43,85,0.05)" }}
             >
               <div className="mb-4 flex gap-0.5">
                 {Array.from({ length: t.stars }).map((_, j) => (
@@ -491,12 +490,12 @@ function Pricing() {
               style={{
                 background: plan.highlight
                   ? `linear-gradient(160deg, ${C.accent}, ${C.accentDeep})`
-                  : `rgba(255,255,255,0.85)`,
+                  : "#fff",
                 backdropFilter: "blur(12px)",
                 border: plan.highlight
                   ? `1px solid ${C.accent}50`
-                  : "1px solid rgba(59,130,246,0.15)",
-                boxShadow: plan.highlight ? `0 20px 50px ${C.accent}25` : "0 8px 25px rgba(59,130,246,0.1)"
+                  : "1px solid rgba(43,127,224,0.18)",
+                boxShadow: plan.highlight ? `0 20px 50px ${C.accent}25` : "0 4px 16px rgba(13,43,85,0.07)"
               }}
             >
               {plan.badge && (
@@ -528,7 +527,7 @@ function Pricing() {
                 onClick={() => navigate("/auth")}
                 style={plan.highlight
                   ? { background: `linear-gradient(135deg, ${C.accent}, ${C.accentDeep})`, color: "white", boxShadow: `0 4px 20px ${C.accent}30` }
-                  : { background: "rgba(59,130,246,0.08)", color: C.azur, border: "1px solid rgba(59,130,246,0.25)" }
+                  : { background: "#F0F6FF", color: C.accentDeep, border: "1px solid rgba(43,127,224,0.25)" }
                 }
               >
                 {plan.cta}
@@ -570,7 +569,7 @@ function FAQ() {
           <Accordion type="single" collapsible className="space-y-3">
             {faqs.map((faq, i) => (
               <AccordionItem key={i} value={`faq-${i}`} className="rounded-xl px-6 border-0"
-                style={{ background: `rgba(255,255,255,0.85)`, border: "1px solid rgba(59,130,246,0.12)" }}
+                style={{ background: "#fff", border: "1px solid rgba(59,130,246,0.12)" }}
               >
                 <AccordionTrigger className="text-sm font-semibold hover:no-underline" style={{ color: C.white }}>
                   {faq.q}
@@ -641,10 +640,10 @@ function Footer() {
             <img src={logoKastAi} alt="Kast AI" className="h-8 w-auto object-contain" />
           </div>
           <div className="flex gap-8 text-sm" style={{ color: C.steel }}>
-            <a href="#pricing" className="transition-colors hover:text-white">Tarifs</a>
-            <a href="#" className="transition-colors hover:text-white">Documentation</a>
-            <a href="#" className="transition-colors hover:text-white">Confidentialité</a>
-            <a href="#" className="transition-colors hover:text-white">CGU</a>
+            <a href="#pricing" className="transition-colors hover:text-[#0D2B55]">Tarifs</a>
+            <a href="#" className="transition-colors hover:text-[#0D2B55]">Documentation</a>
+            <a href="#" className="transition-colors hover:text-[#0D2B55]">Confidentialité</a>
+            <a href="#" className="transition-colors hover:text-[#0D2B55]">CGU</a>
           </div>
           <p className="text-xs" style={{ color: `${C.steel}80` }}>© 2025 Kast AI. Tous droits réservés.</p>
         </div>
