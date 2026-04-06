@@ -25,13 +25,13 @@ const stagger = { visible: { transition: { staggerChildren: 0.08 } } };
 
 /* ─── PALETTE ─── */
 const C = {
-  bgPrimary: "#0B1221",
-  bgSecondary: "#162033",
+  bgPrimary: "#F0F7FF",
+  bgSecondary: "#E1EFFE",
   accent: "#3B82F6",
   accentDeep: "#1D4ED8",
-  steel: "#94A3B8",
-  azur: "#60A5FA",
-  white: "#F8FAFC",
+  steel: "#4B6280",
+  azur: "#2563EB",
+  white: "#0F172A",
 };
 
 /* ─── NAV ─── */
@@ -41,7 +41,7 @@ function Nav() {
     <motion.nav
       initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
       className="fixed top-0 left-0 right-0 z-50"
-      style={{ background: `${C.bgPrimary}dd`, backdropFilter: "blur(20px)", borderBottom: `1px solid rgba(255,255,255,0.06)` }}
+      style={{ background: `${C.bgPrimary}dd`, backdropFilter: "blur(20px)", borderBottom: `1px solid rgba(59,130,246,0.15)` }}
     >
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
         <div className="flex items-center gap-2.5">
@@ -114,7 +114,7 @@ function Hero() {
               Commencer gratuitement <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
             <Button size="lg" variant="ghost" className="h-13 px-8 text-base font-semibold"
-              style={{ color: C.steel, border: `1px solid rgba(255,255,255,0.1)` }}
+              style={{ color: C.steel, border: `1px solid rgba(59,130,246,0.25)` }}
             >
               <Upload className="mr-2 h-4 w-4" /> Importer mes données
             </Button>
@@ -161,7 +161,7 @@ function Problem() {
           {problems.map((p, i) => (
             <motion.div key={i} variants={fadeUp} custom={i}
               className="group rounded-2xl p-8 transition-all duration-300 hover:scale-[1.02]"
-              style={{ background: `${C.bgSecondary}B3`, backdropFilter: "blur(12px)", border: "1px solid rgba(239,68,68,0.15)" }}
+              style={{ background: `rgba(255,255,255,0.85)`, backdropFilter: "blur(12px)", border: "1px solid rgba(239,68,68,0.18)" }}
             >
               <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl" style={{ background: "rgba(239,68,68,0.1)" }}>
                 <p.icon className="h-5 w-5" style={{ color: "#EF4444" }} strokeWidth={1.5} />
@@ -194,7 +194,7 @@ function Solution() {
 
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
           className="mx-auto mt-16 max-w-3xl rounded-2xl p-8"
-          style={{ background: `${C.bgPrimary}B3`, backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.08)" }}
+          style={{ background: `rgba(255,255,255,0.9)`, backdropFilter: "blur(12px)", border: "1px solid rgba(59,130,246,0.15)" }}
         >
           <div className="flex items-start gap-6">
             <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl"
@@ -255,10 +255,10 @@ function Features() {
             <motion.div key={i} variants={fadeUp} custom={i}
               className="group rounded-2xl p-7 transition-all duration-300 hover:scale-[1.02]"
               style={{
-                background: `rgba(22, 32, 51, 0.7)`,
+                background: `rgba(255,255,255,0.85)`,
                 backdropFilter: "blur(12px)",
-                border: "1px solid rgba(255,255,255,0.06)",
-                boxShadow: "0 10px 30px rgba(0,0,0,0.3)"
+                border: "1px solid rgba(59,130,246,0.12)",
+                boxShadow: "0 10px 30px rgba(59,130,246,0.08)"
               }}
             >
               <div className="mb-5 inline-flex h-11 w-11 items-center justify-center rounded-xl transition-all duration-300"
@@ -290,7 +290,7 @@ function DashboardPreview() {
 
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
           className="mt-16 rounded-2xl p-2 overflow-hidden"
-          style={{ background: `${C.bgPrimary}`, border: "1px solid rgba(255,255,255,0.08)", boxShadow: `0 20px 60px ${C.accent}15` }}
+          style={{ background: `${C.bgPrimary}`, border: "1px solid rgba(59,130,246,0.15)", boxShadow: `0 20px 60px ${C.accent}15` }}
         >
           <div className="rounded-xl p-6" style={{ background: C.bgPrimary }}>
             {/* KPI row */}
@@ -303,7 +303,7 @@ function DashboardPreview() {
               ].map((kpi, i) => (
                 <motion.div key={i}
                   className="rounded-xl p-4 group cursor-default"
-                  style={{ background: `rgba(22, 32, 51, 0.7)`, backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.08)" }}
+                  style={{ background: `rgba(255,255,255,0.9)`, backdropFilter: "blur(12px)", border: "1px solid rgba(59,130,246,0.15)" }}
                   whileHover={{ borderColor: `${C.accent}40` }}
                 >
                   <p className="text-xs" style={{ color: C.steel }}>{kpi.label}</p>
@@ -316,7 +316,7 @@ function DashboardPreview() {
             </div>
             {/* Chart area */}
             <div className="rounded-xl p-6 h-64 flex items-end gap-[3px]"
-              style={{ background: `rgba(22, 32, 51, 0.7)`, border: "1px solid rgba(255,255,255,0.06)" }}
+              style={{ background: `rgba(255,255,255,0.8)`, border: "1px solid rgba(59,130,246,0.12)" }}
             >
               {Array.from({ length: 28 }).map((_, i) => {
                 const h = 25 + Math.sin(i * 0.4) * 25 + (i > 20 ? 12 : 0);
@@ -413,15 +413,15 @@ function SocialProof() {
           {testimonials.map((t, i) => (
             <motion.div key={i} variants={fadeUp} custom={i}
               className="rounded-2xl p-7"
-              style={{ background: `rgba(22, 32, 51, 0.7)`, backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.06)" }}
+              style={{ background: `rgba(255,255,255,0.85)`, backdropFilter: "blur(12px)", border: "1px solid rgba(59,130,246,0.12)" }}
             >
               <div className="mb-4 flex gap-0.5">
                 {Array.from({ length: t.stars }).map((_, j) => (
                   <Star key={j} className="h-4 w-4 fill-amber-400 text-amber-400" />
                 ))}
               </div>
-              <Quote className="mb-3 h-5 w-5" style={{ color: `${C.steel}40` }} />
-              <p className="text-sm leading-relaxed" style={{ color: `${C.white}dd` }}>{t.text}</p>
+              <Quote className="mb-3 h-5 w-5" style={{ color: `${C.accent}40` }} />
+              <p className="text-sm leading-relaxed" style={{ color: C.steel }}>{t.text}</p>
               <div className="mt-6 flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full font-display text-sm font-bold"
                   style={{ background: `${C.accent}20`, color: C.azur }}
@@ -492,13 +492,13 @@ function Pricing() {
               className={`relative rounded-2xl p-7 transition-all duration-300 ${plan.highlight ? "scale-[1.03]" : "hover:scale-[1.01]"}`}
               style={{
                 background: plan.highlight
-                  ? `linear-gradient(160deg, ${C.bgSecondary}, ${C.bgPrimary})`
-                  : `rgba(22, 32, 51, 0.7)`,
+                  ? `linear-gradient(160deg, ${C.accent}, ${C.accentDeep})`
+                  : `rgba(255,255,255,0.85)`,
                 backdropFilter: "blur(12px)",
                 border: plan.highlight
                   ? `1px solid ${C.accent}50`
-                  : "1px solid rgba(255,255,255,0.06)",
-                boxShadow: plan.highlight ? `0 20px 50px ${C.accent}20` : "0 10px 30px rgba(0,0,0,0.3)"
+                  : "1px solid rgba(59,130,246,0.15)",
+                boxShadow: plan.highlight ? `0 20px 50px ${C.accent}25` : "0 8px 25px rgba(59,130,246,0.1)"
               }}
             >
               {plan.badge && (
@@ -530,7 +530,7 @@ function Pricing() {
                 onClick={() => navigate("/auth")}
                 style={plan.highlight
                   ? { background: `linear-gradient(135deg, ${C.accent}, ${C.accentDeep})`, color: "white", boxShadow: `0 4px 20px ${C.accent}30` }
-                  : { background: "rgba(255,255,255,0.05)", color: C.white, border: "1px solid rgba(255,255,255,0.1)" }
+                  : { background: "rgba(59,130,246,0.08)", color: C.azur, border: "1px solid rgba(59,130,246,0.25)" }
                 }
               >
                 {plan.cta}
@@ -572,7 +572,7 @@ function FAQ() {
           <Accordion type="single" collapsible className="space-y-3">
             {faqs.map((faq, i) => (
               <AccordionItem key={i} value={`faq-${i}`} className="rounded-xl px-6 border-0"
-                style={{ background: `rgba(11, 18, 33, 0.6)`, border: "1px solid rgba(255,255,255,0.06)" }}
+                style={{ background: `rgba(255,255,255,0.85)`, border: "1px solid rgba(59,130,246,0.12)" }}
               >
                 <AccordionTrigger className="text-sm font-semibold hover:no-underline" style={{ color: C.white }}>
                   {faq.q}
@@ -598,34 +598,34 @@ function FinalCTA() {
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
           className="relative overflow-hidden rounded-3xl p-14 text-center"
           style={{
-            background: `linear-gradient(160deg, ${C.bgSecondary}, ${C.bgPrimary})`,
-            border: "1px solid rgba(255,255,255,0.08)",
-            boxShadow: `0 30px 80px ${C.accent}15`
+            background: `linear-gradient(160deg, ${C.accent}, ${C.accentDeep})`,
+            border: "none",
+            boxShadow: `0 30px 80px ${C.accent}30`
           }}
         >
           {/* Glow */}
-          <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse 50% 50% at 50% 110%, ${C.accent}20, transparent)` }} />
+          <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse 50% 50% at 50% 110%, rgba(255,255,255,0.15), transparent)` }} />
 
           <div className="relative">
             <div className="mx-auto mb-8 flex h-16 w-16 items-center justify-center rounded-2xl"
-              style={{ background: `${C.accent}15`, backdropFilter: "blur(8px)" }}
+              style={{ background: `rgba(255,255,255,0.2)`, backdropFilter: "blur(8px)" }}
             >
               <img src={logoIcon} alt="Kast AI" className="h-10 w-10 rounded-lg" />
             </div>
-            <h2 className="font-display text-3xl font-bold sm:text-4xl" style={{ color: C.white }}>
+            <h2 className="font-display text-3xl font-bold sm:text-4xl" style={{ color: "#ffffff" }}>
               Commencez à prévoir dès maintenant
             </h2>
-            <p className="mx-auto mt-5 max-w-lg leading-relaxed" style={{ color: C.steel }}>
+            <p className="mx-auto mt-5 max-w-lg leading-relaxed" style={{ color: "rgba(255,255,255,0.85)" }}>
               Rejoignez des centaines d'équipes e-commerce et retail qui utilisent Kast AI pour anticiper la demande, réduire le gaspillage et augmenter leur chiffre d'affaires.
             </p>
             <div className="mt-10">
               <Button size="lg" className="h-13 px-12 text-base font-semibold" onClick={() => navigate("/auth")}
-                style={{ background: `linear-gradient(135deg, ${C.accent}, ${C.accentDeep})`, boxShadow: `0 4px 25px ${C.accent}40` }}
+                style={{ background: "#ffffff", color: C.accentDeep, boxShadow: `0 4px 25px rgba(0,0,0,0.2)` }}
               >
                 Commencer gratuitement <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
-            <p className="mt-5 text-xs" style={{ color: `${C.steel}80` }}>Sans carte bancaire · Plan gratuit disponible</p>
+            <p className="mt-5 text-xs" style={{ color: "rgba(255,255,255,0.65)" }}>Sans carte bancaire · Plan gratuit disponible</p>
           </div>
         </motion.div>
       </div>
@@ -636,7 +636,7 @@ function FinalCTA() {
 /* ─── FOOTER ─── */
 function Footer() {
   return (
-    <footer className="py-12" style={{ background: C.bgPrimary, borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+    <footer className="py-12" style={{ background: C.bgPrimary, borderTop: "1px solid rgba(59,130,246,0.15)" }}>
       <div className="mx-auto max-w-6xl px-6">
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
           <div className="flex items-center gap-2.5">
