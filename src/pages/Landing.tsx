@@ -1,11 +1,10 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  Brain, BarChart3, ShieldAlert, PackageCheck, Layers, Zap,
-  Check, ChevronDown, ArrowRight, TrendingUp, TrendingDown,
+  BarChart3, ShieldAlert, PackageCheck, Layers, Zap,
+  Check, ArrowRight, TrendingUp, TrendingDown,
   DollarSign, AlertTriangle, FileSpreadsheet, ShoppingCart,
-  Star, Quote, Sparkles, Upload, Play
+  Star, Quote, Sparkles, Upload
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,62 +17,121 @@ const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: (i: number = 0) => ({
     opacity: 1, y: 0,
-    transition: { delay: i * 0.1, duration: 0.6, ease: "easeOut" as const }
+    transition: { delay: i * 0.1, duration: 0.7, ease: "easeOut" as const }
   })
 };
 
 const stagger = { visible: { transition: { staggerChildren: 0.08 } } };
 
+/* ─── PALETTE ─── */
+const C = {
+  bgPrimary: "#0B1221",
+  bgSecondary: "#162033",
+  accent: "#3B82F6",
+  accentDeep: "#1D4ED8",
+  steel: "#94A3B8",
+  azur: "#60A5FA",
+  white: "#F8FAFC",
+};
+
+/* ─── NAV ─── */
+function Nav() {
+  const navigate = useNavigate();
+  return (
+    <motion.nav
+      initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+      className="fixed top-0 left-0 right-0 z-50"
+      style={{ background: `${C.bgPrimary}dd`, backdropFilter: "blur(20px)", borderBottom: `1px solid rgba(255,255,255,0.06)` }}
+    >
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+        <div className="flex items-center gap-2.5">
+          <img src={logoIcon} alt="Kast AI" className="h-8 w-8 rounded-lg" />
+          <span className="font-display text-lg font-bold" style={{ color: C.white }}>
+            Kast<span style={{ color: C.accent }}>AI</span>
+          </span>
+        </div>
+        <div className="hidden items-center gap-8 text-sm md:flex" style={{ color: `${C.steel}` }}>
+          <a href="#features" className="transition-colors hover:text-white">Features</a>
+          <a href="#pricing" className="transition-colors hover:text-white">Pricing</a>
+          <a href="#faq" className="transition-colors hover:text-white">FAQ</a>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" className="hover:bg-white/5" style={{ color: C.steel }} onClick={() => navigate("/auth")}>
+            Log in
+          </Button>
+          <Button size="sm" onClick={() => navigate("/auth")}
+            style={{ background: `linear-gradient(135deg, ${C.accent}, ${C.accentDeep})`, boxShadow: `0 4px 20px ${C.accent}33`, letterSpacing: "0.3px" }}
+          >
+            Start free
+          </Button>
+        </div>
+      </div>
+    </motion.nav>
+  );
+}
+
 /* ─── HERO ─── */
 function Hero() {
   const navigate = useNavigate();
   return (
-    <section className="relative overflow-hidden">
-      {/* bg gradient */}
-      <div className="absolute inset-0 gradient-hero" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,hsl(217_91%_50%/0.3),transparent)]" />
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
+    <section className="relative overflow-hidden" style={{ background: C.bgPrimary }}>
+      {/* Subtle radial glow */}
+      <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse 70% 50% at 50% -10%, ${C.accent}15, transparent)` }} />
+      {/* Noise texture */}
+      <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")` }} />
 
-      <div className="relative mx-auto max-w-6xl px-6 pb-28 pt-32 text-center">
+      <div className="relative mx-auto max-w-6xl px-6 pb-32 pt-36 text-center">
         <motion.div variants={stagger} initial="hidden" animate="visible">
           <motion.div variants={fadeUp} custom={0}>
-            <Badge className="mb-6 border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 text-sm px-4 py-1.5">
-              <Sparkles className="mr-1.5 h-3.5 w-3.5" /> 95% forecast accuracy
+            <Badge className="mb-8 px-5 py-2 text-sm font-medium border-0"
+              style={{ background: `${C.accent}15`, color: C.azur }}
+            >
+              <Sparkles className="mr-2 h-3.5 w-3.5" /> 95% forecast accuracy
             </Badge>
           </motion.div>
 
           <motion.h1
             variants={fadeUp} custom={1}
-            className="mx-auto max-w-4xl font-display text-5xl font-bold leading-[1.1] tracking-tight text-white sm:text-6xl lg:text-7xl"
+            className="mx-auto max-w-4xl font-display text-5xl font-bold leading-[1.08] tracking-tight sm:text-6xl lg:text-7xl"
+            style={{ color: C.white }}
           >
             Predict your demand.{" "}
-            <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            <span style={{ background: `linear-gradient(135deg, ${C.accent}, ${C.azur})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
               Eliminate stockouts.
             </span>{" "}
             Maximize profit.
           </motion.h1>
 
-          <motion.p variants={fadeUp} custom={2} className="mx-auto mt-6 max-w-2xl text-lg text-white/70">
+          <motion.p variants={fadeUp} custom={2} className="mx-auto mt-7 max-w-2xl text-lg leading-relaxed" style={{ color: C.steel }}>
             AI-powered demand forecasting for e-commerce &amp; retail — no data science required.
             Upload your data. Get predictions in minutes.
           </motion.p>
 
-          <motion.div variants={fadeUp} custom={3} className="mt-10 flex flex-wrap items-center justify-center gap-4">
-            <Button size="lg" className="h-13 px-8 text-base font-semibold shadow-elevated" onClick={() => navigate("/auth")}>
+          <motion.div variants={fadeUp} custom={3} className="mt-12 flex flex-wrap items-center justify-center gap-4">
+            <Button size="lg" className="h-13 px-10 text-base font-semibold" onClick={() => navigate("/auth")}
+              style={{ background: `linear-gradient(135deg, ${C.accent}, ${C.accentDeep})`, boxShadow: `0 4px 25px ${C.accent}40`, letterSpacing: "0.3px" }}
+            >
               Start forecasting for free <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
-            <Button size="lg" variant="outline" className="h-13 px-8 text-base font-semibold border-white/20 text-white hover:bg-white/10 hover:text-white bg-transparent">
+            <Button size="lg" variant="ghost" className="h-13 px-8 text-base font-semibold"
+              style={{ color: C.steel, border: `1px solid rgba(255,255,255,0.1)` }}
+            >
               <Upload className="mr-2 h-4 w-4" /> Upload your data
             </Button>
           </motion.div>
 
-          <motion.div variants={fadeUp} custom={4} className="mt-8 flex items-center justify-center gap-6 text-sm text-white/50">
-            <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-success" /> No credit card</span>
-            <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-success" /> 14-day free trial</span>
-            <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-success" /> Setup in 2 min</span>
+          <motion.div variants={fadeUp} custom={4} className="mt-10 flex items-center justify-center gap-8 text-sm" style={{ color: `${C.steel}99` }}>
+            {["No credit card", "14-day free trial", "Setup in 2 min"].map((t, i) => (
+              <span key={i} className="flex items-center gap-2">
+                <Check className="h-4 w-4" style={{ color: C.azur }} /> {t}
+              </span>
+            ))}
           </motion.div>
         </motion.div>
       </div>
+
+      {/* Bottom fade */}
+      <div className="absolute bottom-0 left-0 right-0 h-32" style={{ background: `linear-gradient(to top, ${C.bgPrimary}, transparent)` }} />
     </section>
   );
 }
@@ -87,28 +145,29 @@ const problems = [
 
 function Problem() {
   return (
-    <section className="py-24 bg-background">
+    <section className="py-28" style={{ background: C.bgPrimary }}>
       <div className="mx-auto max-w-6xl px-6">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={stagger} className="text-center">
-          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-widest text-destructive">The problem</motion.p>
-          <motion.h2 variants={fadeUp} className="mt-3 font-display text-3xl font-bold text-foreground sm:text-4xl">
+          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-[0.2em]" style={{ color: "#EF4444" }}>The problem</motion.p>
+          <motion.h2 variants={fadeUp} className="mt-4 font-display text-3xl font-bold sm:text-4xl" style={{ color: C.white }}>
             Still relying on intuition to plan demand?
           </motion.h2>
-          <motion.p variants={fadeUp} className="mx-auto mt-4 max-w-2xl text-muted-foreground">
+          <motion.p variants={fadeUp} className="mx-auto mt-5 max-w-2xl leading-relaxed" style={{ color: C.steel }}>
             Most businesses still use Excel or gut feeling. This leads to overstock, lost sales, and poor cash flow.
           </motion.p>
         </motion.div>
 
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="mt-14 grid gap-6 md:grid-cols-3">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="mt-16 grid gap-6 md:grid-cols-3">
           {problems.map((p, i) => (
             <motion.div key={i} variants={fadeUp} custom={i}
-              className="group rounded-2xl border border-destructive/20 bg-destructive/5 p-8 transition-all hover:border-destructive/40 hover:shadow-lg"
+              className="group rounded-2xl p-8 transition-all duration-300 hover:scale-[1.02]"
+              style={{ background: `${C.bgSecondary}B3`, backdropFilter: "blur(12px)", border: "1px solid rgba(239,68,68,0.15)" }}
             >
-              <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-destructive/10 text-destructive">
-                <p.icon className="h-6 w-6" />
+              <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl" style={{ background: "rgba(239,68,68,0.1)" }}>
+                <p.icon className="h-5 w-5" style={{ color: "#EF4444" }} strokeWidth={1.5} />
               </div>
-              <h3 className="font-display text-lg font-semibold text-foreground">{p.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{p.desc}</p>
+              <h3 className="font-display text-lg font-semibold" style={{ color: C.white }}>{p.title}</h3>
+              <p className="mt-3 text-sm leading-relaxed" style={{ color: C.steel }}>{p.desc}</p>
             </motion.div>
           ))}
         </motion.div>
@@ -120,38 +179,43 @@ function Problem() {
 /* ─── SOLUTION ─── */
 function Solution() {
   return (
-    <section className="py-24 bg-muted/30">
+    <section className="py-28" style={{ background: C.bgSecondary }}>
       <div className="mx-auto max-w-6xl px-6">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center">
-          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-widest text-primary">The solution</motion.p>
-          <motion.h2 variants={fadeUp} className="mt-3 font-display text-3xl font-bold text-foreground sm:text-4xl">
+          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-[0.2em]" style={{ color: C.azur }}>The solution</motion.p>
+          <motion.h2 variants={fadeUp} className="mt-4 font-display text-3xl font-bold sm:text-4xl" style={{ color: C.white }}>
             AI that predicts your sales — automatically
           </motion.h2>
-          <motion.p variants={fadeUp} className="mx-auto mt-4 max-w-2xl text-muted-foreground">
+          <motion.p variants={fadeUp} className="mx-auto mt-5 max-w-2xl leading-relaxed" style={{ color: C.steel }}>
             Kast AI uses 13 advanced forecasting models to predict your future demand with high accuracy.
             No setup. No code. Just upload and forecast.
           </motion.p>
         </motion.div>
 
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-          className="mx-auto mt-14 max-w-3xl rounded-2xl border border-border bg-card p-8 shadow-card"
+          className="mx-auto mt-16 max-w-3xl rounded-2xl p-8"
+          style={{ background: `${C.bgPrimary}B3`, backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.08)" }}
         >
           <div className="flex items-start gap-6">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl gradient-primary shadow-elevated">
-              <Brain className="h-8 w-8 text-white" />
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl"
+              style={{ background: `linear-gradient(135deg, ${C.accent}, ${C.accentDeep})`, boxShadow: `0 8px 30px ${C.accent}30` }}
+            >
+              <img src={logoIcon} alt="" className="h-9 w-9 rounded-lg" />
             </div>
             <div>
-              <h3 className="font-display text-xl font-bold text-foreground">How it works</h3>
-              <div className="mt-4 space-y-3">
+              <h3 className="font-display text-xl font-bold" style={{ color: C.white }}>How it works</h3>
+              <div className="mt-5 space-y-4">
                 {[
                   "Upload your CSV, Excel, or connect Shopify",
-                  "AI automatically tests 13 models (ARIMA, Prophet, XGBoost, LSTM...)",
+                  "AI automatically tests 13 models (ARIMA, Prophet, XGBoost, LSTM…)",
                   "Backtesting selects the most accurate model",
                   "Get forecasts, alerts, and recommendations instantly"
                 ].map((step, i) => (
                   <div key={i} className="flex items-start gap-3">
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground">{i + 1}</span>
-                    <p className="text-sm text-muted-foreground">{step}</p>
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold"
+                      style={{ background: `${C.accent}20`, color: C.azur }}
+                    >{i + 1}</span>
+                    <p className="text-sm leading-relaxed" style={{ color: C.steel }}>{step}</p>
                   </div>
                 ))}
               </div>
@@ -166,36 +230,44 @@ function Solution() {
 /* ─── FEATURES ─── */
 const features = [
   { icon: BarChart3, title: "AI Forecasting", desc: "13 models compete. The best wins. Automatic model selection based on your data patterns." },
-  { icon: Zap, title: "Backtesting & Accuracy", desc: "80/20 split backtesting with MAPE optimization. Know your forecast precision before you act." },
-  { icon: ShieldAlert, title: "Smart Alerts", desc: "Real-time stockout & overstock risk detection. Never miss a critical inventory threshold." },
+  { icon: Zap, title: "Backtesting & Accuracy", desc: "80/20 split backtesting with MAPE optimization. Know your forecast precision." },
+  { icon: ShieldAlert, title: "Smart Alerts", desc: "Real-time stockout & overstock risk detection. Never miss a critical threshold." },
   { icon: PackageCheck, title: "Order Recommendations", desc: "Know what to order, how much, and when. AI-driven purchasing suggestions." },
-  { icon: Layers, title: "S&OP Integration", desc: "Connect forecasts to inventory, production, and financial planning in one platform." },
-  { icon: ShoppingCart, title: "Multi-channel", desc: "Shopify, CSV, Excel, ERP. Import from anywhere and forecast across all channels." },
+  { icon: Layers, title: "S&OP Integration", desc: "Connect forecasts to inventory, production, and financial planning." },
+  { icon: ShoppingCart, title: "Multi-channel", desc: "Shopify, CSV, Excel, ERP. Import from anywhere and forecast all channels." },
 ];
 
 function Features() {
   return (
-    <section className="py-24 bg-background">
+    <section id="features" className="py-28" style={{ background: C.bgPrimary }}>
       <div className="mx-auto max-w-6xl px-6">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center">
-          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-widest text-primary">Features</motion.p>
-          <motion.h2 variants={fadeUp} className="mt-3 font-display text-3xl font-bold text-foreground sm:text-4xl">
+          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-[0.2em]" style={{ color: C.azur }}>Features</motion.p>
+          <motion.h2 variants={fadeUp} className="mt-4 font-display text-3xl font-bold sm:text-4xl" style={{ color: C.white }}>
             Everything you need to master demand
           </motion.h2>
         </motion.div>
 
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}
-          className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
         >
           {features.map((f, i) => (
             <motion.div key={i} variants={fadeUp} custom={i}
-              className="group rounded-2xl border border-border bg-card p-7 shadow-card transition-all duration-300 hover:shadow-elevated hover:border-primary/30"
+              className="group rounded-2xl p-7 transition-all duration-300 hover:scale-[1.02]"
+              style={{
+                background: `rgba(22, 32, 51, 0.7)`,
+                backdropFilter: "blur(12px)",
+                border: "1px solid rgba(255,255,255,0.06)",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.3)"
+              }}
             >
-              <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-                <f.icon className="h-5 w-5" />
+              <div className="mb-5 inline-flex h-11 w-11 items-center justify-center rounded-xl transition-all duration-300"
+                style={{ background: `${C.accent}12` }}
+              >
+                <f.icon className="h-5 w-5 transition-colors" style={{ color: C.azur }} strokeWidth={1.5} />
               </div>
-              <h3 className="font-display text-base font-semibold text-foreground">{f.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.desc}</p>
+              <h3 className="font-display text-base font-semibold" style={{ color: C.white }}>{f.title}</h3>
+              <p className="mt-3 text-sm leading-relaxed" style={{ color: C.steel }}>{f.desc}</p>
             </motion.div>
           ))}
         </motion.div>
@@ -207,55 +279,72 @@ function Features() {
 /* ─── DASHBOARD PREVIEW ─── */
 function DashboardPreview() {
   return (
-    <section className="py-24 bg-muted/30">
+    <section className="py-28" style={{ background: C.bgSecondary }}>
       <div className="mx-auto max-w-6xl px-6">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center">
-          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-widest text-primary">Dashboard</motion.p>
-          <motion.h2 variants={fadeUp} className="mt-3 font-display text-3xl font-bold text-foreground sm:text-4xl">
+          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-[0.2em]" style={{ color: C.azur }}>Dashboard</motion.p>
+          <motion.h2 variants={fadeUp} className="mt-4 font-display text-3xl font-bold sm:text-4xl" style={{ color: C.white }}>
             Your command center for demand planning
           </motion.h2>
         </motion.div>
 
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-          className="mt-14 rounded-2xl border border-border bg-card p-2 shadow-elevated overflow-hidden"
+          className="mt-16 rounded-2xl p-2 overflow-hidden"
+          style={{ background: `${C.bgPrimary}`, border: "1px solid rgba(255,255,255,0.08)", boxShadow: `0 20px 60px ${C.accent}15` }}
         >
-          {/* Simulated dashboard UI */}
-          <div className="rounded-xl bg-gradient-to-br from-sidebar to-sidebar/90 p-6">
+          <div className="rounded-xl p-6" style={{ background: C.bgPrimary }}>
             {/* KPI row */}
-            <div className="grid grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               {[
-                { label: "Forecast Accuracy", value: "94.2%", change: "+2.1%", up: true },
-                { label: "Revenue Predicted", value: "$1.2M", change: "+18%", up: true },
-                { label: "Stockout Risk", value: "3 SKUs", change: "-40%", up: false },
-                { label: "Overstock Value", value: "$24K", change: "-22%", up: false },
+                { label: "Forecast Accuracy", value: "94.2%", change: "+2.1%" },
+                { label: "Revenue Predicted", value: "$1.2M", change: "+18%" },
+                { label: "Stockout Risk", value: "3 SKUs", change: "-40%" },
+                { label: "Overstock Value", value: "$24K", change: "-22%" },
               ].map((kpi, i) => (
-                <div key={i} className="rounded-xl bg-white/5 backdrop-blur border border-white/10 p-4">
-                  <p className="text-xs text-white/50">{kpi.label}</p>
-                  <p className="mt-1 font-display text-xl font-bold text-white">{kpi.value}</p>
-                  <p className={`mt-1 text-xs font-medium text-success`}>
+                <motion.div key={i}
+                  className="rounded-xl p-4 group cursor-default"
+                  style={{ background: `rgba(22, 32, 51, 0.7)`, backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.08)" }}
+                  whileHover={{ borderColor: `${C.accent}40` }}
+                >
+                  <p className="text-xs" style={{ color: C.steel }}>{kpi.label}</p>
+                  <p className="mt-1 font-display text-xl font-bold" style={{ color: C.white }}>{kpi.value}</p>
+                  <p className="mt-1 text-xs font-medium transition-colors" style={{ color: C.azur }}>
                     {kpi.change}
                   </p>
-                </div>
+                </motion.div>
               ))}
             </div>
             {/* Chart area */}
-            <div className="rounded-xl bg-white/5 backdrop-blur border border-white/10 p-6 h-64 flex items-end gap-1">
-              {Array.from({ length: 24 }).map((_, i) => {
-                const h = 20 + Math.sin(i * 0.5) * 30 + Math.random() * 20 + (i > 17 ? 15 : 0);
-                const isForecast = i >= 18;
+            <div className="rounded-xl p-6 h-64 flex items-end gap-[3px]"
+              style={{ background: `rgba(22, 32, 51, 0.7)`, border: "1px solid rgba(255,255,255,0.06)" }}
+            >
+              {Array.from({ length: 28 }).map((_, i) => {
+                const h = 25 + Math.sin(i * 0.4) * 25 + (i > 20 ? 12 : 0);
+                const isForecast = i >= 20;
                 return (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                  <div key={i} className="flex-1">
                     <div
-                      className={`w-full rounded-t transition-all ${isForecast ? "bg-primary/60 border border-dashed border-primary" : "bg-accent/70"}`}
-                      style={{ height: `${h}%` }}
+                      className="w-full rounded-t transition-all duration-500"
+                      style={{
+                        height: `${h}%`,
+                        background: isForecast
+                          ? `linear-gradient(to top, ${C.accentDeep}90, ${C.accent}90)`
+                          : `linear-gradient(to top, ${C.azur}40, ${C.azur}70)`,
+                        boxShadow: isForecast ? `0 0 12px ${C.accent}30` : "none",
+                        borderTop: isForecast ? `2px dashed ${C.accent}` : "none",
+                      }}
                     />
                   </div>
                 );
               })}
             </div>
-            <div className="mt-3 flex items-center justify-center gap-6 text-xs text-white/40">
-              <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-accent/70" /> Historical</span>
-              <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-primary/60 border border-dashed border-primary" /> Forecast</span>
+            <div className="mt-4 flex items-center justify-center gap-8 text-xs" style={{ color: `${C.steel}80` }}>
+              <span className="flex items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-sm" style={{ background: `${C.azur}70` }} /> Historical
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-sm" style={{ background: C.accent, boxShadow: `0 0 8px ${C.accent}50` }} /> Forecast
+              </span>
             </div>
           </div>
         </motion.div>
@@ -266,30 +355,34 @@ function DashboardPreview() {
 
 /* ─── RESULTS ─── */
 const results = [
-  { icon: TrendingDown, value: "-30%", label: "Stockouts reduced", color: "text-success" },
-  { icon: PackageCheck, value: "-20%", label: "Overstock eliminated", color: "text-primary" },
-  { icon: TrendingUp, value: "+15%", label: "Cash flow improved", color: "text-accent" },
+  { icon: TrendingDown, value: "-30%", label: "Stockouts reduced" },
+  { icon: PackageCheck, value: "-20%", label: "Overstock eliminated" },
+  { icon: TrendingUp, value: "+15%", label: "Cash flow improved" },
 ];
 
 function Results() {
   return (
-    <section className="py-24 bg-background">
+    <section className="py-28" style={{ background: C.bgPrimary }}>
       <div className="mx-auto max-w-6xl px-6">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center">
-          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-widest text-primary">Results</motion.p>
-          <motion.h2 variants={fadeUp} className="mt-3 font-display text-3xl font-bold text-foreground sm:text-4xl">
+          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-[0.2em]" style={{ color: C.azur }}>Results</motion.p>
+          <motion.h2 variants={fadeUp} className="mt-4 font-display text-3xl font-bold sm:text-4xl" style={{ color: C.white }}>
             Real impact on your bottom line
           </motion.h2>
         </motion.div>
 
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="mt-14 grid gap-8 md:grid-cols-3">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="mt-16 grid gap-8 md:grid-cols-3">
           {results.map((r, i) => (
-            <motion.div key={i} variants={fadeUp} custom={i} className="text-center">
-              <div className="mx-auto mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-muted">
-                <r.icon className={`h-8 w-8 ${r.color}`} />
+            <motion.div key={i} variants={fadeUp} custom={i} className="text-center group cursor-default">
+              <div className="mx-auto mb-5 inline-flex h-16 w-16 items-center justify-center rounded-2xl"
+                style={{ background: `${C.accent}10` }}
+              >
+                <r.icon className="h-8 w-8 transition-colors" style={{ color: C.azur }} strokeWidth={1.5} />
               </div>
-              <p className={`font-display text-5xl font-bold ${r.color}`}>{r.value}</p>
-              <p className="mt-2 text-muted-foreground">{r.label}</p>
+              <p className="font-display text-5xl font-bold transition-colors group-hover:drop-shadow-[0_0_12px_rgba(96,165,250,0.5)]"
+                style={{ color: C.azur }}
+              >{r.value}</p>
+              <p className="mt-3" style={{ color: C.steel }}>{r.label}</p>
             </motion.div>
           ))}
         </motion.div>
@@ -307,34 +400,37 @@ const testimonials = [
 
 function SocialProof() {
   return (
-    <section className="py-24 bg-muted/30">
+    <section className="py-28" style={{ background: C.bgSecondary }}>
       <div className="mx-auto max-w-6xl px-6">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center">
-          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-widest text-primary">Testimonials</motion.p>
-          <motion.h2 variants={fadeUp} className="mt-3 font-display text-3xl font-bold text-foreground sm:text-4xl">
+          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-[0.2em]" style={{ color: C.azur }}>Testimonials</motion.p>
+          <motion.h2 variants={fadeUp} className="mt-4 font-display text-3xl font-bold sm:text-4xl" style={{ color: C.white }}>
             Loved by e-commerce &amp; retail teams
           </motion.h2>
         </motion.div>
 
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="mt-14 grid gap-6 md:grid-cols-3">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="mt-16 grid gap-6 md:grid-cols-3">
           {testimonials.map((t, i) => (
             <motion.div key={i} variants={fadeUp} custom={i}
-              className="rounded-2xl border border-border bg-card p-7 shadow-card"
+              className="rounded-2xl p-7"
+              style={{ background: `rgba(22, 32, 51, 0.7)`, backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.06)" }}
             >
-              <div className="mb-3 flex gap-0.5">
+              <div className="mb-4 flex gap-0.5">
                 {Array.from({ length: t.stars }).map((_, j) => (
-                  <Star key={j} className="h-4 w-4 fill-warning text-warning" />
+                  <Star key={j} className="h-4 w-4 fill-amber-400 text-amber-400" />
                 ))}
               </div>
-              <Quote className="mb-2 h-5 w-5 text-muted-foreground/40" />
-              <p className="text-sm leading-relaxed text-foreground">{t.text}</p>
-              <div className="mt-5 flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 font-display text-sm font-bold text-primary">
+              <Quote className="mb-3 h-5 w-5" style={{ color: `${C.steel}40` }} />
+              <p className="text-sm leading-relaxed" style={{ color: `${C.white}dd` }}>{t.text}</p>
+              <div className="mt-6 flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full font-display text-sm font-bold"
+                  style={{ background: `${C.accent}20`, color: C.azur }}
+                >
                   {t.name[0]}
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-foreground">{t.name}</p>
-                  <p className="text-xs text-muted-foreground">{t.role}</p>
+                  <p className="text-sm font-semibold" style={{ color: C.white }}>{t.name}</p>
+                  <p className="text-xs" style={{ color: C.steel }}>{t.role}</p>
                 </div>
               </div>
             </motion.div>
@@ -376,55 +472,66 @@ const plans = [
 function Pricing() {
   const navigate = useNavigate();
   return (
-    <section id="pricing" className="py-24 bg-background">
+    <section id="pricing" className="py-28" style={{ background: C.bgPrimary }}>
       <div className="mx-auto max-w-6xl px-6">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center">
-          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-widest text-primary">Pricing</motion.p>
-          <motion.h2 variants={fadeUp} className="mt-3 font-display text-3xl font-bold text-foreground sm:text-4xl">
+          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-[0.2em]" style={{ color: C.azur }}>Pricing</motion.p>
+          <motion.h2 variants={fadeUp} className="mt-4 font-display text-3xl font-bold sm:text-4xl" style={{ color: C.white }}>
             Simple, transparent pricing
           </motion.h2>
-          <motion.p variants={fadeUp} className="mx-auto mt-4 max-w-xl text-muted-foreground">
+          <motion.p variants={fadeUp} className="mx-auto mt-5 max-w-xl" style={{ color: C.steel }}>
             1 stockout avoided = pays your subscription. Start free, upgrade when you're ready.
           </motion.p>
         </motion.div>
 
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}
-          className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-4"
+          className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-4"
         >
           {plans.map((plan, i) => (
             <motion.div key={i} variants={fadeUp} custom={i}
-              className={`relative rounded-2xl border p-7 transition-all duration-300 ${
-                plan.highlight
-                  ? "border-primary bg-card shadow-elevated scale-[1.03]"
-                  : "border-border bg-card shadow-card hover:shadow-elevated"
-              }`}
+              className={`relative rounded-2xl p-7 transition-all duration-300 ${plan.highlight ? "scale-[1.03]" : "hover:scale-[1.01]"}`}
+              style={{
+                background: plan.highlight
+                  ? `linear-gradient(160deg, ${C.bgSecondary}, ${C.bgPrimary})`
+                  : `rgba(22, 32, 51, 0.7)`,
+                backdropFilter: "blur(12px)",
+                border: plan.highlight
+                  ? `1px solid ${C.accent}50`
+                  : "1px solid rgba(255,255,255,0.06)",
+                boxShadow: plan.highlight ? `0 20px 50px ${C.accent}20` : "0 10px 30px rgba(0,0,0,0.3)"
+              }}
             >
               {plan.badge && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-primary text-primary-foreground px-3 shadow-sm">{plan.badge}</Badge>
+                  <Badge className="px-4 py-1 text-xs font-semibold border-0"
+                    style={{ background: `linear-gradient(135deg, ${C.accent}, ${C.accentDeep})`, color: "white", boxShadow: `0 4px 15px ${C.accent}40` }}
+                  >{plan.badge}</Badge>
                 </div>
               )}
-              <h3 className="font-display text-lg font-semibold text-foreground">{plan.name}</h3>
+              <h3 className="font-display text-lg font-semibold" style={{ color: C.white }}>{plan.name}</h3>
               <div className="mt-4 flex items-baseline gap-1">
-                <span className="font-display text-4xl font-bold text-foreground">${plan.price}</span>
-                {plan.period && <span className="text-sm text-muted-foreground">{plan.period}</span>}
+                <span className="font-display text-4xl font-bold" style={{ color: C.white }}>${plan.price}</span>
+                {plan.period && <span className="text-sm" style={{ color: C.steel }}>{plan.period}</span>}
               </div>
-              <ul className="mt-6 space-y-2.5">
+              <ul className="mt-6 space-y-3">
                 {plan.features.map((f, j) => (
-                  <li key={j} className="flex items-start gap-2 text-sm text-muted-foreground">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> {f}
+                  <li key={j} className="flex items-start gap-2 text-sm" style={{ color: C.steel }}>
+                    <Check className="mt-0.5 h-4 w-4 shrink-0" style={{ color: C.azur }} /> {f}
                   </li>
                 ))}
                 {plan.limits.map((l, j) => (
-                  <li key={`l${j}`} className="flex items-start gap-2 text-sm text-muted-foreground/60">
+                  <li key={`l${j}`} className="flex items-start gap-2 text-sm" style={{ color: `${C.steel}60` }}>
                     <span className="mt-0.5 h-4 w-4 shrink-0 text-center">—</span> {l}
                   </li>
                 ))}
               </ul>
               <Button
-                className={`mt-7 w-full ${plan.highlight ? "" : ""}`}
-                variant={plan.highlight ? "default" : "outline"}
+                className="mt-7 w-full font-semibold"
                 onClick={() => navigate("/auth")}
+                style={plan.highlight
+                  ? { background: `linear-gradient(135deg, ${C.accent}, ${C.accentDeep})`, color: "white", boxShadow: `0 4px 20px ${C.accent}30` }
+                  : { background: "rgba(255,255,255,0.05)", color: C.white, border: "1px solid rgba(255,255,255,0.1)" }
+                }
               >
                 {plan.cta}
               </Button>
@@ -432,7 +539,7 @@ function Pricing() {
           ))}
         </motion.div>
 
-        <p className="mt-8 text-center text-sm text-muted-foreground">
+        <p className="mt-10 text-center text-sm" style={{ color: `${C.steel}80` }}>
           14-day free trial on all paid plans · No credit card required · Cancel anytime
         </p>
       </div>
@@ -452,23 +559,25 @@ const faqs = [
 
 function FAQ() {
   return (
-    <section className="py-24 bg-muted/30">
+    <section id="faq" className="py-28" style={{ background: C.bgSecondary }}>
       <div className="mx-auto max-w-3xl px-6">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center">
-          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-widest text-primary">FAQ</motion.p>
-          <motion.h2 variants={fadeUp} className="mt-3 font-display text-3xl font-bold text-foreground sm:text-4xl">
+          <motion.p variants={fadeUp} className="text-sm font-semibold uppercase tracking-[0.2em]" style={{ color: C.azur }}>FAQ</motion.p>
+          <motion.h2 variants={fadeUp} className="mt-4 font-display text-3xl font-bold sm:text-4xl" style={{ color: C.white }}>
             Frequently asked questions
           </motion.h2>
         </motion.div>
 
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="mt-12">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="mt-14">
           <Accordion type="single" collapsible className="space-y-3">
             {faqs.map((faq, i) => (
-              <AccordionItem key={i} value={`faq-${i}`} className="rounded-xl border border-border bg-card px-6 shadow-card">
-                <AccordionTrigger className="text-sm font-semibold text-foreground hover:no-underline">
+              <AccordionItem key={i} value={`faq-${i}`} className="rounded-xl px-6 border-0"
+                style={{ background: `rgba(11, 18, 33, 0.6)`, border: "1px solid rgba(255,255,255,0.06)" }}
+              >
+                <AccordionTrigger className="text-sm font-semibold hover:no-underline" style={{ color: C.white }}>
                   {faq.q}
                 </AccordionTrigger>
-                <AccordionContent className="text-sm text-muted-foreground">
+                <AccordionContent className="text-sm" style={{ color: C.steel }}>
                   {faq.a}
                 </AccordionContent>
               </AccordionItem>
@@ -484,28 +593,39 @@ function FAQ() {
 function FinalCTA() {
   const navigate = useNavigate();
   return (
-    <section className="py-24">
+    <section className="py-28" style={{ background: C.bgPrimary }}>
       <div className="mx-auto max-w-4xl px-6">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-          className="relative overflow-hidden rounded-3xl gradient-hero p-12 text-center shadow-elevated"
+          className="relative overflow-hidden rounded-3xl p-14 text-center"
+          style={{
+            background: `linear-gradient(160deg, ${C.bgSecondary}, ${C.bgPrimary})`,
+            border: "1px solid rgba(255,255,255,0.08)",
+            boxShadow: `0 30px 80px ${C.accent}15`
+          }}
         >
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_50%_110%,hsl(217_91%_50%/0.3),transparent)]" />
+          {/* Glow */}
+          <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse 50% 50% at 50% 110%, ${C.accent}20, transparent)` }} />
+
           <div className="relative">
-            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 backdrop-blur">
+            <div className="mx-auto mb-8 flex h-16 w-16 items-center justify-center rounded-2xl"
+              style={{ background: `${C.accent}15`, backdropFilter: "blur(8px)" }}
+            >
               <img src={logoIcon} alt="Kast AI" className="h-10 w-10 rounded-lg" />
             </div>
-            <h2 className="font-display text-3xl font-bold text-white sm:text-4xl">
+            <h2 className="font-display text-3xl font-bold sm:text-4xl" style={{ color: C.white }}>
               Start forecasting now
             </h2>
-            <p className="mx-auto mt-4 max-w-lg text-white/70">
+            <p className="mx-auto mt-5 max-w-lg leading-relaxed" style={{ color: C.steel }}>
               Join hundreds of e-commerce and retail teams using Kast AI to predict demand, reduce waste, and grow revenue.
             </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-              <Button size="lg" className="h-13 px-10 text-base font-semibold" onClick={() => navigate("/auth")}>
+            <div className="mt-10">
+              <Button size="lg" className="h-13 px-12 text-base font-semibold" onClick={() => navigate("/auth")}
+                style={{ background: `linear-gradient(135deg, ${C.accent}, ${C.accentDeep})`, boxShadow: `0 4px 25px ${C.accent}40` }}
+              >
                 Get started for free <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
-            <p className="mt-4 text-xs text-white/40">No credit card required · Free plan available</p>
+            <p className="mt-5 text-xs" style={{ color: `${C.steel}80` }}>No credit card required · Free plan available</p>
           </div>
         </motion.div>
       </div>
@@ -516,65 +636,32 @@ function FinalCTA() {
 /* ─── FOOTER ─── */
 function Footer() {
   return (
-    <footer className="border-t border-border bg-card py-12">
+    <footer className="py-12" style={{ background: C.bgPrimary, borderTop: "1px solid rgba(255,255,255,0.06)" }}>
       <div className="mx-auto max-w-6xl px-6">
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <img src={logoIcon} alt="Kast AI" className="h-8 w-8 rounded-lg" />
-            <span className="font-display text-lg font-bold text-foreground">
-              Kast<span className="text-primary">AI</span>
+            <span className="font-display text-lg font-bold" style={{ color: C.white }}>
+              Kast<span style={{ color: C.accent }}>AI</span>
             </span>
           </div>
-          <div className="flex gap-8 text-sm text-muted-foreground">
-            <a href="#pricing" className="hover:text-foreground transition-colors">Pricing</a>
-            <a href="#" className="hover:text-foreground transition-colors">Documentation</a>
-            <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
-            <a href="#" className="hover:text-foreground transition-colors">Terms</a>
+          <div className="flex gap-8 text-sm" style={{ color: C.steel }}>
+            <a href="#pricing" className="transition-colors hover:text-white">Pricing</a>
+            <a href="#" className="transition-colors hover:text-white">Documentation</a>
+            <a href="#" className="transition-colors hover:text-white">Privacy</a>
+            <a href="#" className="transition-colors hover:text-white">Terms</a>
           </div>
-          <p className="text-xs text-muted-foreground">© 2025 Kast AI. All rights reserved.</p>
+          <p className="text-xs" style={{ color: `${C.steel}80` }}>© 2025 Kast AI. All rights reserved.</p>
         </div>
       </div>
     </footer>
   );
 }
 
-/* ─── NAV ─── */
-function Nav() {
-  const navigate = useNavigate();
-  return (
-    <motion.nav
-      initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
-      className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-sidebar/80 backdrop-blur-xl"
-    >
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <div className="flex items-center gap-2">
-          <img src={logoIcon} alt="Kast AI" className="h-8 w-8 rounded-lg" />
-          <span className="font-display text-lg font-bold text-white">
-            Kast<span className="text-primary">AI</span>
-          </span>
-        </div>
-        <div className="hidden items-center gap-8 text-sm text-white/60 md:flex">
-          <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
-          <a href="#" className="hover:text-white transition-colors">Features</a>
-          <a href="#" className="hover:text-white transition-colors">FAQ</a>
-        </div>
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" className="text-white/70 hover:text-white hover:bg-white/10" onClick={() => navigate("/auth")}>
-            Log in
-          </Button>
-          <Button size="sm" className="shadow-elevated" onClick={() => navigate("/auth")}>
-            Start free
-          </Button>
-        </div>
-      </div>
-    </motion.nav>
-  );
-}
-
 /* ─── LANDING PAGE ─── */
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen" style={{ background: C.bgPrimary }}>
       <Nav />
       <Hero />
       <Problem />
