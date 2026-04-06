@@ -23,6 +23,7 @@ import Connectors from "@/pages/Connectors";
 import UserManagement from "@/pages/UserManagement";
 import SuperAdmin from "@/pages/SuperAdmin";
 import Auth from "@/pages/Auth";
+import Landing from "@/pages/Landing";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,8 +38,9 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/auth" element={<Auth />} />
+              <Route path="/" element={<Landing />} />
               <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
-                <Route path="/" element={<Dashboard />} />
+                <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/forecast" element={<Forecast />} />
                 <Route path="/alerts" element={<Alerts />} />
                 <Route path="/kpi" element={<KPIReports />} />
