@@ -14,6 +14,71 @@ export type Database = {
   }
   public: {
     Tables: {
+      events: {
+        Row: {
+          color: string | null
+          created_at: string
+          end_date: string
+          famille: string | null
+          id: string
+          impact_type: string | null
+          impact_value: number | null
+          name: string
+          notes: string | null
+          sku: string | null
+          source: string | null
+          sous_famille: string | null
+          start_date: string
+          type: string | null
+          user_id: string
+          workspace_id: string | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          end_date: string
+          famille?: string | null
+          id?: string
+          impact_type?: string | null
+          impact_value?: number | null
+          name: string
+          notes?: string | null
+          sku?: string | null
+          source?: string | null
+          sous_famille?: string | null
+          start_date: string
+          type?: string | null
+          user_id: string
+          workspace_id?: string | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          end_date?: string
+          famille?: string | null
+          id?: string
+          impact_type?: string | null
+          impact_value?: number | null
+          name?: string
+          notes?: string | null
+          sku?: string | null
+          source?: string | null
+          sous_famille?: string | null
+          start_date?: string
+          type?: string | null
+          user_id?: string
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       forecast_runs: {
         Row: {
           best_mape: number | null
@@ -132,6 +197,39 @@ export type Database = {
           mapping?: Json | null
           row_count?: number | null
           uploaded_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      workspaces: {
+        Row: {
+          color: string
+          created_at: string
+          description: string | null
+          icon: string
+          id: string
+          is_default: boolean
+          name: string
+          user_id: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          description?: string | null
+          icon?: string
+          id?: string
+          is_default?: boolean
+          name: string
+          user_id: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          description?: string | null
+          icon?: string
+          id?: string
+          is_default?: boolean
+          name?: string
           user_id?: string
         }
         Relationships: []

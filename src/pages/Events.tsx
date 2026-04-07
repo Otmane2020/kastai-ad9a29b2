@@ -207,7 +207,7 @@ export default function Events() {
       color: partial.color ?? TYPE_COLORS[partial.type ?? "other"],
       source: partial.source ?? "manual",
     };
-    const { data } = await supabase.from("events").insert(payload).select().single();
+    const { data } = await supabase.from("events" as any).insert([payload] as any).select().single();
     if (data) { setEvents((p) => [...p, data as CalendarEvent]); setShowForm(false); }
   };
 
