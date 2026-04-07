@@ -159,6 +159,135 @@ export type Database = {
         }
         Relationships: []
       }
+      sop_lines: {
+        Row: {
+          capacity_per_day: number
+          created_at: string
+          id: string
+          name: string
+          site: string | null
+          user_id: string
+        }
+        Insert: {
+          capacity_per_day?: number
+          created_at?: string
+          id?: string
+          name: string
+          site?: string | null
+          user_id: string
+        }
+        Update: {
+          capacity_per_day?: number
+          created_at?: string
+          id?: string
+          name?: string
+          site?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      sop_mappings: {
+        Row: {
+          created_at: string
+          id: string
+          line_id: string
+          product_id: string
+          unit_time: number
+          user_id: string
+          yield_pct: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          line_id: string
+          product_id: string
+          unit_time?: number
+          user_id: string
+          yield_pct?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          line_id?: string
+          product_id?: string
+          unit_time?: number
+          user_id?: string
+          yield_pct?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sop_mappings_line_id_fkey"
+            columns: ["line_id"]
+            isOneToOne: false
+            referencedRelation: "sop_lines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sop_mappings_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "sop_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sop_products: {
+        Row: {
+          created_at: string
+          family: string | null
+          id: string
+          name: string
+          sku: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          family?: string | null
+          id?: string
+          name: string
+          sku: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          family?: string | null
+          id?: string
+          name?: string
+          sku?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      sop_scenarios: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          param: number
+          results: Json | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          param?: number
+          results?: Json | null
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          param?: number
+          results?: Json | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       uploaded_files: {
         Row: {
           ai_mapping: Json | null
