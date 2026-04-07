@@ -189,7 +189,7 @@ export default function Events() {
   const fetchEvents = useCallback(async () => {
     if (!user) return;
     setLoading(true);
-    const q = supabase.from("events").select("*").eq("user_id", user.id).order("start_date");
+    const q = (supabase.from as any)("events").select("*").eq("user_id", user.id).order("start_date");
     if (activeWorkspace) q.eq("workspace_id", activeWorkspace.id);
     const { data } = await q;
     setEvents((data ?? []) as CalendarEvent[]);
@@ -207,12 +207,12 @@ export default function Events() {
       color: partial.color ?? TYPE_COLORS[partial.type ?? "other"],
       source: partial.source ?? "manual",
     };
-    const { data } = await supabase.from("events").insert(payload).select().single();
+    const { data } = await (supabase.from as any)("events").insert([payload]).select().single();
     if (data) { setEvents((p) => [...p, data as CalendarEvent]); setShowForm(false); }
   };
 
   const deleteEvent = async (id: string) => {
-    await supabase.from("events").delete().eq("id", id);
+    await (supabase.from as any)("events").delete().eq("id", id);
     setEvents((p) => p.filter((e) => e.id !== id));
   };
 
