@@ -34,8 +34,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     if (!user) { setWorkspaces([]); setLoading(false); return; }
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("workspaces")
+      const { data, error } = await (supabase.from as any)("workspaces")
         .select("*")
         .eq("user_id", user.id)
         .order("created_at", { ascending: true });
@@ -75,8 +74,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
 
   const createWorkspace = useCallback(async (name: string, description?: string, color = "#6366f1"): Promise<Workspace | null> => {
     if (!user) return null;
-    const { data, error } = await supabase
-      .from("workspaces")
+    const { data, error } = await (supabase.from as any)("workspaces")
       .insert({ user_id: user.id, name, description, color })
       .select()
       .single();
@@ -87,7 +85,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   }, [user]);
 
   const deleteWorkspace = useCallback(async (id: string) => {
-    await supabase.from("workspaces").delete().eq("id", id);
+    await (supabase.from as any)("workspaces").delete().eq("id", id);
     setWorkspaces((prev) => {
       const next = prev.filter((w) => w.id !== id);
       if (activeWorkspace?.id === id) {
