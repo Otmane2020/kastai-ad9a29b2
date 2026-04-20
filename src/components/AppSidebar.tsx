@@ -3,10 +3,12 @@ import { NavLink, useLocation } from "react-router-dom";
 import {
   SquareKanban, LineChart, ShieldAlert, PieChart,
   Wallet, Workflow, Boxes, Cable, UserCog, MessageSquare, ChevronLeft,
-  ChevronRight, Gem, LogOut, ChevronDown, Factory, Activity, ClipboardList, BarChart3, FlaskConical, CalendarDays
+  ChevronRight, Gem, LogOut, ChevronDown, Factory, Activity, ClipboardList, BarChart3, FlaskConical, CalendarDays,
+  Settings, Lock
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
+import { usePlan } from "@/context/PlanContext";
 import logoKastAi from "@/assets/logo-kast-ai.png";
 import WorkspaceSwitcher from "@/components/WorkspaceSwitcher";
 
@@ -30,6 +32,7 @@ const navItems = [
   { path: "/connectors", label: "Connecteurs", icon: Cable },
   { path: "/users", label: "Utilisateurs", icon: UserCog },
   { path: "/superadmin", label: "Super Admin", icon: Gem },
+  { path: "/settings", label: "Paramètres", icon: Settings },
 ];
 
 interface AppSidebarProps {
@@ -41,11 +44,30 @@ export default function AppSidebar({ onToggleCopilot, copilotOpen }: AppSidebarP
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const { signOut, user } = useAuth();
+  const { canRoute } = usePlan();
   const isSopActive = location.pathname.startsWith("/sop");
   const [sopOpen, setSopOpen] = useState(isSopActive);
 
   const renderNavLink = (item: { path: string; label: string; icon: any }, end = true) => {
     const isActive = end ? location.pathname === item.path : location.pathname.startsWith(item.path);
+    const allowed = canRoute(item.path);
+    if (!allowed) {
+      return (
+        <div
+          key={item.path}
+          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-foreground/40 cursor-not-allowed"
+          title={`Fonctionnalité réservée — mettez à niveau votre plan`}
+        >
+          <item.icon className="h-[18px] w-[18px] shrink-0" />
+          {!collapsed && (
+            <>
+              <span className="animate-fade-in flex-1">{item.label}</span>
+              <Lock className="h-3 w-3 shrink-0 opacity-50" />
+            </>
+          )}
+        </div>
+      );
+    }
     return (
       <NavLink
         key={item.path}
@@ -88,44 +110,68 @@ export default function AppSidebar({ onToggleCopilot, copilotOpen }: AppSidebarP
 
         {/* S&OP expandable section */}
         <div>
-          <button
-            onClick={() => collapsed ? undefined : setSopOpen(!sopOpen)}
-            className={cn(
-              "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
-              isSopActive
-                ? "bg-sidebar-accent text-sidebar-primary-foreground shadow-sm"
-                : "text-sidebar-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground"
-            )}
-          >
-            <Workflow className={cn("h-[18px] w-[18px] shrink-0", isSopActive && "text-sidebar-primary")} />
-            {!collapsed && (
-              <>
-                <span className="flex-1 text-left animate-fade-in">S&OP</span>
-                <ChevronDown className={cn("h-3.5 w-3.5 transition-transform duration-200", sopOpen && "rotate-180")} />
-              </>
-            )}
-          </button>
+          {canRoute("/sop") ? (
+            <>
+              <button
+                onClick={() => collapsed ? undefined : setSopOpen(!sopOpen)}
+                className={cn(
+                  "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                  isSopActive
+                    ? "bg-sidebar-accent text-sidebar-primary-foreground shadow-sm"
+                    : "text-sidebar-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground"
+                )}
+              >
+                <Workflow className={cn("h-[18px] w-[18px] shrink-0", isSopActive && "text-sidebar-primary")} />
+                {!collapsed && (
+                  <>
+                    <span className="flex-1 text-left animate-fade-in">S&OP</span>
+                    <ChevronDown className={cn("h-3.5 w-3.5 transition-transform duration-200", sopOpen && "rotate-180")} />
+                  </>
+                )}
+              </button>
 
-          {!collapsed && sopOpen && (
-            <div className="ml-4 mt-1 space-y-0.5 border-l-2 border-sidebar-border pl-3">
-              {sopSubItems.map((sub) => {
-                const isActive = location.pathname === sub.path;
-                return (
-                  <NavLink
-                    key={sub.path}
-                    to={sub.path}
-                    className={cn(
-                      "flex items-center gap-2 rounded-md px-2.5 py-2 text-xs font-medium transition-all duration-200",
-                      isActive
-                        ? "bg-sidebar-accent/80 text-sidebar-primary-foreground"
-                        : "text-sidebar-foreground/70 hover:bg-sidebar-accent/40 hover:text-sidebar-accent-foreground"
-                    )}
-                  >
-                    <sub.icon className={cn("h-3.5 w-3.5 shrink-0", isActive && "text-sidebar-primary")} />
-                    <span>{sub.label}</span>
-                  </NavLink>
-                );
-              })}
+              {!collapsed && sopOpen && (
+                <div className="ml-4 mt-1 space-y-0.5 border-l-2 border-sidebar-border pl-3">
+                  {sopSubItems.map((sub) => {
+                    const isActive = location.pathname === sub.path;
+                    const allowed = canRoute(sub.path);
+                    if (!allowed) {
+                      return (
+                        <div key={sub.path} className="flex items-center gap-2 rounded-md px-2.5 py-2 text-xs font-medium text-sidebar-foreground/30 cursor-not-allowed">
+                          <sub.icon className="h-3.5 w-3.5 shrink-0" />
+                          <span className="flex-1">{sub.label}</span>
+                          <Lock className="h-2.5 w-2.5 opacity-50" />
+                        </div>
+                      );
+                    }
+                    return (
+                      <NavLink
+                        key={sub.path}
+                        to={sub.path}
+                        className={cn(
+                          "flex items-center gap-2 rounded-md px-2.5 py-2 text-xs font-medium transition-all duration-200",
+                          isActive
+                            ? "bg-sidebar-accent/80 text-sidebar-primary-foreground"
+                            : "text-sidebar-foreground/70 hover:bg-sidebar-accent/40 hover:text-sidebar-accent-foreground"
+                        )}
+                      >
+                        <sub.icon className={cn("h-3.5 w-3.5 shrink-0", isActive && "text-sidebar-primary")} />
+                        <span>{sub.label}</span>
+                      </NavLink>
+                    );
+                  })}
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-foreground/40 cursor-not-allowed" title="Fonctionnalité réservée — mettez à niveau votre plan">
+              <Workflow className="h-[18px] w-[18px] shrink-0" />
+              {!collapsed && (
+                <>
+                  <span className="flex-1 text-left animate-fade-in">S&OP</span>
+                  <Lock className="h-3 w-3 shrink-0 opacity-50" />
+                </>
+              )}
             </div>
           )}
         </div>
